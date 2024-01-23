@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 
 // routes 
 
-app.use('/api/trans', transRoutes)
+app.use('/trans', transRoutes)
 
 // connect to mongodb & listen for requests
 
