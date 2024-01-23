@@ -1,4 +1,9 @@
-# CASH 💷
-Customised Advisory for Spending &amp; Handling (CASH) - A Money Management Tool
+# cash ✨
 
-Developed as part of my final year project
+Customised Advisory for Spending &amp; Handling - A Money Management Tool
+
+---
+
+## Dev Log
+
+1. Express App Setup
