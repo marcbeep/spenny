@@ -2,6 +2,8 @@ const express = require('express')
 
 const router = express.Router()
 
+const Transaction = require('../models/transModel')
+
 // Get all
 router.get('/', (req, res) => {
     res.json({mssg: 'GET all trans'})
@@ -13,8 +15,18 @@ router.get('/:id', (req, res) => {
 })
 
 // Post new
-router.post('/', (req, res) => {
-    res.json({mssg: 'POST new trans'})
+router.post('/', async (req, res) => {
+    const {title, amount} = req.body
+    
+    try{
+        const newTrans = await Transaction.create({
+            title,
+            amount
+        })
+        return res.status(200).json(newTrans)
+    }catch(err){
+        res.status(400).json({error: err.message})
+    }
 })
 
 // Delete single
