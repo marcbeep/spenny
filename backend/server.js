@@ -1,10 +1,13 @@
 require('dotenv').config()
 
 const express = require('express')
+const transRoutes = require('./routes/trans')
 
 const app = express()
 
 // middleware
+
+app.use(express.json())
 
 app.use((req, res, next) => {
     console.log(req.path, req.method)
@@ -13,9 +16,7 @@ app.use((req, res, next) => {
 
 // routes 
 
-app.get('/', (req, res) => {
-    res.json({mssg: 'Hello World!'})
-})
+app.use('/api/trans', transRoutes)
 
 // listening
 
