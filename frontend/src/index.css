@@ -1,6 +1,21 @@
 /* google font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap');
 
+/* custom font */
+@font-face {
+  font-family: 'RocaOne';
+  src: url('./assets/fonts/RocaOne.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'RocaTwo';
+  src: url('./assets/fonts/RocaTwo.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
 /* layout */
 :root {
   --primary: #1aac83;
@@ -9,10 +24,11 @@
 body {
   background: #f1f1f1;
   margin: 0;
-  font-family: "Poppins";
+  font-family: "RocaTwo", "Poppins", sans;
 }
 header {
-  background: #fff;
+  background: #000;
+  font-family: "RocaOne", "Poppins", sans;
 }
 header .container {
   max-width: 1400px;
@@ -23,7 +39,7 @@ header .container {
   justify-content: space-between;
 }
 header a {
-  color: #333;
+  color: #fff;
   text-decoration: none;
 }
 .pages{
