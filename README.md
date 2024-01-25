@@ -17,3 +17,4 @@ Customised Advisory for Spending &amp; Handling - A Money Management Tool
 4. Models & schemas
 5. Controllers setup (1)
 6. Controllers setup (2)
+7. Create React App
