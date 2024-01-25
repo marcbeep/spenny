@@ -1,37 +1,38 @@
-require('dotenv').config()
+require('dotenv').config();
 
-const express = require('express')
+const express = require('express');
 
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const transRoutes = require('./routes/trans')
+const transRoutes = require('./routes/trans');
 
 // express app
 
-const app = express()
+const app = express();
 
 // middleware
 
-app.use(express.json())
+app.use(express.json());
 
 app.use((req, res, next) => {
-    console.log(req.path, req.method)
-    next()
-})
+  console.log(req.path, req.method);
+  next();
+});
 
-// routes 
+// routes
 
-app.use('/trans', transRoutes)
+app.use('/trans', transRoutes);
 
 // connect to mongodb & listen for requests
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => {    
-        console.log('Connected to MongoDB')
-        app.listen(process.env.PORT, () => {
-            console.log('Listening on Port ' + process.env.PORT)
-        }) 
-    })
-    .catch(err => {
-        console.log(err)
-    })
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('Connected to MongoDB');
+    app.listen(process.env.PORT, () => {
+      console.log('Listening on Port ' + process.env.PORT);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
