@@ -1,49 +1,29 @@
-/* google font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap');
+/* Import Tailwind CSS */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
-/* custom font */
+/* Define custom font families */
 @font-face {
   font-family: 'RocaOne';
   src: url('./assets/fonts/RocaOne.ttf') format('truetype');
   font-weight: 400;
-  font-style: normal;
 }
 
 @font-face {
   font-family: 'RocaTwo';
   src: url('./assets/fonts/RocaTwo.ttf') format('truetype');
   font-weight: 400;
-  font-style: normal;
 }
 
-/* layout */
-:root {
-  --primary: #1aac83;
-  --error: #e7195a;
+/* Apply fonts to headings and text */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'RocaOne', sans; /* Apply RocaOne font to all headings */
+  font-size: 2rem;
 }
-body {
-  background: #f1f1f1;
-  margin: 0;
-  font-family: "RocaTwo", "Poppins", sans;
-}
-header {
-  background: #000;
-  font-family: "RocaOne", "Poppins", sans;
-}
-header .container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-header a {
-  color: #fff;
-  text-decoration: none;
-}
-.pages{
-  max-width: 1400px;
-  padding: 20px;
-  margin: 0 auto;
+
+/* Apply RocaTwo font to all other text elements */
+body, p, a, span, div {
+  font-family: 'RocaTwo', sans;
+  font-size: 1rem;
 }
