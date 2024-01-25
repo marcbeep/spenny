@@ -15,3 +15,4 @@ Customised Advisory for Spending &amp; Handling - A Money Management Tool
    - PATCH /trans/:id
 3. Mongodb & mongoose setup
 4. Models & schemas
+5. Controllers setup (1)

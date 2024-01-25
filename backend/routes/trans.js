@@ -4,30 +4,20 @@ const router = express.Router()
 
 const Transaction = require('../models/transModel')
 
+const {
+    createTransaction, 
+    getAllTransactions, 
+    getSingleTransaction
+} = require('../controllers/transController')
+
 // Get all
-router.get('/', (req, res) => {
-    res.json({mssg: 'GET all trans'})
-})
+router.get('/', getAllTransactions)
 
 // Get single
-router.get('/:id', (req, res) => {
-    res.json({mssg: 'GET single trans'})
-})
+router.get('/:id', getSingleTransaction)
 
 // Post new
-router.post('/', async (req, res) => {
-    const {title, amount} = req.body
-    
-    try{
-        const newTrans = await Transaction.create({
-            title,
-            amount
-        })
-        return res.status(200).json(newTrans)
-    }catch(err){
-        res.status(400).json({error: err.message})
-    }
-})
+router.post('/', createTransaction)
 
 // Delete single
 router.delete('/', (req, res) => {
