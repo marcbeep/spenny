@@ -27,3 +27,8 @@ body, p, a, span, div {
   font-family: 'RocaTwo', sans;
   font-size: 1rem;
 }
+
+/* Rounded buttons */
+.btn {
+ @apply rounded-full;
+}

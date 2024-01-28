@@ -19,7 +19,7 @@ const Home = () => {
 
   return (
     <div className="home">
-      <h1 className="text-xl font-bold mb-4">Home</h1>
+      <button class="btn btn-primary mb-4">+ New Transaction</button>
       <Table data={data} />
     </div>
   );
