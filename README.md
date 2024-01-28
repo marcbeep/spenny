@@ -18,3 +18,6 @@ Customised Advisory for Spending &amp; Handling - A Money Management Tool
 5. Controllers setup (1)
 6. Controllers setup (2)
 7. Create React App
+8. Fetching Data
+9. Adding a workout form
+10. Add pagination & animations

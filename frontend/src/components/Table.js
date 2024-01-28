@@ -1,25 +1,35 @@
-// components/Table.js
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const Table = ({ data }) => {
+
+  const rowTransition = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 }
+  };
+
   return (
     <div className="overflow-x-auto">
-      <table className="table w-full"> {/* Updated to use DaisyUI table classes */}
-        {/* Table header */}
+      <table className="table w-full">
         <thead>
           <tr>
-            <th>Title</th> {/* Simplified header cells */}
+            <th>Title</th>
             <th>Amount</th>
           </tr>
         </thead>
-        {/* Table body */}
         <tbody>
           {data &&
-            data.map((item) => (
-              <tr key={item.id}> {/* Removed conditional styling for rounded corners */}
+            data.map((item, index) => (
+              <motion.tr
+                key={item.id}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: 0.1 * index, duration: 0.5 }}
+                variants={rowTransition}
+              >
                 <td>{item.title}</td>
-                <td>£{item.amount}</td>
-              </tr>
+                <td>£{item.amount.toFixed(2)}</td>
+              </motion.tr>
             ))}
         </tbody>
       </table>
@@ -28,6 +38,8 @@ const Table = ({ data }) => {
 };
 
 export default Table;
+
+
 
 
 

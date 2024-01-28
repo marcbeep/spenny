@@ -1,5 +1,3 @@
-// TransactionModal.js
-
 import React, { useState } from 'react';
 
 const TransactionModal = ({ isOpen, closeModal }) => {

@@ -1,35 +1,57 @@
-// Home.js
-
 import React, { useEffect, useState } from 'react';
 import Table from '../components/Table';
-import TransactionModal from '../components/TransactionModal'; // Import the modal component
+import Pagination from '../components/Pagination';
+import TransactionModal from '../components/TransactionModal';
 
 const Home = () => {
-  const [data, setData] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [data, setData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('https://cash-api.reeflink.org/trans/');
-      const data = await res.json();
-
-      if (res.ok) {
+      try {
+        const res = await fetch('https://cash-api.reeflink.org/trans/');
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await res.json();
         setData(data);
+      } catch (error) {
+        console.error('Fetch error:', error);
       }
-    }
+    };
     fetchData();
   }, []);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = data ? data.slice(indexOfFirstItem, indexOfLastItem) : [];
+
   return (
     <div className="home">
       <button className="btn btn-primary mb-4" onClick={openModal}>+ New Transaction</button>
-      
+
       <TransactionModal isOpen={isModalOpen} closeModal={closeModal} />
 
-      <Table data={data} />
+      <Table data={currentData} currentPage={currentPage} itemsPerPage={itemsPerPage} />
+
+      {data && (
+        <Pagination
+          className="mt-4"  // Added margin-top class here
+          currentPage={currentPage}
+          totalPages={Math.ceil(data.length / itemsPerPage)}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };
