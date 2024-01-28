@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const Table = ({ data }) => {
-
   const rowTransition = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 }
@@ -18,7 +17,13 @@ const Table = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {data &&
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan="2">
+                <div className="loading loading-spinner loading-sm"></div>
+              </td>
+            </tr>
+          ) : (
             data.map((item, index) => (
               <motion.tr
                 key={item.id}
@@ -30,7 +35,8 @@ const Table = ({ data }) => {
                 <td>{item.title}</td>
                 <td>£{item.amount.toFixed(2)}</td>
               </motion.tr>
-            ))}
+            ))
+          )}
         </tbody>
       </table>
     </div>
@@ -38,6 +44,7 @@ const Table = ({ data }) => {
 };
 
 export default Table;
+
 
 
 

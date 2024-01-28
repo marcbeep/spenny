@@ -14,7 +14,7 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('https://cash-api.reeflink.org/trans/');
+        const res = await fetch('https://cash-api.reeflink.org/transs/');
         if (!res.ok) {
           throw new Error('Network response was not ok');
         }
