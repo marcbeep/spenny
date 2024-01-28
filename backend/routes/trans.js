@@ -1,6 +1,12 @@
 const express = require('express');
 
+const cors = require('cors');
+
 const router = express.Router();
+
+router.use(cors({
+  origin: 'https://cash.reeflink.org'
+}));
 
 const Transaction = require('../models/transModel');
 
