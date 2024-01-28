@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import Table from '../components/Table';
 
 const Home = () => {
 
@@ -18,13 +19,8 @@ const Home = () => {
 
   return (
     <div className="home">
-      <h1>Home</h1>
-      {data && data.map((item) => (
-        <div key={item.id}>
-          <h3>{item.title}</h3>
-          <p>{item.amount}</p>
-        </div>
-      ))}
+      <h1 className="text-xl font-bold mb-4">Home</h1>
+      <Table data={data} />
     </div>
   );
 };
