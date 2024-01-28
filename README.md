@@ -21,3 +21,4 @@ Customised Advisory for Spending &amp; Handling - A Money Management Tool
 8. Fetching Data
 9. Adding a workout form
 10. Add pagination & animations
+11. Establish Deploy CI/CD

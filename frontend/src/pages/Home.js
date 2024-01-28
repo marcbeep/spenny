@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import TransactionModal from '../components/TransactionModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -38,7 +40,7 @@ const Home = () => {
 
   return (
     <div className="home">
-      <button className="btn btn-primary mb-4" onClick={openModal}>+ New Transaction</button>
+      <button className="btn btn-primary mb-4" onClick={openModal}><FontAwesomeIcon icon={faPlus} size="sm" /> New Transaction</button>
 
       <TransactionModal isOpen={isModalOpen} closeModal={closeModal} />
 
