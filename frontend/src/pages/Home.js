@@ -6,7 +6,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('http://cash-api.reeflink.org/trans/');
+      const res = await fetch('https://cash-api.reeflink.org/trans/');
       const data = await res.json();
 
       if (res.ok){
