@@ -1,14 +1,12 @@
 import {useEffect, useState} from 'react';
 
-const apiBaseUrl = process.env.REACT_APP_API_URL;
-
 const Home = () => {
 
   const [data, setData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`${apiBaseUrl}/trans/`);
+      const res = await fetch('https://cash-api.reeflink.org/trans/');
       const data = await res.json();
 
       if (res.ok){

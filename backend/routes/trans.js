@@ -4,8 +4,19 @@ const cors = require('cors');
 
 const router = express.Router();
 
+const allowedOrigins = ['https://cash.reeflink.org', 'http://localhost:3000'];
+
 router.use(cors({
-  origin: 'https://cash.reeflink.org'
+  origin: function(origin, callback){
+    // allow requests with no origin (like mobile apps, curl requests)
+    if(!origin) return callback(null, true);
+
+    if(allowedOrigins.indexOf(origin) === -1){
+      var message = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(message), false);
+    }
+    return callback(null, true);
+  }
 }));
 
 const Transaction = require('../models/transModel');
