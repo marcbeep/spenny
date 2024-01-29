@@ -9,14 +9,14 @@ const Navbar = () => {
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
         {/* Navbar */}
-        <header className='bg-black px-16 py-8 flex justify-between items-center'>
+        <header className='bg-black px-8 py-8 flex justify-between items-center'>
           <div className="">
             <label htmlFor="my-drawer" className="btn btn-square btn-ghost">
               {/* FontAwesome Hamburger Icon */}
               <FontAwesomeIcon icon={faBars} className="text-white" />
             </label>
           </div>
-          <div className='mr-4'>
+          <div className=''>
             <Link to='/' className='text-white text-3xl'>Spenny 💸</Link>
           </div>
         </header>
