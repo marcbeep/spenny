@@ -2,25 +2,60 @@ import React, { useState } from 'react';
 
 const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
   const [formData, setFormData] = useState({ title: '', amount: '' });
-  const [error, setError] = useState('');
+  const [titleError, setTitleError] = useState('');
+  const [amountError, setAmountError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const updateFormData = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+    if (field === 'title') setTitleError('');
+    if (field === 'amount') setAmountError('');
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+    if (!formData.title) {
+      setTitleError('Title is required');
+      isValid = false;
+    }
+
+    if (!/^\d+(\.\d{1,2})?$/.test(formData.amount)) {
+      setAmountError('Amount must be a valid number');
+      isValid = false;
+    } else if (parseFloat(formData.amount) > 1000000) {
+      setAmountError('Amount must be less than or equal to £1,000,000.00');
+      isValid = false;
+    }
+
+    return isValid;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('https://cash-api.reeflink.org/trans/', {
-      method: 'POST',
-      body: JSON.stringify(formData),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    if (!validateForm()) return;
+    setIsSubmitting(true);
 
-    const json = await response.json();
+    try {
+      const response = await fetch('https://cash-api.reeflink.org/trans/', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-    if (response.ok) {
-      setFormData({ title: '', amount: '' });
-      console.log('New transaction added:', json);
-      closeModal();
-      onAddTransaction(); // Refresh the transaction list
-    } else {
-      setError(json.error || 'An error occurred');
+      const json = await response.json();
+
+      if (response.ok) {
+        setFormData({ title: '', amount: '' });
+        console.log('New transaction added:', json);
+        closeModal();
+        onAddTransaction();
+      } else {
+        console.error(json.error || 'An error occurred');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -34,31 +69,30 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
     >
       <div className='modal-box'>
         <form onSubmit={handleSubmit} className='form-control'>
-          <label className='label'>
-            <span className='font-bold label-text'>Transaction Title</span>
-            <input
-              type='text'
-              placeholder='Greggs'
-              className='input input-bordered'
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            />
-          </label>
-          <label className='label'>
-            <span className='font-bold label-text'>Amount Spent</span>
-            <input
-              type='text'
-              placeholder='£10'
-              className='input input-bordered'
-              value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-            />
-          </label>
-          {error && <div className='error text-red-500'>{error}</div>}
+          <Field
+            type='text'
+            placeholder='Greggs'
+            value={formData.title}
+            onChange={(e) => updateFormData('title', e.target.value)}
+            error={titleError}
+          />
+          <Field
+            type='number'
+            placeholder='1.50'
+            value={formData.amount}
+            onChange={(e) => updateFormData('amount', e.target.value)}
+            error={amountError}
+          />
           <div className='modal-action'>
-            <button type='submit' className='btn btn-primary'>
-              Submit
-            </button>
+            {isSubmitting ? (
+              <button type='button' className='btn loading'>
+                loading
+              </button>
+            ) : (
+              <button type='submit' className='btn btn-primary'>
+                Submit
+              </button>
+            )}
             <button type='button' className='btn' onClick={closeModal}>
               Close
             </button>
@@ -68,5 +102,22 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
     </div>
   );
 };
+
+const Field = ({ type, placeholder, value, onChange, error }) => (
+  <div className='mb-2'>
+    <input
+      type={type}
+      placeholder={placeholder}
+      className='input input-bordered w-full'
+      value={value}
+      onChange={onChange}
+    />
+    {error && (
+      <div role='alert' className='alert alert-error mt-2'>
+        <span>{error}</span>
+      </div>
+    )}
+  </div>
+);
 
 export default TransactionModal;
