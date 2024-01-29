@@ -27,8 +27,7 @@ const Navbar = () => {
         <ul className="menu p-16 overflow-y-auto w-80 h-full bg-black text-white">
           {/* Sidebar content here */}
           <li><a href="/">Home</a></li>
-          <li><a href="/">Accounts</a></li>
-          <li><a href="/">Transactions</a></li>
+          <li><a href="/about">About</a></li>
         </ul>
       </div>
     </div>
