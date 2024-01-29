@@ -11,21 +11,26 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('https://cash-api.reeflink.org/trans/');
-        if (!res.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await res.json();
-        setData(data);
-      } catch (error) {
-        console.error('Fetch error:', error);
+  const fetchData = async () => {
+    try {
+      const res = await fetch('https://cash-api.reeflink.org/trans/');
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
       }
-    };
+      const data = await res.json();
+      setData(data);
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
+
+  const refreshData = async () => {
+    await fetchData();
+  };
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -39,16 +44,22 @@ const Home = () => {
   const currentData = data ? data.slice(indexOfFirstItem, indexOfLastItem) : [];
 
   return (
-    <div className="home">
-      <button className="btn btn-primary mb-4" onClick={openModal}><FontAwesomeIcon icon={faPlus} size="sm" /> New Transaction</button>
+    <div className='home'>
+      <button className='btn btn-primary mb-4' onClick={openModal}>
+        <FontAwesomeIcon icon={faPlus} size='sm' /> New Transaction
+      </button>
 
-      <TransactionModal isOpen={isModalOpen} closeModal={closeModal} />
+      <TransactionModal
+        isOpen={isModalOpen}
+        closeModal={closeModal}
+        onAddTransaction={refreshData}
+      />
 
       <Table data={currentData} currentPage={currentPage} itemsPerPage={itemsPerPage} />
 
       {data && (
         <Pagination
-          className="mt-4"  // Added margin-top class here
+          className='mt-4' // Added margin-top class here
           currentPage={currentPage}
           totalPages={Math.ceil(data.length / itemsPerPage)}
           onPageChange={handlePageChange}
@@ -59,4 +70,3 @@ const Home = () => {
 };
 
 export default Home;
-

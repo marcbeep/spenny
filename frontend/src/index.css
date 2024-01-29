@@ -33,9 +33,7 @@ body, p, a, span, div {
  @apply rounded-full;
 }
 
-/* Table z-index fix */
-.table {
-  z-index: -1; 
+.drawer-side {
+  z-index: 1000;
 }
-
 
