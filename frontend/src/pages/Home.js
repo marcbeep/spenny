@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import TransactionModal from '../components/TransactionModal';
@@ -10,6 +11,8 @@ const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const controls = useAnimation();
+
 
   const fetchData = async () => {
     try {
@@ -32,8 +35,17 @@ const Home = () => {
     await fetchData();
   };
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = () => {
+    // Toggle the rotation animation
+    controls.start({ rotate: 180 });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    // Reset the rotation animation
+    controls.start({ rotate: 0 });
+    setIsModalOpen(false);
+  };
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -46,9 +58,11 @@ const Home = () => {
   return (
     <div className='home'>
       <div className="flex justify-end">
-        <button className='btn btn-primary mb-4' onClick={openModal}>
-          <FontAwesomeIcon icon={faPlus} size='sm' />
-        </button>
+        <motion.div animate={controls}>
+          <button className='btn btn-primary mb-4' onClick={openModal}>
+            <FontAwesomeIcon icon={faPlus} size='sm' />
+          </button>
+        </motion.div>
       </div>
 
       <TransactionModal
