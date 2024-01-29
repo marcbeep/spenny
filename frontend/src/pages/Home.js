@@ -47,7 +47,7 @@ const Home = () => {
     <div className='home'>
       <div className="flex justify-end">
         <button className='btn btn-primary mb-4' onClick={openModal}>
-          <FontAwesomeIcon icon={faPlus} size='sm' /> New Transaction
+          <FontAwesomeIcon icon={faPlus} size='sm' />
         </button>
       </div>
 
