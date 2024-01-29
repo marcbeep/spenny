@@ -13,16 +13,17 @@ const Navbar = () => {
       <div className='drawer-content flex flex-col'>
         {/* Navbar */}
         <header className='bg-black px-8 py-8 flex justify-between items-center'>
-          <div className=''>
+          <div>
             <label htmlFor='my-drawer' className='btn btn-square btn-ghost'>
               <FontAwesomeIcon icon={faBars} className='text-white' />
             </label>
           </div>
-          <div className=''>
+          <div>
             <Link to='/' className='text-white text-3xl'>
               Spenny 💸
             </Link>
           </div>
+          <div> {/* Placeholder to balance the flexbox */} </div>
         </header>
         {/* Page content here */}
       </div>
