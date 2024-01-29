@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 
 const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
-  const [formData, setFormData] = useState({ title: '', amount: '' });
+  const [formData, setFormData] = useState({ title: '', amount: '', category: '' });
   const [titleError, setTitleError] = useState('');
   const [amountError, setAmountError] = useState('');
+  const [categoryError, setCategoryError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const updateFormData = (field, value) => {
     setFormData({ ...formData, [field]: value });
     if (field === 'title') setTitleError('');
     if (field === 'amount') setAmountError('');
+    if (field === 'category') setCategoryError('');
   };
 
   const validateForm = () => {
@@ -24,6 +26,11 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
       isValid = false;
     } else if (parseFloat(formData.amount) > 1000000) {
       setAmountError('Amount must be less than or equal to £1,000,000.00');
+      isValid = false;
+    }
+
+    if (!formData.category) {
+      setCategoryError('Category is required');
       isValid = false;
     }
 
@@ -45,7 +52,7 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
       const json = await response.json();
 
       if (response.ok) {
-        setFormData({ title: '', amount: '' });
+        setFormData({ title: '', amount: '', category: '' });
         console.log('New transaction added:', json);
         closeModal();
         onAddTransaction();
@@ -71,18 +78,35 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
         <form onSubmit={handleSubmit} className='form-control'>
           <Field
             type='text'
-            placeholder='Greggs'
+            placeholder='Item (e.g. Greggs)'
             value={formData.title}
             onChange={(e) => updateFormData('title', e.target.value)}
             error={titleError}
           />
           <Field
             type='number'
-            placeholder='1.50'
+            placeholder='Price (1.50)'
             value={formData.amount}
             onChange={(e) => updateFormData('amount', e.target.value)}
             error={amountError}
           />
+          <select
+            className='select select-bordered w-full'
+            value={formData.category}
+            onChange={(e) => updateFormData('category', e.target.value)}
+          >
+            <option disabled value=''>
+              Select Category
+            </option>
+            <option value='Groceries'>Groceries</option>
+            <option value='Utilities'>Utilities</option>
+            {/* Add more categories here */}
+          </select>
+          {categoryError && (
+            <div role='alert' className='alert alert-error mt-2'>
+              <span>{categoryError}</span>
+            </div>
+          )}
           <div className='modal-action'>
             {isSubmitting ? (
               <button type='button' className='btn loading'>

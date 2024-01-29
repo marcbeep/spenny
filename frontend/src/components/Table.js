@@ -14,12 +14,13 @@ const Table = ({ data }) => {
           <tr>
             <th>Title</th>
             <th>Amount</th>
+            <th>Category</th> {/* Added Category column */}
           </tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan='2'>
+              <td colSpan='3'>
                 <div className='loading loading-spinner loading-sm'></div>
               </td>
             </tr>
@@ -34,6 +35,7 @@ const Table = ({ data }) => {
               >
                 <td>{item.title}</td>
                 <td>£{item.amount.toFixed(2)}</td>
+                <td>{item.category || 'No Category'}</td> {/* Display Category or 'No Category' */}
               </motion.tr>
             ))
           )}

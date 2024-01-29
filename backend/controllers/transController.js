@@ -30,12 +30,13 @@ const getSingleTransaction = async (req, res) => {
 // create new transaction
 
 const createTransaction = async (req, res) => {
-  const { title, amount } = req.body;
+  const { title, amount, category } = req.body;
 
   try {
     const newTrans = await Transaction.create({
       title,
       amount,
+      category,
     });
     return res.status(200).json(newTrans);
   } catch (err) {
@@ -44,6 +45,7 @@ const createTransaction = async (req, res) => {
 };
 
 // delete a single transaction
+
 const deleteSingleTransaction = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id))
     return res.status(404).json({ error: 'No transaction found' });
@@ -57,6 +59,7 @@ const deleteSingleTransaction = async (req, res) => {
 };
 
 // update a single transaction
+
 const updateSingleTransaction = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id))
     return res.status(404).json({ error: 'No transaction found' });

@@ -4,13 +4,13 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'RocaOne': ['RocaOne', 'sans'],
-        'RocaTwo': ['RocaTwo', 'sans'],
+        RocaOne: ['RocaOne', 'sans'],
+        RocaTwo: ['RocaTwo', 'sans'],
       },
     },
   },
   variants: {
     extend: {},
   },
-  plugins: [require("daisyui")], 
-}
+  plugins: [require('daisyui')],
+};

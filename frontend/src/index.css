@@ -17,23 +17,31 @@
 }
 
 /* Apply fonts to headings and text */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'RocaOne', sans; /* Apply RocaOne font to all headings */
   font-size: 2rem;
 }
 
 /* Apply RocaTwo font to all other text elements */
-body, p, a, span, div {
+body,
+p,
+a,
+span,
+div {
   font-family: 'RocaTwo', sans;
   font-size: 1rem;
 }
 
 /* Rounded buttons */
 .btn {
- @apply rounded-full;
+  @apply rounded-full;
 }
 
 .drawer-side {
   z-index: 1000;
 }
-
