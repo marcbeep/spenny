@@ -1,9 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
+  const location = useLocation();
+  const isActive = (path) => (location.pathname === path ? 'bg-gray-800' : '');
+
   return (
     <div className='drawer drawer-left'>
       <input id='my-drawer' type='checkbox' className='drawer-toggle' />
@@ -28,10 +31,14 @@ const Navbar = () => {
         <ul className='menu p-16 overflow-y-auto w-80 h-full bg-black text-white'>
           {/* Sidebar content here */}
           <li>
-            <Link to='/'>Home</Link>
+            <Link to='/' className={`${isActive('/')} p-2`}>
+              Home
+            </Link>
           </li>
           <li>
-            <Link to='/about'>About</Link>
+            <Link to='/about' className={`${isActive('/about')} p-2`}>
+              About
+            </Link>
           </li>
         </ul>
       </div>
