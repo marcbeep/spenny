@@ -54,27 +54,27 @@ const deleteSingleTransaction = async (req, res) => {
   } catch (err) {
     return res.status(404).json({ error: 'No transaction found' });
   }
-}
+};
 
 // update a single transaction
 const updateSingleTransaction = async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id))
+  if (!mongoose.Types.ObjectId.isValid(req.params.id))
     return res.status(404).json({ error: 'No transaction found' });
 
   try {
     const updatedTrans = await Transaction.findByIdAndUpdate(req.params.id, {
-        ...req.body
+      ...req.body,
     });
     return res.status(200).json(updatedTrans);
   } catch (err) {
     return res.status(404).json({ error: 'No transaction found' });
   }
-}
+};
 
 module.exports = {
   createTransaction,
   getAllTransactions,
   getSingleTransaction,
   deleteSingleTransaction,
-  updateSingleTransaction
+  updateSingleTransaction,
 };
