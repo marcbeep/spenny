@@ -32,3 +32,10 @@ body, p, a, span, div {
 .btn {
  @apply rounded-full;
 }
+
+/* Table z-index fix */
+.table {
+  z-index: -1; 
+}
+
+
