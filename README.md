@@ -23,3 +23,4 @@ A simple zero-based budgeting tool.
 10. Add pagination & animations
 11. Add categories
 12. Add drawer
+13. Add delete

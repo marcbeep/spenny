@@ -26,6 +26,26 @@ const Home = () => {
     }
   };
 
+  const deleteTransaction = async (id) => {
+
+    console.log('Attempting to delete transaction with ID:', id); // Debugging statement
+
+    const deleteUrl = `https://spenny-api.reeflink.org/transaction/${id}`;
+    console.log('Delete URL:', deleteUrl); // Debugging statement
+    
+    try {
+      const res = await fetch(`https://spenny-api.reeflink.org/transaction/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
+      }
+      refreshData(); // Refresh data to reflect the deletion
+    } catch (error) {
+      console.error('Delete error:', error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -68,7 +88,7 @@ const Home = () => {
         onAddTransaction={refreshData}
       />
 
-      <Table data={currentData} currentPage={currentPage} itemsPerPage={itemsPerPage} />
+      <Table data={currentData}  onDelete={deleteTransaction} currentPage={currentPage} itemsPerPage={itemsPerPage}/>
 
       {data && (
         <Pagination

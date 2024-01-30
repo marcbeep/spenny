@@ -1,7 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const Table = ({ data }) => {
+const Table = ({ data, onDelete }) => {
   const rowTransition = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
@@ -15,6 +17,7 @@ const Table = ({ data }) => {
             <th>ITEM</th>
             <th>AMOUNT</th>
             <th>CATEGORY</th>
+            <th>ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -36,6 +39,11 @@ const Table = ({ data }) => {
                 <td>{item.title}</td>
                 <td>£{item.amount.toFixed(2)}</td>
                 <td>{item.category || 'No Category'}</td>
+                <td>
+                  <button onClick={() => onDelete(item._id)}>
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </td>
               </motion.tr>
             ))
           )}
