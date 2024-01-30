@@ -38,7 +38,7 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://cash-api.reeflink.org/trans/', {
+      const response = await fetch('https://spenny-api.reeflink.org/transaction/', {
         method: 'POST',
         body: JSON.stringify(formData),
         headers: { 'Content-Type': 'application/json' },
