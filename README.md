@@ -1,6 +1,6 @@
-# cash ✨
+# Spenny 💸
 
-Customised Advisory for Spending &amp; Handling - A Money Management Tool
+A simple zero-based budgeting tool.
 
 ---
 
@@ -21,4 +21,5 @@ Customised Advisory for Spending &amp; Handling - A Money Management Tool
 8. Fetching Data
 9. Adding a workout form
 10. Add pagination & animations
-11. Establish Deploy CI/CD
+11. Add categories
+12. Add drawer
