@@ -20,7 +20,7 @@ const Table = ({ data, onRowClick }) => {
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan='3' className='text-center'>No data available</td>
+              <td colSpan='3' className='text-center'><span className="loading loading-spinner loading-lg"></span></td>
             </tr>
           ) : (
             data.map((item, index) => (
