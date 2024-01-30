@@ -12,6 +12,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const controls = useAnimation();
+  const [editingTransaction, setEditingTransaction] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -32,7 +33,7 @@ const Home = () => {
 
     const deleteUrl = `https://spenny-api.reeflink.org/transaction/${id}`;
     console.log('Delete URL:', deleteUrl); // Debugging statement
-    
+
     try {
       const res = await fetch(`https://spenny-api.reeflink.org/transaction/${id}`, {
         method: 'DELETE',
@@ -52,6 +53,7 @@ const Home = () => {
 
   const refreshData = async () => {
     await fetchData();
+    setEditingTransaction(null);
   };
 
   const openModal = () => {
@@ -62,6 +64,12 @@ const Home = () => {
   const closeModal = () => {
     controls.start({ rotate: 0 });
     setIsModalOpen(false);
+    setEditingTransaction(null);
+  };
+
+  const openEditModal = (transaction) => {
+    setEditingTransaction(transaction);
+    setIsModalOpen(true);
   };
 
   const handlePageChange = (newPage) => {
@@ -88,8 +96,15 @@ const Home = () => {
         onAddTransaction={refreshData}
       />
 
-      <Table data={currentData}  onDelete={deleteTransaction} currentPage={currentPage} itemsPerPage={itemsPerPage}/>
+      <Table data={currentData}  onDelete={deleteTransaction} onEdit={openEditModal} currentPage={currentPage} itemsPerPage={itemsPerPage}/>
 
+      <TransactionModal 
+        isOpen={isModalOpen} 
+        closeModal={closeModal} 
+        onAddTransaction={refreshData} 
+        editingTransaction={editingTransaction} 
+      />
+      
       {data && (
         <Pagination
           className='mt-4'

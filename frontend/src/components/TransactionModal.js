@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
-  const initialState = { title: '', amount: '', category: '' };
+const TransactionModal = ({ isOpen, closeModal, onAddTransaction, editingTransaction }) => {
+  const initialState = editingTransaction || { title: '', amount: '', category: '' };
   const [formData, setFormData] = useState(initialState);
   const [formErrors, setFormErrors] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (editingTransaction) {
+      setFormData(editingTransaction);
+    } else {
+      setFormData(initialState);
+    }
+  }, [editingTransaction]);
 
   const updateFormData = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -37,9 +45,14 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction }) => {
     if (!validateForm()) return;
     setIsSubmitting(true);
 
+    const url = editingTransaction 
+      ? `https://spenny-api.reeflink.org/transaction/${editingTransaction._id}` 
+      : 'https://spenny-api.reeflink.org/transaction/';
+    const method = editingTransaction ? 'PATCH' : 'POST';
+
     try {
-      const response = await fetch('https://spenny-api.reeflink.org/transaction/', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method: method,
         body: JSON.stringify(formData),
         headers: { 'Content-Type': 'application/json' },
       });
