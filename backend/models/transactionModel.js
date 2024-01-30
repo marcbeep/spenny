@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-
-const transSchema = new Schema(
+const transactionSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -17,7 +15,7 @@ const transSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
-module.exports = mongoose.model('Transaction', transSchema);
+module.exports = mongoose.model('Transaction', transactionSchema);

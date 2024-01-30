@@ -15,7 +15,7 @@ const Home = () => {
 
   const fetchData = async () => {
     try {
-      const res = await fetch('https://cash-api.reeflink.org/trans/');
+      const res = await fetch('https://spenny-api.reeflink.org/transaction/');
       if (!res.ok) {
         throw new Error('Network response was not ok');
       }

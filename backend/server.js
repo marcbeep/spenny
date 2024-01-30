@@ -1,17 +1,11 @@
 require('dotenv').config();
-
 const express = require('express');
-
 const mongoose = require('mongoose');
-
-const transRoutes = require('./routes/trans');
-
-// express app
+const transactionRoutes = require('./routes/transaction');
 
 const app = express();
 
-// middleware
-
+// Middleware
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -19,20 +13,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// routes
+// Routes
+app.use('/transaction', transactionRoutes);
 
-app.use('/trans', transRoutes);
-
-// connect to mongodb & listen for requests
-
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
+// Connect to MongoDB & listen for requests
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
     console.log('Connected to MongoDB');
     app.listen(process.env.PORT, () => {
       console.log('Listening on Port ' + process.env.PORT);
     });
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+startServer();
+
