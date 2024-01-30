@@ -1,10 +1,10 @@
-const About = () => {
-  return (
-    <div className='about'>
-      <h1>About</h1>
-      <p>Spenny is a money mangement tool by Marc Beepath currently under development.</p>
-    </div>
-  );
-};
+import React from 'react';
+
+const About = () => (
+  <div className='about'>
+    <h1>About</h1>
+    <p>Spenny is a money management tool by Marc Beepath currently under development.</p>
+  </div>
+);
 
 export default About;

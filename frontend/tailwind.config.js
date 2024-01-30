@@ -4,8 +4,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        RocaOne: ['RocaOne', 'sans'],
-        RocaTwo: ['RocaTwo', 'sans'],
+        sans: ['Inter', 'sans'],
+      },
+      fontWeight: {
+        normal: 500,
+        bold: 700,
+        black: 900,
       },
     },
   },

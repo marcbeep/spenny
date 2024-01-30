@@ -13,7 +13,6 @@ const Home = () => {
   const itemsPerPage = 5;
   const controls = useAnimation();
 
-
   const fetchData = async () => {
     try {
       const res = await fetch('https://cash-api.reeflink.org/trans/');
@@ -36,13 +35,11 @@ const Home = () => {
   };
 
   const openModal = () => {
-    // Toggle the rotation animation
     controls.start({ rotate: 180 });
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    // Reset the rotation animation
     controls.start({ rotate: 0 });
     setIsModalOpen(false);
   };
@@ -75,7 +72,7 @@ const Home = () => {
 
       {data && (
         <Pagination
-          className='mt-4' // Added margin-top class here
+          className='mt-4'
           currentPage={currentPage}
           totalPages={Math.ceil(data.length / itemsPerPage)}
           onPageChange={handlePageChange}

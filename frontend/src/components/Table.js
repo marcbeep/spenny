@@ -12,9 +12,9 @@ const Table = ({ data }) => {
       <table className='table w-full'>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Amount</th>
-            <th>Category</th> {/* Added Category column */}
+            <th>ITEM</th>
+            <th>£</th>
+            <th>CATEGORY</th>
           </tr>
         </thead>
         <tbody>
@@ -35,7 +35,7 @@ const Table = ({ data }) => {
               >
                 <td>{item.title}</td>
                 <td>£{item.amount.toFixed(2)}</td>
-                <td>{item.category || 'No Category'}</td> {/* Display Category or 'No Category' */}
+                <td>{item.category || 'No Category'}</td>
               </motion.tr>
             ))
           )}

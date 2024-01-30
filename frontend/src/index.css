@@ -1,43 +1,19 @@
-/* Import Tailwind CSS */
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Define custom font families */
-@font-face {
-  font-family: 'RocaOne';
-  src: url('./assets/fonts/RocaOne.ttf') format('truetype');
-  font-weight: 400;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap');
 
-@font-face {
-  font-family: 'RocaTwo';
-  src: url('./assets/fonts/RocaTwo.ttf') format('truetype');
-  font-weight: 400;
-}
-
-/* Apply fonts to headings and text */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'RocaOne', sans; /* Apply RocaOne font to all headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans;
   font-size: 2rem;
 }
 
-/* Apply RocaTwo font to all other text elements */
-body,
-p,
-a,
-span,
-div {
-  font-family: 'RocaTwo', sans;
+body, p, a, span, div {
+  font-family: 'Inter', sans;
   font-size: 1rem;
 }
 
-/* Rounded buttons */
 .btn {
   @apply rounded-full;
 }
