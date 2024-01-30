@@ -13,7 +13,7 @@ const Table = ({ data }) => {
         <thead>
           <tr>
             <th>ITEM</th>
-            <th>£</th>
+            <th>AMOUNT</th>
             <th>CATEGORY</th>
           </tr>
         </thead>
