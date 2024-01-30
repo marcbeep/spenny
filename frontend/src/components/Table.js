@@ -1,15 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
-const Table = ({ data, onDelete, onEdit }) => {
-  const rowTransition = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
+const Table = ({ data, onRowClick }) => {
+  const rowVariants = {
+    hover: { scale: 1.02, backgroundColor: "rgba(245, 245, 245, 1)", transition: { type: "spring", stiffness: 300 } },
+    initial: { scale: 1, backgroundColor: "rgba(255, 255, 255, 0)" }, 
   };
-
+  
   return (
     <div className='overflow-x-auto'>
       <table className='table w-full'>
@@ -18,36 +15,26 @@ const Table = ({ data, onDelete, onEdit }) => {
             <th>ITEM</th>
             <th>AMOUNT</th>
             <th>CATEGORY</th>
-            <th>ACTIONS</th>
           </tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan='3'>
-                <div className='loading loading-spinner loading-sm'></div>
-              </td>
+              <td colSpan='3' className='text-center'>No data available</td>
             </tr>
           ) : (
             data.map((item, index) => (
               <motion.tr
-                key={item.id}
-                initial='hidden'
-                animate='visible'
-                transition={{ delay: 0.1 * index, duration: 0.5 }}
-                variants={rowTransition}
+                key={item._id}
+                initial="initial"
+                whileHover="hover"
+                variants={rowVariants}
+                onClick={() => onRowClick(item)}
+                className="cursor-pointer"
               >
                 <td>{item.title}</td>
                 <td>£{item.amount.toFixed(2)}</td>
                 <td>{item.category || 'No Category'}</td>
-                <td>
-                <button onClick={() => onEdit(item)}> 
-                  <FontAwesomeIcon icon={faEdit} />
-                </button>
-                  <button onClick={() => onDelete(item._id)}>
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
-                </td>
               </motion.tr>
             ))
           )}

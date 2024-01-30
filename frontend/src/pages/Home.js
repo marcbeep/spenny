@@ -96,13 +96,13 @@ const Home = () => {
         onAddTransaction={refreshData}
       />
 
-      <Table data={currentData}  onDelete={deleteTransaction} onEdit={openEditModal} currentPage={currentPage} itemsPerPage={itemsPerPage}/>
-
+<Table data={currentData} onRowClick={openEditModal} />
       <TransactionModal 
-        isOpen={isModalOpen} 
-        closeModal={closeModal} 
-        onAddTransaction={refreshData} 
-        editingTransaction={editingTransaction} 
+        isOpen={isModalOpen}
+        closeModal={closeModal}
+        onAddTransaction={refreshData}
+        onDeleteTransaction={deleteTransaction} // Pass the delete function
+        editingTransaction={editingTransaction}
       />
       
       {data && (

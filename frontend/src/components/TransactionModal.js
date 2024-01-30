@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const TransactionModal = ({ isOpen, closeModal, onAddTransaction, editingTransaction }) => {
+const TransactionModal = ({ isOpen, closeModal, onAddTransaction, onDeleteTransaction, editingTransaction }) => {
   const initialState = editingTransaction || { title: '', amount: '', category: '' };
   const [formData, setFormData] = useState(initialState);
   const [formErrors, setFormErrors] = useState(initialState);
@@ -12,7 +12,15 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction, editingTransac
     } else {
       setFormData(initialState);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingTransaction]);
+
+  const handleDelete = async () => {
+    if (editingTransaction && editingTransaction._id) {
+      onDeleteTransaction(editingTransaction._id);
+      closeModal(); // Close modal after deletion
+    }
+  };
 
   const updateFormData = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -113,17 +121,20 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction, editingTransac
           </div>
           <div className='modal-action'>
             {isSubmitting ? (
-              <button type='button' className='btn loading'>
-                Loading
-              </button>
+              <button type='button' className='btn loading'>Loading</button>
             ) : (
-              <button type='submit' className='btn btn-primary'>
-                Submit
-              </button>
+              <>
+                <button type='submit' className='btn btn-primary'>
+                  {editingTransaction ? 'Update' : 'Add Transaction'}
+                </button>
+                {editingTransaction && (
+                  <button type='button' className='btn btn-error' onClick={handleDelete}>
+                    Delete
+                  </button>
+                )}
+              </>
             )}
-            <button type='button' className='btn' onClick={closeModal}>
-              Close
-            </button>
+            <button type='button' className='btn' onClick={closeModal}>Close</button>
           </div>
         </form>
       </div>
