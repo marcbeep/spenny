@@ -4,7 +4,8 @@ const validator = require('validator');
 
 const EMAIL_ALREADY_EXISTS = 'Email already exists';
 const INVALID_EMAIL = 'Invalid email';
-const INVALID_PASSWORD = 'Password must be at least 8 characters long and contain at least 1 lowercase, 1 uppercase, 1 number, and 1 symbol';
+const WEAK_PASSWORD = 'Password must be at least 8 characters long and contain at least 1 lowercase, 1 uppercase, 1 number, and 1 symbol';
+const INVALID_PASSWORD = 'Incorrect password';
 
 const userSchema = new mongoose.Schema(
   {
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       validate: {
         validator: (password) => validator.isStrongPassword(password, { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 }),
-        message: INVALID_PASSWORD,
+        message: WEAK_PASSWORD,
       },
     },
   },
@@ -37,9 +38,18 @@ userSchema.statics.signup = async function (email, password) {
     throw new Error(EMAIL_ALREADY_EXISTS);
   }
 
+  // Validate password strength
+  if (!validator.isStrongPassword(password, { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 })) {
+    throw new Error(WEAK_PASSWORD);
+  }
+
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-  const user = await this.create({ email, password: hashedPassword });
+
+  // Create a new user instance and save it
+  const user = new this({ email, password: hashedPassword });
+  await user.save();
+
   return user;
 };
 
