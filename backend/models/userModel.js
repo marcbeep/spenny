@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
+
+const EMAIL_ALREADY_EXISTS = 'Email already exists';
+const INVALID_EMAIL = 'Invalid email';
+const INVALID_PASSWORD = 'Password must be at least 8 characters long and contain at least 1 lowercase, 1 uppercase, 1 number, and 1 symbol';
 
 const userSchema = new mongoose.Schema(
   {
@@ -7,22 +12,29 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      validate: {
+        validator: validator.isEmail,
+        message: INVALID_EMAIL,
+      },
     },
     password: {
       type: String,
       required: true,
-    }
+      validate: {
+        validator: (password) => validator.isStrongPassword(password, { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 }),
+        message: INVALID_PASSWORD,
+      },
+    },
   },
   { timestamps: true }
 );
 
 // static signup method
 userSchema.statics.signup = async function (email, password) {
-  
-  const exists = await this.findOne({ email });
-  
-  if(exists) {
-    throw new Error('Email already exists');
+  const existingUser = await this.findOne({ email });
+
+  if (existingUser) {
+    throw new Error(EMAIL_ALREADY_EXISTS);
   }
 
   const salt = await bcrypt.genSalt(10);

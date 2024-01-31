@@ -32,3 +32,5 @@ A simple zero-based budgeting tool.
 
 1. User routes, controller & model
 2. Signup
+3. Email & Password Validation
+4. JSON Web Token
