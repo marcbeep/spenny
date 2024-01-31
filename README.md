@@ -35,3 +35,4 @@ A simple zero-based budgeting tool.
 3. Email & Password Validation
 4. JSON Web Token
 5. Login
+6. React Context
