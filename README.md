@@ -31,3 +31,4 @@ A simple zero-based budgeting tool.
 ### Authentication
 
 1. User routes, controller & model
+2. Signup
