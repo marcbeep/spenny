@@ -34,3 +34,4 @@ A simple zero-based budgeting tool.
 2. Signup
 3. Email & Password Validation
 4. JSON Web Token
+5. Login
