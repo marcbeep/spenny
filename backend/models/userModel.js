@@ -43,8 +43,6 @@ userSchema.statics.signup = async function (email, password) {
   return user;
 };
 
-module.exports = mongoose.model('User', userSchema);
-
 // static login method
 userSchema.statics.login = async function (email, password) {
   const user = await this.findOne({ email });
@@ -61,3 +59,5 @@ userSchema.statics.login = async function (email, password) {
 
   return user;
 };
+
+module.exports = mongoose.model('User', userSchema);
