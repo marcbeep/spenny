@@ -36,3 +36,4 @@ A simple zero-based budgeting tool.
 4. JSON Web Token
 5. Login
 6. React Context
+7. Signup & Login form
