@@ -6,6 +6,8 @@ A simple zero-based budgeting tool.
 
 ## Dev Log
 
+### Initial Setup
+
 1. Express app setup
 2. Express router & api routes
    - GET /trans
@@ -24,3 +26,8 @@ A simple zero-based budgeting tool.
 11. Add categories
 12. Add drawer
 13. Add delete
+14. Add update
+
+### Authentication
+
+1. User routes, controller & model
