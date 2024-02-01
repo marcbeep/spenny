@@ -37,3 +37,4 @@ A simple zero-based budgeting tool.
 5. Login
 6. React Context
 7. Signup & Login form
+8. Adding accounts
