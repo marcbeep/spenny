@@ -19,21 +19,20 @@ const Signup = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username: email, // Assuming username is needed
                     email,
                     password,
                 }),
             });
-
+    
             const data = await res.json(); // Always parse the JSON to get the data
-
+    
             if (res.ok) {
                 console.log(data);
                 setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
-                // Redirect or handle signup success
+                // Redirect or handle signup success here
             } else {
-                // Use the error message from the response if available
-                throw new Error(data.message || 'Failed to signup. Please try again.');
+                // Use the specific error message from the response if available
+                throw new Error(data.error || 'Failed to signup. Please try again.');
             }
         } catch (err) {
             console.log(err);
@@ -41,7 +40,7 @@ const Signup = () => {
         } finally {
             setIsSubmitting(false); // End submission, re-enable button, hide spinner
         }
-    };
+    };    
 
     const handleInputChange = (setter) => (e) => {
         setter(e.target.value);
