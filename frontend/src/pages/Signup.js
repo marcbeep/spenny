@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import { useSignup } from './hooks/useSignup'; // Adjust the import path as necessary
+import { useSignup } from '../hooks/useSignup'; // Adjust the import path as necessary
 
 const Signup = () => {
     const [email, setEmail] = useState('');

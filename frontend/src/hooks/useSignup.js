@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuthContext } from '../context/AuthContext';
+import { useAuthContext } from './useAuthContext';
 
 export const useSignup = () => {
     const [error, setError] = useState(null);
@@ -11,7 +11,7 @@ export const useSignup = () => {
         setError(null);
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/user/signup`, {
+            const response = await fetch('spenny-api.reeflink.org/user/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
