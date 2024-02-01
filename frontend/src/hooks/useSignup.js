@@ -11,25 +11,30 @@ export const useSignup = () => {
         setError(null);
 
         try {
-            const response = await fetch('spenny-api.reeflink.org/user/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/user/signup`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password }),
             });
-
-            const json = await response.json();
-
+          
             if (!response.ok) {
-                throw new Error(json.message || 'An error occurred, please try again.');
+              throw new Error('The server responded with an unexpected status.');
             }
-
+          
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+              throw new Error('Expected JSON response from the server, but received something else.');
+            }
+          
+            const json = await response.json();
             localStorage.setItem('user', JSON.stringify(json));
             dispatch({ type: 'LOGIN', payload: json });
-        } catch (err) {
+          } catch (err) {
             setError(err.message);
-        } finally {
+          } finally {
             setIsLoading(false);
-        }
+          }
+          
     };
 
     return { signup, error, isLoading };
