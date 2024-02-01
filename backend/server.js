@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const transactionRoutes = require('./routes/transaction');
 const userRoutes = require('./routes/user');
+const accountRoutes = require('./routes/account');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/transaction', transactionRoutes);
 app.use('/user', userRoutes);
+app.use('/account', accountRoutes);
 
 // Connect to MongoDB & listen for requests
 async function startServer() {
