@@ -120,22 +120,25 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction, onDeleteTransa
             )}
           </div>
           <div className='modal-action'>
-            {isSubmitting ? (
-              <button type='button' className='btn loading'>Loading</button>
-            ) : (
-              <>
-                <button type='submit' className='btn btn-primary'>
-                  {editingTransaction ? 'Update' : 'Add Transaction'}
-                </button>
-                {editingTransaction && (
-                  <button type='button' className='btn btn-error' onClick={handleDelete}>
-                    Delete
-                  </button>
-                )}
-              </>
-            )}
-            <button type='button' className='btn' onClick={closeModal}>Close</button>
-          </div>
+  {isSubmitting ? (
+    <button type="button" className="btn btn-primary" disabled>
+      <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full" role="status">
+      </div>
+    </button>
+  ) : (
+    <>
+      <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
+        {editingTransaction ? 'Update' : 'Add Transaction'}
+      </button>
+      {editingTransaction && (
+        <button type='button' className='btn btn-error' onClick={handleDelete} disabled={isSubmitting}>
+          Delete
+        </button>
+      )}
+    </>
+  )}
+  <button type='button' className='btn' onClick={closeModal} disabled={isSubmitting}>Close</button>
+</div>
         </form>
       </div>
     </div>

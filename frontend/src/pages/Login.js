@@ -7,9 +7,11 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [feedback, setFeedback] = useState({ message: '', type: '' }); // type can be 'success' or 'error'
+    const [isSubmitting, setIsSubmitting] = useState(false); // New state to track form submission
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true); // Disable button and show spinner
         try {
             const res = await fetch('https://spenny-api.reeflink.org/user/login', {
                 method: 'POST',
@@ -19,17 +21,21 @@ const Login = () => {
                 body: JSON.stringify({ email, password }),
             });
 
+            const data = await res.json(); // Always parse the JSON to get the data
+
             if (res.ok) {
-                const data = await res.json();
                 console.log(data);
                 setFeedback({ message: 'Successful Login', type: 'success' });
                 // Redirect or handle login success
             } else {
-                throw new Error('Login failed');
+                // Use the error message from the response if available
+                throw new Error(data.message || 'Login failed');
             }
         } catch (err) {
             console.log(err);
-            setFeedback({ message: 'Incorrect password or email', type: 'error' });
+            setFeedback({ message: err.message, type: 'error' });
+        } finally {
+            setIsSubmitting(false); // Re-enable button and hide spinner after processing
         }
     };
 
@@ -60,8 +66,15 @@ const Login = () => {
                                    onChange={handleInputChange(setPassword)} />
                         </div>
                         <div className="flex items-baseline justify-between">
-                            <button type="submit"
-                                    className="px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900">Login</button>
+                            <button type="submit" disabled={isSubmitting}
+                                    className="px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900 disabled:bg-blue-300">
+                                {isSubmitting ? (
+                                    <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full" role="status">
+                                    </div>
+                                ) : (
+                                    'Login'
+                                )}
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -84,4 +97,5 @@ const Login = () => {
 };
 
 export default Login;
+
 
