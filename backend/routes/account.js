@@ -1,9 +1,8 @@
 const express = require('express');
-const router = express.Router();
 const { addAccount, getAccounts, getTotalBalance } = require('../controllers/accountController');
 const requireAuth = require('../middleware/requireAuth');
 
-// Apply the authentication middleware to all routes
+const router = express.Router();
 router.use(requireAuth);
 
 router.post('/', addAccount);

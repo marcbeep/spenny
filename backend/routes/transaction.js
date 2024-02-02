@@ -1,6 +1,6 @@
 const express = require('express');
-const router = express.Router();
 const Transaction = require('../models/transactionModel');
+const requireAuth = require('../middleware/requireAuth');
 const {
   createTransaction,
   getAllTransactions,
@@ -9,7 +9,9 @@ const {
   updateSingleTransaction,
 } = require('../controllers/transactionController');
 
-// Transaction routes
+const router = express.Router();
+router.use(requireAuth);
+
 router.get('/', getAllTransactions);
 router.get('/:id', getSingleTransaction);
 router.post('/', createTransaction);
