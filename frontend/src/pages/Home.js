@@ -6,6 +6,7 @@ import TransactionModal from '../components/TransactionModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import apiUrl from '../apiConfig';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -14,6 +15,8 @@ const Home = () => {
   const itemsPerPage = 5;
   const controls = useAnimation();
   const [editingTransaction, setEditingTransaction] = useState(null);
+
+  const { user } = useAuthContext();
 
   const fetchData = async () => {
     try {
@@ -49,7 +52,9 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (user){
+      fetchData();
+    };
     // eslint-disable-next-line 
   }, []);
 
