@@ -5,6 +5,7 @@ import Pagination from '../components/Pagination';
 import TransactionModal from '../components/TransactionModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import apiUrl from '../apiConfig';
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -16,7 +17,7 @@ const Home = () => {
 
   const fetchData = async () => {
     try {
-      const res = await fetch('https://spenny-api.reeflink.org/transaction/');
+      const res = await fetch(`${apiUrl}/transaction/`);
       if (!res.ok) {
         throw new Error('Network response was not ok');
       }
@@ -31,11 +32,11 @@ const Home = () => {
 
     console.log('Attempting to delete transaction with ID:', id); // Debugging statement
 
-    const deleteUrl = `https://spenny-api.reeflink.org/transaction/${id}`;
+    const deleteUrl = `${apiUrl}/transaction/${id}`;
     console.log('Delete URL:', deleteUrl); // Debugging statement
 
     try {
-      const res = await fetch(`https://spenny-api.reeflink.org/transaction/${id}`, {
+      const res = await fetch(`${apiUrl}/transaction/${id}`, {
         method: 'DELETE',
       });
       if (!res.ok) {
@@ -49,6 +50,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line 
   }, []);
 
   const refreshData = async () => {

@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import apiUrl from '../apiConfig';
 
 const TransactionModal = ({ isOpen, closeModal, onAddTransaction, onDeleteTransaction, editingTransaction }) => {
   const initialState = editingTransaction || { title: '', amount: '', category: '' };
   const [formData, setFormData] = useState(initialState);
   const [formErrors, setFormErrors] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const url = editingTransaction 
+    ? `${apiUrl}/transaction/${editingTransaction._id}` 
+    : `${apiUrl}/transaction/`;
 
   useEffect(() => {
     if (editingTransaction) {
@@ -53,9 +58,6 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction, onDeleteTransa
     if (!validateForm()) return;
     setIsSubmitting(true);
 
-    const url = editingTransaction 
-      ? `https://spenny-api.reeflink.org/transaction/${editingTransaction._id}` 
-      : 'https://spenny-api.reeflink.org/transaction/';
     const method = editingTransaction ? 'PATCH' : 'POST';
 
     try {

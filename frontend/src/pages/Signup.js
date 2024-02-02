@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import apiUrl from '../apiConfig';
 
 const Signup = () => {
     const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ const Signup = () => {
         e.preventDefault();
         setIsSubmitting(true); // Begin submission, disable button, show spinner
         try {
-            const res = await fetch('https://spenny-api.reeflink.org/user/signup', {
+            const res = await fetch(`${apiUrl}/user/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

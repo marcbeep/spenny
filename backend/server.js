@@ -9,7 +9,7 @@ const accountRoutes = require('./routes/account');
 const app = express();
 
 // Global CORS Configuration
-const allowedOrigins = ['https://spenny.reeflink.org', 'http://localhost:3000'];
+const allowedOrigins = [process.env.ALLOWED_ORIGIN, 'http://localhost:4000'];
 
 app.use(cors({
   origin: (origin, callback) => {
