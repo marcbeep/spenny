@@ -14,10 +14,6 @@ body, p, a, span, div {
   font-size: 1rem;
 }
 
-.btn {
-  @apply rounded-full;
-}
-
 .drawer-side {
   z-index: 1000;
 }

@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import apiUrl from '../apiConfig';
 import { useAuthContext } from '../hooks/useAuthContext'; 
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -68,10 +69,13 @@ const Login = () => {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900 disabled:bg-blue-300"
+                            className="btn btn-primary w-full mt-4"
                         >
                             {isSubmitting ? 'Logging in...' : 'Login'}
                         </button>
+                        <div className = "mt-4">
+                            <Link to ='/signup'><p>No account?</p></Link>
+                        </div>
                     </div>
                 </form>
                 <AnimatePresence>
