@@ -22,7 +22,7 @@ const Login = () => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const response = await fetch(`${apiUrl}/user/login`, {
+            const response = await fetch('https://spenny-api.reeflink.org/user/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),

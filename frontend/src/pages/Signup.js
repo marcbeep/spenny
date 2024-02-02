@@ -21,7 +21,7 @@ const Signup = () => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const res = await fetch(`${apiUrl}/user/signup`, {
+            const res = await fetch('https://spenny-api.reeflink.org/user/signup', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ email, password }),
