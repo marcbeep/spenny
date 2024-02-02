@@ -19,7 +19,7 @@ const Home = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       if (user) {
-        const response = await fetch('https://spenny-api.reeflink.org/transactions', {
+        const response = await fetch('https://spenny-api.reeflink.org/transaction', {
           headers: { 'Authorization': `Bearer ${user.token}` },
         });
         const json = await response.json();
