@@ -8,8 +8,8 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction, onDeleteTransa
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const url = editingTransaction 
-    ? `${apiUrl}/transaction/${editingTransaction._id}` 
-    : `${apiUrl}/transaction/`;
+    ? 'https://spenny-api.reeflink.org/transaction/${editingTransaction._id}'
+    : 'https://spenny-api.reeflink.org/transaction/';
 
   useEffect(() => {
     if (editingTransaction) {
