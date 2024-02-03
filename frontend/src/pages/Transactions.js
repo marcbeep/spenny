@@ -12,6 +12,7 @@ const Transactions = () => {
   const { user } = useAuthContext();
   const { transactions, dispatch } = useTransactionContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -36,7 +37,15 @@ const Transactions = () => {
     setCurrentPage(newPage);
   };
 
-  const openModal = () => setIsModalOpen(true);
+  const openModalForNewTransaction = () => {
+    setEditingTransaction(null); 
+    setIsModalOpen(true);
+  };
+
+  const openModalForEdit = (transaction) => {
+    setEditingTransaction(transaction);
+    setIsModalOpen(true);
+  };
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -46,15 +55,25 @@ const Transactions = () => {
       <h1 className='font-black'>Transactions</h1>
       <div className="flex justify-end">
         <motion.div>
-          <button className='btn btn-primary mb-4' onClick={openModal}>
+          <button className='btn btn-primary mb-4' onClick={openModalForNewTransaction}>
             <FontAwesomeIcon icon={faPlus} size='sm' />
           </button>
         </motion.div>
       </div>
-      <TransactionModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} />
-      <Table data={currentTransactions} />
-      <Pagination currentPage={currentPage} totalPages={Math.ceil(transactions.length / itemsPerPage)} onPageChange={handlePageChange} />
-      
+      <TransactionModal 
+        isOpen={isModalOpen} 
+        closeModal={() => setIsModalOpen(false)} 
+        editingTransaction={editingTransaction} 
+      />
+      <Table 
+        data={currentTransactions} 
+        onRowClick={openModalForEdit} 
+      />
+      <Pagination 
+        currentPage={currentPage} 
+        totalPages={Math.ceil(transactions.length / itemsPerPage)} 
+        onPageChange={handlePageChange} 
+      />
     </div>
   );
 };

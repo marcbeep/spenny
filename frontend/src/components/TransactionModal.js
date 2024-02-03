@@ -1,53 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import apiUrl from '../apiConfig';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useTransactionContext } from '../context/TransactionContext';
 
-const TransactionModal = ({ isOpen, closeModal, onAddTransaction, onDeleteTransaction, editingTransaction }) => {
-  const initialState = editingTransaction || { title: '', amount: '', category: '' };
-  const [formData, setFormData] = useState(initialState);
-  const [formErrors, setFormErrors] = useState(initialState);
+const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
+  const initialState = { title: '', amount: '', category: '' };
+  const [formData, setFormData] = useState(editingTransaction || initialState);
+  const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuthContext();
+  const { dispatch } = useTransactionContext();
 
-  const url = editingTransaction 
-    ? 'https://spenny-api.reeflink.org/transaction/${editingTransaction._id}'
+  const isEditing = !!editingTransaction;
+  const url = isEditing
+    ? `https://spenny-api.reeflink.org/transaction/${editingTransaction._id}`
     : 'https://spenny-api.reeflink.org/transaction/';
 
   useEffect(() => {
-    if (editingTransaction) {
-      setFormData(editingTransaction);
-    } else {
-      setFormData(initialState);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setFormData(editingTransaction || initialState);
   }, [editingTransaction]);
 
-  const handleDelete = async () => {
-    if (editingTransaction && editingTransaction._id) {
-      onDeleteTransaction(editingTransaction._id);
-      closeModal(); // Close modal after deletion
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (formErrors[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: '' }));
     }
-  };
-
-  const updateFormData = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-    setFormErrors({ ...formErrors, [field]: '' });
   };
 
   const validateForm = () => {
-    const errors = {};
-
-    if (!formData.title) {
-      errors.title = 'Title is required';
-    }
-
-    if (!/^\d+(\.\d{1,2})?$/.test(formData.amount)) {
-      errors.amount = 'Amount must be a valid number';
-    } else if (parseFloat(formData.amount) > 1000000) {
-      errors.amount = 'Amount must be less than or equal to £1,000,000.00';
-    }
-
-    if (!formData.category) {
-      errors.category = 'Category is required';
-    }
+    let errors = {};
+    if (!formData.title) errors.title = 'Title is required';
+    if (!/^\d+(\.\d{1,2})?$/.test(formData.amount)) errors.amount = 'Amount must be a valid number';
+    else if (parseFloat(formData.amount) > 1000000) errors.amount = 'Amount must be less than or equal to £1,000,000.00';
+    if (!formData.category) errors.category = 'Category is required';
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -58,24 +43,22 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction, onDeleteTransa
     if (!validateForm()) return;
     setIsSubmitting(true);
 
-    const method = editingTransaction ? 'PATCH' : 'POST';
-
     try {
       const response = await fetch(url, {
-        method: method,
+        method: isEditing ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
         body: JSON.stringify(formData),
-        headers: { 'Content-Type': 'application/json' },
       });
 
-      const json = await response.json();
-
       if (response.ok) {
+        const actionType = isEditing ? 'UPDATE_TRANSACTION' : 'ADD_TRANSACTION';
+        const data = await response.json();
+        dispatch({ type: actionType, payload: data });
         setFormData(initialState);
-        console.log('New transaction added:', json);
         closeModal();
-        onAddTransaction();
       } else {
-        console.error(json.error || 'An error occurred');
+        const error = await response.json();
+        console.error(error.message || 'An error occurred');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -84,82 +67,93 @@ const TransactionModal = ({ isOpen, closeModal, onAddTransaction, onDeleteTransa
     }
   };
 
+  const handleDelete = async () => {
+    if (!editingTransaction?._id) return;
+  
+    setIsSubmitting(true);
+  
+    try {
+      const response = await fetch(`https://spenny-api.reeflink.org/transaction/${editingTransaction._id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${user.token}` },
+      });
+  
+      if (response.ok) {
+        dispatch({ type: 'DELETE_TRANSACTION', payload: editingTransaction._id });
+        closeModal();
+      } else {
+        console.error('Failed to delete the transaction');
+      }
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
   if (!isOpen) return null;
 
   return (
     <div className='modal modal-open' aria-labelledby='modalTitle' aria-describedby='modalDescription'>
       <div className='modal-box'>
         <form onSubmit={handleSubmit} className='form-control'>
-          <Field
-            type='text'
-            placeholder='Item (e.g. Greggs)'
-            value={formData.title}
-            onChange={(e) => updateFormData('title', e.target.value)}
-            error={formErrors.title}
-          />
-          <Field
-            type='number'
-            placeholder='Price (1.50)'
-            value={formData.amount}
-            onChange={(e) => updateFormData('amount', e.target.value)}
-            error={formErrors.amount}
-          />
-          <div className='mb-2'>
-            <select
-              className={`select select-bordered w-full ${formErrors.category ? 'border-red-500' : ''}`}
-              value={formData.category}
-              onChange={(e) => updateFormData('category', e.target.value)}
-            >
-              <option disabled value=''>
-                Select Category
-              </option>
-              <option value='Groceries'>Groceries</option>
-              <option value='Utilities'>Utilities</option>
-              {/* Add more categories here */}
-            </select>
-            {formErrors.category && (
-              <p className='text-red-500 text-sm mt-1'>{formErrors.category}</p>
-            )}
-          </div>
+          {['title', 'amount', 'category'].map((field) => (
+            <Field
+              key={field}
+              type={field === 'amount' ? 'number' : 'text'}
+              name={field}
+              placeholder={field === 'category' ? 'Select Category' : `Enter ${field}`}
+              value={formData[field]}
+              onChange={handleInputChange}
+              error={formErrors[field]}
+            />
+          ))}
           <div className='modal-action'>
-  {isSubmitting ? (
-    <button type="button" className="btn btn-primary" disabled>
-      <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full" role="status">
-      </div>
-    </button>
-  ) : (
-    <>
-      <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
-        {editingTransaction ? 'Update' : 'Add Transaction'}
-      </button>
-      {editingTransaction && (
-        <button type='button' className='btn btn-error' onClick={handleDelete} disabled={isSubmitting}>
-          Delete
-        </button>
-      )}
-    </>
-  )}
-  <button type='button' className='btn' onClick={closeModal} disabled={isSubmitting}>Close</button>
-</div>
+            <ActionButton
+              isSubmitting={isSubmitting}
+              isEditing={isEditing}
+              closeModal={closeModal}
+              handleDelete={handleDelete} 
+            />
+          </div>
         </form>
       </div>
     </div>
   );
 };
 
-const Field = ({ type, placeholder, value, onChange, error }) => (
+const Field = ({ type, name, placeholder, value, onChange, error }) => (
   <div className='mb-2'>
     <input
       type={type}
+      name={name}
       placeholder={placeholder}
       className={`input input-bordered w-full ${error ? 'border-red-500' : ''}`}
       value={value}
       onChange={onChange}
     />
-    {error && (
-      <p className='text-red-500 text-sm mt-1'>{error}</p>
-    )}
+    {error && <p className='text-red-500 text-sm mt-1'>{error}</p>}
   </div>
 );
+
+const ActionButton = ({ isSubmitting, isEditing, closeModal, handleDelete }) => { 
+  return (
+    <>
+      <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
+        {isSubmitting ? 'Processing...' : isEditing ? 'Update' : 'Add'} Transaction
+      </button>
+      {isEditing && (
+        <button type='button' className='btn btn-error' onClick={handleDelete} disabled={isSubmitting}>
+          Delete
+        </button>
+      )}
+      <button type='button' className='btn' onClick={closeModal} disabled={isSubmitting}>
+        Close
+      </button>
+    </>
+  );
+};
+
+
 
 export default TransactionModal;
