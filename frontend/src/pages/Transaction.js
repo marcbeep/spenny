@@ -51,6 +51,7 @@ const Transaction = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentTransactions = transactions.slice(indexOfFirstItem, indexOfLastItem);
+
   return (
     <div className='home'>
       <h1 className='font-black'>Transactions</h1>
@@ -70,13 +71,16 @@ const Transaction = () => {
         data={currentTransactions} 
         onRowClick={openModalForEdit} 
       />
-      <Pagination 
-        currentPage={currentPage} 
-        totalPages={Math.ceil(transactions.length / itemsPerPage)} 
-        onPageChange={handlePageChange} 
-      />
+      {transactions.length > 0 && ( // Conditionally render Pagination only when there is data
+        <Pagination 
+          currentPage={currentPage} 
+          totalPages={Math.ceil(transactions.length / itemsPerPage)} 
+          onPageChange={handlePageChange} 
+        />
+      )}
     </div>
   );
 };
 
 export default Transaction;
+

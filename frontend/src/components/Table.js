@@ -9,21 +9,24 @@ const Table = ({ data, onRowClick }) => {
   
   return (
     <div className='overflow-x-auto'>
-      <table className='table w-full'>
-        <thead>
-          <tr>
-            <th>ITEM</th>
-            <th>AMOUNT</th>
-            <th>CATEGORY</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.length === 0 ? (
+      {data.length === 0 ? (
+        <div className="card w-192 bg-primary text-primary-content mb-8">
+        <div className="card-body">
+          <h2 className="card-title">It's lonely in here!</h2>
+          <p>Add your first transaction with the button above.</p>
+        </div>
+      </div>
+      ) : (
+        <table className='table w-full mb-8'>
+          <thead>
             <tr>
-              <td colSpan='3' className='text-center'><span className="loading loading-spinner loading-lg"></span></td>
+              <th>ITEM</th>
+              <th>AMOUNT</th>
+              <th>CATEGORY</th>
             </tr>
-          ) : (
-            data.map((item, index) => (
+          </thead>
+          <tbody>
+            {data.map((item, index) => (
               <motion.tr
                 key={item._id}
                 initial="initial"
@@ -36,10 +39,10 @@ const Table = ({ data, onRowClick }) => {
                 <td>£{item.amount.toFixed(2)}</td>
                 <td>{item.category || 'No Category'}</td>
               </motion.tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
