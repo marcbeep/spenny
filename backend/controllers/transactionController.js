@@ -8,7 +8,8 @@ const handleNoTransactionFound = (res) => {
 // Get all transactions
 const getAllTransactions = async (req, res) => {
   try {
-    const allTransactions = await Transaction.find({}).sort({ createdAt: -1 });
+    const user_id = req.user.id;
+    const allTransactions = await Transaction.find({ user_id }).sort({ createdAt: -1 });
     return res.status(200).json(allTransactions);
   } catch (err) {
     return res.status(400).json({ error: err.message });
@@ -34,10 +35,12 @@ const createTransaction = async (req, res) => {
   const { title, amount, category } = req.body;
 
   try {
+    const user_id = req.user.id;
     const newTransaction = await Transaction.create({
       title,
       amount,
       category,
+      user_id,
     });
     return res.status(200).json(newTransaction);
   } catch (err) {
