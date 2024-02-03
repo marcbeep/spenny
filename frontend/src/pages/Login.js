@@ -35,7 +35,7 @@ const Login = () => {
                 setFeedback({ message: 'Successful login. Welcome back!', type: 'success' });
                 localStorage.setItem('user', JSON.stringify(data)); 
                 dispatch({ type: 'LOGIN', payload: data }); 
-                navigate('/transactions');
+                navigate('/transaction');
             } else {
                 throw new Error(data.message || 'Login failed. Please check your credentials and try again.');
             }

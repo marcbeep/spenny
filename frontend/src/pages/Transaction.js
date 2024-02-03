@@ -8,7 +8,7 @@ import TransactionModal from '../components/TransactionModal';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 
-const Transactions = () => {
+const Transaction = () => {
   const { user } = useAuthContext();
   const { transactions, dispatch } = useTransactionContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,4 +78,4 @@ const Transactions = () => {
   );
 };
 
-export default Transactions;
+export default Transaction;

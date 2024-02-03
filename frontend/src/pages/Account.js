@@ -1,10 +1,10 @@
 import React from 'react';
 
-const About = () => (
-  <div className='about'>
-    <h1 className='font-black'>About</h1>
+const Account = () => (
+  <div className='accounts'>
+    <h1 className='font-black'>Accounts</h1>
     <p>Spenny is a money management tool by Marc Beepath currently under development.</p>
   </div>
 );
 
-export default About;
+export default Account;

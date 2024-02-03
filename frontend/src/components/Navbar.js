@@ -48,13 +48,13 @@ const Navbar = () => {
         <label htmlFor='my-drawer' className='drawer-overlay' aria-label='close sidebar'></label>
         <ul className='menu py-32 overflow-y-auto w-80 h-full bg-black text-white'>
           <li>
-            <Link to='/transactions' className={`p-2 ${isActive('/')}`}>
+            <Link to='/transaction' className={`p-2 ${isActive('/')}`}>
               Transactions
             </Link>
           </li>
           <li>
-            <Link to='/about' className={`p-2 ${isActive('/about')}`}>
-              About
+            <Link to='/account' className={`p-2 ${isActive('/about')}`}>
+              Accounts
             </Link>
           </li>
         </ul>

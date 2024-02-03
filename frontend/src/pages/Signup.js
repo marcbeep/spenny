@@ -32,7 +32,7 @@ const Signup = () => {
                 setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
                 localStorage.setItem('user', JSON.stringify(data));
                 dispatch({type: 'LOGIN', payload: data});
-                navigate('/transactions');
+                navigate('/transaction');
             } else {
                 throw new Error(data.error || 'Failed to signup. Please try again.');
             }
