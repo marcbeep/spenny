@@ -7,9 +7,8 @@ import { useTransactionContext } from '../context/TransactionContext';
 import TransactionModal from '../components/TransactionModal';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
-import apiUrl from '../apiConfig';
 
-const Home = () => {
+const Transactions = () => {
   const { user } = useAuthContext();
   const { transactions, dispatch } = useTransactionContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,6 +43,7 @@ const Home = () => {
   const currentTransactions = transactions.slice(indexOfFirstItem, indexOfLastItem);
   return (
     <div className='home'>
+      <h1 className='font-black'>Transactions</h1>
       <div className="flex justify-end">
         <motion.div>
           <button className='btn btn-primary mb-4' onClick={openModal}>
@@ -59,4 +59,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Transactions;

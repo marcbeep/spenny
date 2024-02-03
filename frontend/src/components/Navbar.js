@@ -46,10 +46,10 @@ const Navbar = () => {
       </div>
       <div className='drawer-side'>
         <label htmlFor='my-drawer' className='drawer-overlay' aria-label='close sidebar'></label>
-        <ul className='menu p-16 overflow-y-auto w-80 h-full bg-black text-white'>
+        <ul className='menu py-32 overflow-y-auto w-80 h-full bg-black text-white'>
           <li>
-            <Link to='/' className={`p-2 ${isActive('/')}`}>
-              Home
+            <Link to='/transactions' className={`p-2 ${isActive('/')}`}>
+              Transactions
             </Link>
           </li>
           <li>

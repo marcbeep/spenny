@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import apiUrl from '../apiConfig';
 import { useAuthContext } from '../hooks/useAuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
     const [email, setEmail] = useState('');
@@ -11,6 +11,7 @@ const Signup = () => {
     const [feedback, setFeedback] = useState({ message: '', type: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { dispatch } = useAuthContext();
+    const navigate = useNavigate();
 
     const handleInputChange = (setter) => (e) => {
         setter(e.target.value);
@@ -31,6 +32,7 @@ const Signup = () => {
                 setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
                 localStorage.setItem('user', JSON.stringify(data));
                 dispatch({type: 'LOGIN', payload: data});
+                navigate('/transactions');
             } else {
                 throw new Error(data.error || 'Failed to signup. Please try again.');
             }
