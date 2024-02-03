@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext';
+import backendURL from '../config';
 
 const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
   const initialState = { title: '', amount: '', category: '' };
@@ -12,8 +13,8 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
 
   const isEditing = !!editingTransaction;
   const url = isEditing
-    ? `https://spenny-api.reeflink.org/transaction/${editingTransaction._id}`
-    : 'https://spenny-api.reeflink.org/transaction/';
+    ? `${backendURL}/transaction/${editingTransaction._id}`
+    : `${backendURL}/transaction/`;
 
   useEffect(() => {
     setFormData(editingTransaction || initialState);
@@ -73,7 +74,7 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
     setIsSubmitting(true);
   
     try {
-      const response = await fetch(`https://spenny-api.reeflink.org/transaction/${editingTransaction._id}`, {
+      const response = await fetch(`${backendURL}/transaction/${editingTransaction._id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${user.token}` },
       });

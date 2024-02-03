@@ -5,6 +5,7 @@ import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { useAuthContext } from '../hooks/useAuthContext'; 
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import backendURL from '../config';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -23,7 +24,7 @@ const Login = () => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const response = await fetch('https://spenny-api.reeflink.org/user/login', {
+            const response = await fetch(`${backendURL}/user/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),

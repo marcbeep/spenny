@@ -7,6 +7,7 @@ import { useTransactionContext } from '../context/TransactionContext';
 import TransactionModal from '../components/TransactionModal';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
+import backendURL from '../config';
 
 const Transaction = () => {
   const { user } = useAuthContext();
@@ -19,7 +20,7 @@ const Transaction = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       if (user) {
-        const response = await fetch('https://spenny-api.reeflink.org/transaction', {
+        const response = await fetch(`${backendURL}/transaction`, {
           headers: { 'Authorization': `Bearer ${user.token}` },
         });
         const json = await response.json();
