@@ -1,12 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-//pages & components
+//pages
 import Transactions from './pages/Transactions';
 import About from './pages/About';
-import Navbar from './components/Navbar';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
+
+// components
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -22,6 +25,7 @@ function App() {
             <Route path='/login' element={<Login />} />
           </Routes>
         </div>
+        <Footer />
       </BrowserRouter>
     </div>
   );
