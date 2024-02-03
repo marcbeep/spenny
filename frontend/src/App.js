@@ -19,7 +19,7 @@ function App() {
         <Navbar />
         <div className='px-16 py-12'>
           <Routes>
-            <Route path='/' element={<LandingPage />} />
+            <Route path='/' element={!user ? <LandingPage /> : <Navigate to="/transaction" />} />
             <Route path='/transaction' element={user ? <Transaction /> : <Navigate to="/" />} />
             <Route path='/account' element={user ? <Account /> : <Navigate to="/" />} />
             <Route path='/signup' element={!user ? <Signup /> : <Navigate to="/transaction" />} />
