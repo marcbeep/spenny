@@ -12,7 +12,12 @@ import LandingPage from './pages/LandingPage';
 import Navbar from './components/Navbar';
 
 function App() {
-  const { user } = useAuthContext();
+  const { user, authIsReady } = useAuthContext();
+
+  if (!authIsReady) {
+    return <div>Loading...</div>;
+  };
+  
   return (
     <div className='App'>
       <BrowserRouter>
