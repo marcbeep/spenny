@@ -4,12 +4,13 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans'],
+        sans: ['Nunito', 'sans'],
       },
       fontWeight: {
-        normal: 500,
-        bold: 700,
-        black: 900,
+        light: 200,
+        normal: 400,
+        semibold: 600,
+        bold: 800,
       },
     },
   },
