@@ -17,7 +17,7 @@ function App() {
     <div className='App'>
       <BrowserRouter>
         <Navbar />
-        <div className='px-16 py-12'>
+        <div className='px-16 py-12 bg-base'>
           <Routes>
             <Route path='/' element={!user ? <LandingPage /> : <Navigate to="/transaction" />} />
             <Route path='/transaction' element={user ? <Transaction /> : <Navigate to="/" />} />

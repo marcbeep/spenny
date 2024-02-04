@@ -17,7 +17,7 @@ const LandingPage = () => {
           className="w-full max-w-lg rounded-3xl shadow-md mb-8"
         />
         <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <Link to="/login" className="btn btn-ghost">
+          <Link to="/login" className="btn btn-outline">
               Log In
           </Link>
           <Link to="/signup" className="btn btn-primary">
