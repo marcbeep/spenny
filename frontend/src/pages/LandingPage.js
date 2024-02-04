@@ -5,7 +5,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto flex flex-col items-center justify-center text-center">
-        <h1 className="text-5xl font-black mt-0 mb-2">
+        <h1 className="text-5xl font-bold mt-0 mb-2">
           It's your money.
         </h1>
         <h2 className="text-3xl mb-8 font-bold">
@@ -14,14 +14,14 @@ const LandingPage = () => {
         <img
           src="https://images.pexels.com/photos/6207714/pexels-photo-6207714.jpeg" 
           alt="Finance Management"
-          className="w-full max-w-lg rounded-lg shadow-md mb-8"
+          className="w-full max-w-lg rounded-3xl shadow-md mb-8"
         />
         <div className="flex flex-wrap justify-center gap-4 mb-8">
+          <Link to="/login" className="btn btn-ghost">
+              Log In
+          </Link>
           <Link to="/signup" className="btn btn-primary">
             Sign Up
-          </Link>
-          <Link to="/login" className="btn btn-outline">
-            Log In
           </Link>
         </div>
         <p className="max-w-md">

@@ -54,7 +54,7 @@ const Transaction = () => {
 
   return (
     <div className='home'>
-      <h1 className='font-black'>Transactions</h1>
+      <h1 className='font-semibold'>Transactions</h1>
       <div className="flex justify-end">
         <motion.div>
           <button className='btn btn-primary mb-4' onClick={openModalForNewTransaction}>

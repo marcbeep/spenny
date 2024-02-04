@@ -28,23 +28,23 @@ const Navbar = () => {
     <div className={`drawer drawer-left ${isDrawerOpen ? 'active' : ''}`}>
       <input id='my-drawer' type='checkbox' className='drawer-toggle' checked={isDrawerOpen} />
       <div className='drawer-content flex flex-col'>
-        <header className='bg-black px-8 py-8 flex justify-between items-center'>
+        <header className='bg-primary text-primary-content px-8 py-8 flex justify-between items-center'>
           {user && ( // Display the toggle button only if the user is logged in
             <div>
-              <label htmlFor='my-drawer' className='btn btn-square btn-ghost'>
-                <FontAwesomeIcon icon={faBars} className='text-white' onClick={toggleDrawer} />
+              <label htmlFor='my-drawer' className='btn btn-ghost'>
+                <FontAwesomeIcon icon={faBars} onClick={toggleDrawer} />
               </label>
             </div>
           )}
 
           <div className='flex-grow'>
-            <Link to='/' className='text-white text-3xl font-black'>
+            <Link to='/' className= 'text-3xl font-bold ml-4'>
               Spenny 💸
             </Link>
           </div>
 
           {user ? (
-            <button onClick={logout} className='text-white py-2 px-4 rounded hover-bg-gray-800'>
+            <button onClick={logout} className= 'btn btn-ghost'>
               Logout
             </button>
           ) : (
@@ -54,7 +54,7 @@ const Navbar = () => {
       </div>
       <div className='drawer-side'>
         <label htmlFor='my-drawer' className='drawer-overlay' aria-label='close sidebar' onClick={closeDrawer}></label>
-        <ul className='menu py-32 overflow-y-auto w-80 h-full bg-black text-white'>
+        <ul className='menu py-32 overflow-y-auto w-80 h-full bg-primary text-primary-content'>
           <li>
             <Link to='/transaction' className={`p-2 ${isActive('/')}`} onClick={closeDrawer}>
               Transactions
