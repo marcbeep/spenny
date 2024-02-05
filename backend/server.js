@@ -9,7 +9,7 @@ const accountRoutes = require('./routes/account');
 const app = express();
 
 // Global CORS Configuration
-const allowedOrigins = ['https://spenny.reeflink.org', 'https://getspenny.com', , 'https://wwww.getspenny.com', 'http://localhost:4000'];
+const allowedOrigins = ['https://spenny.reeflink.org', 'https://getspenny.com', 'https://wwww.getspenny.com', 'http://localhost:4000'];
 
 app.use(cors({
   origin: (origin, callback) => {
