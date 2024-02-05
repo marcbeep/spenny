@@ -141,6 +141,9 @@ const Field = ({ type, name, placeholder, value, onChange, error }) => (
 const ActionButton = ({ isSubmitting, isEditing, closeModal, handleDelete }) => { 
   return (
     <>
+      <button type='button' className='btn' onClick={closeModal} disabled={isSubmitting}>
+        Close
+      </button>
       <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
         {isSubmitting ? 'Processing...' : isEditing ? 'Update' : 'Add'} Account
       </button>
@@ -149,9 +152,6 @@ const ActionButton = ({ isSubmitting, isEditing, closeModal, handleDelete }) => 
           Delete
         </button>
       )}
-      <button type='button' className='btn' onClick={closeModal} disabled={isSubmitting}>
-        Close
-      </button>
     </>
   );
 };

@@ -1,7 +1,7 @@
 **To Do**
 
 - [x] Display accounts
-- [ ] Add accounts - Incomplete updating and deleting (check controllers)
+- [x] Add accounts
 - [ ] Add categories
 - [ ] Display categories
 - [ ] Assign to categories - transactions
