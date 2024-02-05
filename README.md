@@ -1,6 +1,7 @@
 **To Do**
 
-- [ ] Display accounts
+- [x] Display accounts
+- [ ] Add accounts
 - [ ] Add categories
 - [ ] Display categories
 - [ ] Assign to categories - transactions
