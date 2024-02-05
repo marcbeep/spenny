@@ -13,7 +13,7 @@ const AccountModal = ({ isOpen, closeModal, editingAccount }) => {
 
   const isEditing = !!editingAccount;
   const url = isEditing
-    ? `${backendURL}/account/${editingAccount.id}`
+    ? `${backendURL}/account/${editingAccount._id}`
     : `${backendURL}/account/`;
 
   useEffect(() => {
@@ -69,18 +69,19 @@ const AccountModal = ({ isOpen, closeModal, editingAccount }) => {
   };
 
   const handleDelete = async () => {
-    if (!editingAccount?.id) return;
+    if (!editingAccount?._id) return;
   
     setIsSubmitting(true);
   
     try {
-      const response = await fetch(`${backendURL}/account/${editingAccount.id}`, {
+      const response = await fetch(`${backendURL}/account/${editingAccount._id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${user.token}` },
       });
   
       if (response.ok) {
-        dispatch({ type: 'DELETE_ACCOUNT', payload: editingAccount.id });
+        dispatch({ type: 'DELETE_ACCOUNT', payload: editingAccount._id });
+        console.log('deleted account:', editingAccount._id);
         closeModal();
       } else {
         console.error('Failed to delete the account');

@@ -45,9 +45,11 @@ const Account = () => {
   };
 
   const openModalForEdit = (account) => {
+    console.log(account); // This should include an 'id'
     setEditingAccount(account);
     setIsModalOpen(true);
   };
+  
 
   if (isLoading) return <div>Loading accounts...</div>;
 
