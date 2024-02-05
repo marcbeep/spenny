@@ -25,7 +25,30 @@ exports.getAccounts = async (req, res) => {
     }
   };
   
-  // Implement update and delete operations similarly
+  // Delete a single account
+exports.deleteAccount = async (req, res) => {
+    const accountId = req.params.id;
+  
+    try {
+      await Account.findByIdAndDelete(accountId);
+      res.status(204).end();
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  };
+
+  // Update a single account
+exports.updateAccount = async (req, res) => {
+    const accountId = req.params.id;
+    const { name, type, balance } = req.body;
+  
+    try {
+      const account = await Account.findByIdAndUpdate(accountId, { name, type, balance }, { new: true });
+      res.status(200).json(account);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  };
 
   // Get total balance across all accounts for a user
 exports.getTotalBalance = async (req, res) => {

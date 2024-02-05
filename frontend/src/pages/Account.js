@@ -1,61 +1,77 @@
 import React, { useEffect, useState } from 'react';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useAccountContext } from '../context/AccountContext'; // Ensure this import is correct
-import backendURL from '../config';
+import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { useAccountContext } from '../context/AccountContext';
+import AccountModal from '../components/AccountModal';
+import backendURL from '../config';
 
 const Account = () => {
   const { user } = useAuthContext();
-  const { accounts, dispatch: dispatchAccount } = useAccountContext(); // Correctly extract dispatchAccount here
+  const { accounts, dispatch: dispatchAccount } = useAccountContext();
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState(null);
   const colors = ['bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 'bg-purple-400'];
 
   useEffect(() => {
     const fetchAccounts = async () => {
-      if (user) {
-        setIsLoading(true);
-        try {
-          const response = await fetch(`${backendURL}/account`, {
-            headers: { 'Authorization': `Bearer ${user.token}` },
-          });
-          const json = await response.json();
-    
-          if (response.ok) {
-            // Use dispatchAccount to update the context with the fetched accounts
-            dispatchAccount({ type: 'SET_ACCOUNTS', payload: json });
-          } else {
-            console.error('Failed to fetch accounts', json.error);
-          }
-        } catch (error) {
-          console.error('Error fetching accounts', error);
-        } finally {
-          setIsLoading(false);
+      if (!user) return;
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${backendURL}/account`, {
+          headers: { 'Authorization': `Bearer ${user.token}` },
+        });
+        const json = await response.json();
+        if (response.ok) {
+          dispatchAccount({ type: 'SET_ACCOUNTS', payload: json });
+        } else {
+          console.error('Failed to fetch accounts:', json.error);
         }
+      } catch (error) {
+        console.error('Error fetching accounts:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchAccounts();
-  }, [user, dispatchAccount]); // Make sure to include dispatchAccount in the dependency array
+  }, [user, dispatchAccount]);
 
-  if (isLoading) {
-    return <div>Loading accounts...</div>;
-  }
+  const openModalForNewAccount = () => {
+    setEditingAccount(null);
+    setIsModalOpen(true);
+  };
+
+  const openModalForEdit = (account) => {
+    setEditingAccount(account);
+    setIsModalOpen(true);
+  };
+
+  if (isLoading) return <div>Loading accounts...</div>;
 
   return (
     <>
-    <h1 className='font-semibold'>Accounts</h1>
-    <div className="flex justify-end">
-          <button className='btn btn-primary mb-4' onClick={console.log("hello")}>
+      <h1 className='font-semibold'>Accounts</h1>
+      <div className="flex justify-end">
+        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <button className='btn btn-primary mb-4' onClick={openModalForNewAccount}>
             <FontAwesomeIcon icon={faPlus} size='sm' />
           </button>
+        </motion.div>
       </div>
-    <div className="flex flex-wrap justify-center gap-4 p-4 text-base-100">
-      {accounts.length > 0 ? (
-        accounts.map((account, index) => (
+      <AccountModal 
+        isOpen={isModalOpen} 
+        closeModal={() => setIsModalOpen(false)} 
+        editingAccount={editingAccount}
+      />
+      <div className="flex flex-wrap justify-center gap-4 p-4 text-base-100">
+        {accounts.length > 0 ? accounts.map((account, index) => (
           <div
             key={account.id}
-            className={`card rounded-xl w-48 ${colors[index % colors.length]} lg:w-1/4 md:w-1/2 sm:w-full`}
+            onClick={() => openModalForEdit(account)}
+            className={`card rounded-xl cursor-pointer w-96 ${colors[index % colors.length]} lg:w-1/4 md:w-1/2 sm:w-full m-2 p-4`}
           >
             <div className="card-body">
               <h2 className="card-title">{account.name}</h2>
@@ -63,13 +79,13 @@ const Account = () => {
               <div className="badge badge-outline">{account.type}</div>
             </div>
           </div>
-        ))
-      ) : (
-        <div>No accounts available</div>
-      )}
-    </div>
+        )) : <div>No accounts available</div>}
+      </div>
     </>
   );
 };
 
 export default Account;
+
+
+
