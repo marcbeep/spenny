@@ -2,9 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const accountRoutes = require('./routes/account');
+const budgetRoutes = require('./routes/budget');
+const categoryRoutes = require('./routes/category');
 const transactionRoutes = require('./routes/transaction');
 const userRoutes = require('./routes/user');
-const accountRoutes = require('./routes/account');
 
 const app = express();
 
@@ -33,9 +35,11 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/account', accountRoutes);
+app.use('/budget', budgetRoutes);
+app.use('/category', categoryRoutes);
 app.use('/transaction', transactionRoutes);
 app.use('/user', userRoutes);
-app.use('/account', accountRoutes);
 
 // Connect to MongoDB & listen for requests
 async function startServer() {

@@ -2,7 +2,7 @@
 
 - [x] Display accounts
 - [x] Add accounts (frontend)
-- [ ] Add categories (backend)
+- [x] Add categories (backend)
 
 To implement the features you've described, resembling the functionality of budgeting applications like YNAB (You Need A Budget), you'll need a well-structured backend that supports various operations such as managing accounts, transactions, and categories, as well as the logic for assigning money to categories and tracking overspending. Using the MERN stack for this purpose is a good choice, as it provides a full JavaScript stack that is well-suited for building dynamic and interactive web applications.
 
