@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Category = require('../models/categoryModel');
 const jwt = require('jsonwebtoken');
 
 // Helper function to create JWT tokens
@@ -47,7 +48,7 @@ exports.signupUser = async (req, res) => {
 
     // After successfully signing up the user, create generic categories for them
     await createGenericCategoriesForUser(user._id);
-    
+
     res.status(201).json({ email: user.email, token }); // Return 201 for successful creation, ensure to return the email from the user object
   } catch (err) {
     res.status(400).json({ error: 'Signup failed' }); // Provide a generic error message to avoid giving details that could be used for malicious purposes
