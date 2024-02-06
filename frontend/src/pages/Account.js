@@ -14,6 +14,7 @@ const Account = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState(null);
   const colors = ['bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 'bg-purple-400'];
+  const [totalBalance, setTotalBalance] = useState(0);
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -36,8 +37,26 @@ const Account = () => {
       }
     };
 
+    const fetchTotalBalance = async () => {
+      if (!user) return;
+      try {
+        const response = await fetch(`${backendURL}/account/totalBalance`, {
+          headers: { 'Authorization': `Bearer ${user.token}` },
+        });
+        const json = await response.json();
+        if (response.ok) {
+          setTotalBalance(json.totalBalance);
+        } else {
+          console.error('Failed to fetch total balance:', json.error);
+        }
+      } catch (error) {
+        console.error('Error fetching total balance:', error);
+      }
+    };
+
     fetchAccounts();
-  }, [user, dispatchAccount]);
+    fetchTotalBalance();
+  }, [user, accounts.length, dispatchAccount]);
 
   const openModalForNewAccount = () => {
     setEditingAccount(null);
@@ -56,6 +75,7 @@ const Account = () => {
   return (
     <>
       <h1 className='font-semibold'>Accounts</h1>
+      <div className="total-balance">Total Balance: £{totalBalance}</div>
       <div className="flex justify-end">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <button className='btn btn-primary mb-4' onClick={openModalForNewAccount}>
@@ -71,7 +91,7 @@ const Account = () => {
       <div className="flex flex-wrap justify-center gap-4 p-4 text-base-100">
         {accounts.length > 0 ? accounts.map((account, index) => (
           <div
-            key={account.id}
+            key={account._id}
             onClick={() => openModalForEdit(account)}
             className={`card rounded-xl cursor-pointer w-96 ${colors[index % colors.length]} lg:w-1/4 md:w-1/2 sm:w-full m-2 p-4`}
           >

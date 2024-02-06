@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useAccountContext } from '../context/AccountContext'; // Ensure this import is correct
 import backendURL from '../config';
 
 const AccountModal = ({ isOpen, closeModal, editingAccount }) => {
-  const initialState = { name: '', balance: '', type: '' };
+  // Define initialState using useMemo to prevent unnecessary re-renders
+  const initialState = useMemo(() => ({ name: '', balance: '', type: '' }), []);
   const [formData, setFormData] = useState(editingAccount || initialState);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,7 +19,7 @@ const AccountModal = ({ isOpen, closeModal, editingAccount }) => {
 
   useEffect(() => {
     setFormData(editingAccount || initialState);
-  }, [editingAccount]);
+  }, [editingAccount, initialState]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -144,14 +145,14 @@ const ActionButton = ({ isSubmitting, isEditing, closeModal, handleDelete }) => 
       <button type='button' className='btn' onClick={closeModal} disabled={isSubmitting}>
         Close
       </button>
-      <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
-        {isSubmitting ? 'Processing...' : isEditing ? 'Update' : 'Add'} Account
-      </button>
       {isEditing && (
         <button type='button' className='btn btn-error' onClick={handleDelete} disabled={isSubmitting}>
           Delete
         </button>
       )}
+      <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
+        {isSubmitting ? 'Processing...' : isEditing ? 'Update' : 'Add'} Account
+      </button>
     </>
   );
 };
