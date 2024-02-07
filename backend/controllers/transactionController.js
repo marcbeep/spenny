@@ -2,30 +2,24 @@ const Transaction = require('../models/transactionModel');
 const Category = require('../models/categoryModel');
 const mongoose = require('mongoose');
 
-// Helper function to handle "transaction not found" scenario
 const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
 
-// Consistently use req.params.id for accessing the transaction ID from the URL parameter
-// Get all transactions for the logged-in user
 exports.getAllTransactions = async (req, res) => {
   try {
-    const userId = req.user._id; // Use camelCase for variable names
-    const allTransactions = await Transaction.find({ user: userId }).sort({ createdAt: -1 });
+    const allTransactions = await Transaction.find({ user: req.user._id }).sort({ createdAt: -1 });
     res.status(200).json(allTransactions);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
 
-// Get a single transaction by ID
 exports.getSingleTransaction = async (req, res) => {
-  const transactionId = req.params.id; // Use a consistent variable for clarity
-  if (!mongoose.Types.ObjectId.isValid(transactionId)) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return handleNoTransactionFound(res);
   }
 
   try {
-    const singleTransaction = await Transaction.findById(transactionId);
+    const singleTransaction = await Transaction.findById(req.params.id);
     if (!singleTransaction) return handleNoTransactionFound(res);
     res.status(200).json(singleTransaction);
   } catch (err) {
@@ -33,93 +27,72 @@ exports.getSingleTransaction = async (req, res) => {
   }
 };
 
-// Create a new transaction
 exports.createTransaction = async (req, res) => {
   const { title, amount, category: categoryId } = req.body;
-  const userId = req.user._id; // Use camelCase for consistency
+
+  if (!await Category.exists({ _id: categoryId })) {
+    return res.status(404).json({ error: 'Category not found' });
+  }
 
   try {
-    const category = await Category.findById(categoryId);
-    if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
-    }
-
     const newTransaction = await Transaction.create({
       title,
       amount,
       category: categoryId,
-      user: userId,
+      user: req.user._id,
     });
 
-    // Update category balances
-    category.activity += amount;
-    category.available -= amount;
-    await category.save();
+    await Category.findByIdAndUpdate(categoryId, {
+      $inc: { activity: amount, available: -amount }
+    });
 
-    res.status(201).json(newTransaction); // Correctly use 201 for resource creation
+    res.status(201).json(newTransaction);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
 
-// Delete a single transaction
 exports.deleteSingleTransaction = async (req, res) => {
-  const transactionId = req.params.id; // Standardize variable naming
-  if (!mongoose.Types.ObjectId.isValid(transactionId)) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return handleNoTransactionFound(res);
   }
 
   try {
-    const transactionToDelete = await Transaction.findById(transactionId);
+    const transactionToDelete = await Transaction.findByIdAndRemove(req.params.id);
     if (!transactionToDelete) return handleNoTransactionFound(res);
 
-    // Update category balances before deletion
-    const category = await Category.findById(transactionToDelete.category);
-    if (category) {
-      category.activity -= transactionToDelete.amount;
-      category.available += transactionToDelete.amount;
-      await category.save();
-    }
+    await Category.findByIdAndUpdate(transactionToDelete.category, {
+      $inc: { activity: -transactionToDelete.amount, available: transactionToDelete.amount }
+    });
 
-    await transactionToDelete.remove();
     res.status(200).json({ message: 'Transaction successfully deleted' });
   } catch (err) {
     return handleNoTransactionFound(res);
   }
 };
 
-// Update a single transaction
 exports.updateSingleTransaction = async (req, res) => {
-  const transactionId = req.params.id; // Ensure consistency in variable naming
   const { title, amount, category: newCategoryId } = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(transactionId)) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return handleNoTransactionFound(res);
   }
 
   try {
-    const transactionToUpdate = await Transaction.findById(transactionId);
+    const transactionToUpdate = await Transaction.findById(req.params.id);
     if (!transactionToUpdate) return handleNoTransactionFound(res);
 
-    // Adjust the old category if changing categories or amounts
     if (transactionToUpdate.category.toString() !== newCategoryId || transactionToUpdate.amount !== amount) {
-      const oldCategory = await Category.findById(transactionToUpdate.category);
-      if (oldCategory) {
-        oldCategory.activity -= transactionToUpdate.amount;
-        oldCategory.available += transactionToUpdate.amount;
-        await oldCategory.save();
-      }
+      await Category.findByIdAndUpdate(transactionToUpdate.category, {
+        $inc: { activity: -transactionToUpdate.amount, available: transactionToUpdate.amount }
+      });
 
-      // Update the new category
-      const newCategory = await Category.findById(newCategoryId);
-      if (newCategory) {
-        newCategory.activity += amount;
-        newCategory.available -= amount;
-        await newCategory.save();
-      }
+      await Category.findByIdAndUpdate(newCategoryId, {
+        $inc: { activity: amount, available: -amount }
+      });
     }
 
-    const updatedTransaction = await Transaction.findByIdAndUpdate(transactionId, {
+    const updatedTransaction = await Transaction.findByIdAndUpdate(req.params.id, {
       title,
       amount,
       category: newCategoryId,

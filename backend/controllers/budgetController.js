@@ -1,6 +1,5 @@
 const Category = require('../models/categoryModel');
 
-// Move money between categories
 exports.moveMoneyBetweenCategories = async (req, res) => {
   const { fromCategoryId, toCategoryId, amount } = req.body;
 
@@ -16,7 +15,6 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
       return res.status(400).json({ error: 'Insufficient funds in the source category' });
     }
 
-    // Update the categories
     fromCategory.available -= amount;
     toCategory.available += amount;
 
@@ -25,15 +23,9 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
 
     res.status(200).json({
       message: `£${amount} successfully moved from ${fromCategory.name} to ${toCategory.name}`,
-      fromCategory: {
-        id: fromCategory._id,
-        name: fromCategory.name,
-        available: fromCategory.available
-      },
-      toCategory: {
-        id: toCategory._id,
-        name: toCategory.name,
-        available: toCategory.available
+      details: {
+        fromCategory: { id: fromCategory._id, available: fromCategory.available },
+        toCategory: { id: toCategory._id, available: toCategory.available }
       }
     });
   } catch (err) {
@@ -41,7 +33,6 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
   }
 };
 
-// Assign money to a category
 exports.assignMoneyToCategory = async (req, res) => {
   const { categoryId, amount } = req.body;
 
@@ -52,24 +43,18 @@ exports.assignMoneyToCategory = async (req, res) => {
       return res.status(404).json({ error: 'Category not found' });
     }
 
-    category.available += amount; // Assuming this increases the 'available' funds without affecting the 'activity'
-
+    category.available += amount; // Assuming this increases the available funds without affecting the activity
     await category.save();
 
     res.status(200).json({
       message: `£${amount} successfully assigned to ${category.name}`,
-      category: {
-        id: category._id,
-        name: category.name,
-        available: category.available
-      }
+      category: { id: category._id, available: category.available }
     });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
 
-// Remove money from a category (e.g., unassigning money)
 exports.removeMoneyFromCategory = async (req, res) => {
   const { categoryId, amount } = req.body;
 
@@ -85,16 +70,11 @@ exports.removeMoneyFromCategory = async (req, res) => {
     }
 
     category.available -= amount;
-
     await category.save();
 
     res.status(200).json({
       message: `£${amount} successfully removed from ${category.name}`,
-      category: {
-        id: category._id,
-        name: category.name,
-        available: category.available
-      }
+      category: { id: category._id, available: category.available }
     });
   } catch (err) {
     res.status(400).json({ error: err.message });
