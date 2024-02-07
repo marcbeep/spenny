@@ -14,6 +14,7 @@ const Transaction = () => {
   const { user } = useAuthContext();
   const { transactions, dispatch } = useTransactionContext();
   const { categories } = useCategoryContext();
+  const { dispatch: categoryDispatch } = useCategoryContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,6 +36,24 @@ const Transaction = () => {
 
     fetchTransactions();
   }, [user, dispatch]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (user) {
+        const response = await fetch(`${backendURL}/category`, {
+          headers: { 'Authorization': `Bearer ${user.token}` },
+        });
+        const json = await response.json();
+  
+        if (response.ok) {
+          categoryDispatch({ type: 'SET_CATEGORIES', payload: json }); 
+        }
+      }
+    };
+  
+    fetchCategories();
+  }, [user, categoryDispatch]); 
+  
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);

@@ -1,4 +1,6 @@
-import { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useReducer, useEffect } from 'react';
+import backendURL from '../config';
+import { useAuthContext } from '../hooks/useAuthContext'; 
 
 export const CategoryContext = createContext();
 
@@ -33,6 +35,32 @@ const categoryReducer = (state, action) => {
 
 export const CategoryContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(categoryReducer, { categories: [] });
+  const { user } = useAuthContext(); // Access user context to get the current user
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (user && user.token) { // Ensure there's a user token available
+        try {
+          const response = await fetch(`${backendURL}/category`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${user.token}`,
+            },
+          });
+          const data = await response.json();
+          if (response.ok) {
+            dispatch({ type: 'SET_CATEGORIES', payload: data });
+          } else {
+            console.error('Failed to fetch categories');
+          }
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+        }
+      }
+    };
+
+    fetchCategories();
+  }, [user]); // Depend on user to re-fetch when the user logs in/out
 
   return (
     <CategoryContext.Provider value={{ ...state, dispatch }}>
