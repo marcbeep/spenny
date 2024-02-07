@@ -37,7 +37,7 @@ const Table = ({ data, onRowClick }) => {
               >
                 <td>{item.title}</td>
                 <td>£{item.amount.toFixed(2)}</td>
-                <td>{item.category || 'No Category'}</td>
+                <td>{item.categoryName || 'No Category'}</td>
               </motion.tr>
             ))}
           </tbody>

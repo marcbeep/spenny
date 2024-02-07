@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext'; 
+import { useCategoryContext } from '../context/CategoryContext';
 import TransactionModal from '../components/TransactionModal';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
@@ -12,6 +13,7 @@ import backendURL from '../config';
 const Transaction = () => {
   const { user } = useAuthContext();
   const { transactions, dispatch } = useTransactionContext();
+  const { categories } = useCategoryContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,6 +54,14 @@ const Transaction = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentTransactions = transactions.slice(indexOfFirstItem, indexOfLastItem);
 
+  const transactionData = currentTransactions.map(transaction => {
+    const category = categories.find(c => c._id === transaction.category);
+    return {
+      ...transaction,
+      categoryName: category ? category.name : 'No Category', // Replace 'category' with 'categoryName' which has the actual category name
+    };
+  });
+
   return (
     <div className='home'>
       <h1 className='font-semibold'>Transactions</h1>
@@ -68,10 +78,10 @@ const Transaction = () => {
         editingTransaction={editingTransaction} 
       />
       <Table 
-        data={currentTransactions} 
+        data={transactionData} 
         onRowClick={openModalForEdit} 
       />
-      {transactions.length > 0 && ( // Conditionally render Pagination only when there is data
+      {transactions.length > 0 && ( 
         <Pagination 
           currentPage={currentPage} 
           totalPages={Math.ceil(transactions.length / itemsPerPage)} 

@@ -118,14 +118,14 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
             {formErrors.category && <span className='text-error text-sm'>{formErrors.category}</span>}
           </div>
           <div className='modal-action'>
-            <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
-              {isSubmitting ? 'Processing...' : editingTransaction ? 'Update' : 'Add'}
-            </button>
             {editingTransaction && (
               <button type='button' className='btn btn-error' onClick={handleDelete} disabled={isSubmitting}>
                 Delete
               </button>
             )}
+            <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
+              {isSubmitting ? 'Processing...' : editingTransaction ? 'Update' : 'Add'}
+            </button>
           </div>
         </form>
       </div>
@@ -134,3 +134,4 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
 };
 
 export default TransactionModal;
+
