@@ -4,15 +4,16 @@ import { useCategoryContext } from '../context/CategoryContext';
 import backendURL from '../config';
 
 const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
-    const initialState = { name: '', available: 0, activity: 0 };
+    const initialState = { name: '', available: 0 };
     const [formData, setFormData] = useState(initialState);
     const [formErrors, setFormErrors] = useState({});
     const { user } = useAuthContext();
     const { dispatch } = useCategoryContext();
   
     useEffect(() => {
-      setFormData(editingCategory ? editingCategory : initialState);
-    }, [editingCategory, initialState]);
+      // Reset form data whenever the modal is opened/closed or an editing category is set/unset
+      setFormData(editingCategory ? { name: editingCategory.name, available: editingCategory.available } : initialState);
+    }, [editingCategory]);
   
     const handleInputChange = (e) => {
       const { name, value } = e.target;
@@ -22,7 +23,6 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
     const validateForm = () => {
       const errors = {};
       if (!formData.name) errors.name = 'Name is required';
-      if (isNaN(formData.available) || formData.available < 0) errors.available = 'Available funds must be a non-negative number';
       setFormErrors(errors);
       return Object.keys(errors).length === 0;
     };
@@ -85,7 +85,10 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
           <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>✕</button>
           <h3 className='font-bold text-lg'>{editingCategory ? 'Edit Category' : 'Add Category'}</h3>
           <form onSubmit={handleSubmit}>
-            {/* Input fields here */}
+            <label className='label'>
+              <span className='label-text'>Name</span>
+            </label>
+            <input type='text' name='name' value={formData.name} onChange={handleInputChange} className='input input-bordered w-full mb-4' />
             
             <div className='modal-action'>
               <button type='submit' className='btn btn-primary'>
@@ -105,4 +108,3 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
   };
   
   export default CategoryModal;
-  
