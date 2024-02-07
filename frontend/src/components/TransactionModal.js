@@ -1,38 +1,33 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext';
+import { useCategoryContext } from '../context/CategoryContext';
 import backendURL from '../config';
 
 const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
-  const initialState = useMemo(() => ({ title: '', amount: '', category: '' }), []);
-  const [formData, setFormData] = useState(editingTransaction || initialState);
+  const initialState = { title: '', amount: '', category: '' };
+  const [formData, setFormData] = useState(initialState);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuthContext();
   const { dispatch } = useTransactionContext();
-
-  const isEditing = !!editingTransaction;
-  const url = isEditing
-    ? `${backendURL}/transaction/${editingTransaction._id}`
-    : `${backendURL}/transaction/`;
+  const { categories } = useCategoryContext();
 
   useEffect(() => {
-    setFormData(editingTransaction || initialState);
-  }, [editingTransaction, initialState]);
+    if (isOpen) {
+      setFormData(editingTransaction || { title: '', amount: '', category: '' });
+    }
+  }, [editingTransaction, isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (formErrors[name]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    setFormData(formData => ({ ...formData, [name]: value }));
   };
 
   const validateForm = () => {
-    let errors = {};
+    const errors = {};
     if (!formData.title) errors.title = 'Title is required';
-    if (!/^\d+(\.\d{1,2})?$/.test(formData.amount)) errors.amount = 'Amount must be a valid number';
-    else if (parseFloat(formData.amount) > 1000000) errors.amount = 'Amount must be less than or equal to £1,000,000.00';
+    if (!formData.amount || isNaN(formData.amount)) errors.amount = 'Amount must be a valid number';
     if (!formData.category) errors.category = 'Category is required';
 
     setFormErrors(errors);
@@ -42,27 +37,32 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+
+    const method = editingTransaction ? 'PATCH' : 'POST';
+    const url = `${backendURL}/transaction/${editingTransaction ? editingTransaction._id : ''}`;
+
     setIsSubmitting(true);
 
     try {
       const response = await fetch(url, {
-        method: isEditing ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
-        const actionType = isEditing ? 'UPDATE_TRANSACTION' : 'ADD_TRANSACTION';
         const data = await response.json();
-        dispatch({ type: actionType, payload: data });
-        setFormData(initialState);
+        dispatch({ type: editingTransaction ? 'UPDATE_TRANSACTION' : 'ADD_TRANSACTION', payload: data });
         closeModal();
       } else {
         const error = await response.json();
-        console.error(error.message || 'An error occurred');
+        setFormErrors({ form: error.message || 'An error occurred' });
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      setFormErrors({ form: 'An error occurred during the request.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -70,15 +70,15 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
 
   const handleDelete = async () => {
     if (!editingTransaction?._id) return;
-  
+
     setIsSubmitting(true);
-  
+
     try {
       const response = await fetch(`${backendURL}/transaction/${editingTransaction._id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${user.token}` },
       });
-  
+
       if (response.ok) {
         dispatch({ type: 'DELETE_TRANSACTION', payload: editingTransaction._id });
         closeModal();
@@ -91,70 +91,46 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
       setIsSubmitting(false);
     }
   };
-  
+
   if (!isOpen) return null;
 
   return (
-    <div className='modal modal-open' aria-labelledby='modalTitle' aria-describedby='modalDescription'>
+    <div className='modal modal-open' aria-modal="true" role="dialog">
       <div className='modal-box'>
-        <form onSubmit={handleSubmit} className='form-control'>
-          {['title', 'amount', 'category'].map((field) => (
-            <Field
-              key={field}
-              type={field === 'amount' ? 'number' : 'text'}
-              name={field}
-              placeholder={field === 'category' ? 'Select Category' : `Enter ${field}`}
-              value={formData[field]}
-              onChange={handleInputChange}
-              error={formErrors[field]}
-            />
-          ))}
+        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-4 top-4' aria-label="Close">✕</button>
+        <h3 className='text-lg font-bold mb-4'>{editingTransaction ? 'Edit Transaction' : 'Add Transaction'}</h3>
+        <form onSubmit={handleSubmit}>
+          <div className='form-control mb-4'>
+            <input type='text' id='title' name='title' placeholder='Transaction Title' className='input input-bordered w-full' value={formData.title} onChange={handleInputChange} />
+            {formErrors.title && <span className='text-error text-sm'>{formErrors.title}</span>}
+          </div>
+          <div className='form-control mb-4'>
+            <input type='number' id='amount' name='amount' placeholder='Amount' className='input input-bordered w-full' value={formData.amount} onChange={handleInputChange} />
+            {formErrors.amount && <span className='text-error text-sm'>{formErrors.amount}</span>}
+          </div>
+          <div className='form-control'>
+            <select id='category' name='category' className='select select-bordered w-full' value={formData.category} onChange={handleInputChange}>
+              <option value=''>Select Category</option>
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>{category.name}</option>
+              ))}
+            </select>
+            {formErrors.category && <span className='text-error text-sm'>{formErrors.category}</span>}
+          </div>
           <div className='modal-action'>
-            <ActionButton
-              isSubmitting={isSubmitting}
-              isEditing={isEditing}
-              closeModal={closeModal}
-              handleDelete={handleDelete} 
-            />
+            <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
+              {isSubmitting ? 'Processing...' : editingTransaction ? 'Update' : 'Add'}
+            </button>
+            {editingTransaction && (
+              <button type='button' className='btn btn-error' onClick={handleDelete} disabled={isSubmitting}>
+                Delete
+              </button>
+            )}
           </div>
         </form>
       </div>
     </div>
   );
 };
-
-const Field = ({ type, name, placeholder, value, onChange, error }) => (
-  <div className='mb-2'>
-    <input
-      type={type}
-      name={name}
-      placeholder={placeholder}
-      className={`input input-bordered w-full ${error ? 'border-red-500' : ''}`}
-      value={value}
-      onChange={onChange}
-    />
-    {error && <p className='text-red-500 text-sm mt-1'>{error}</p>}
-  </div>
-);
-
-const ActionButton = ({ isSubmitting, isEditing, closeModal, handleDelete }) => { 
-  return (
-    <>
-      <button type='button' className='btn' onClick={closeModal} disabled={isSubmitting}>
-        Close
-      </button>
-      {isEditing && (
-        <button type='button' className='btn btn-error' onClick={handleDelete} disabled={isSubmitting}>
-          Delete
-        </button>
-      )}
-      <button type='submit' className='btn btn-primary' disabled={isSubmitting}>
-        {isSubmitting ? 'Processing...' : isEditing ? 'Update' : 'Add'} Transaction
-      </button>
-    </>
-  );
-};
-
-
 
 export default TransactionModal;
