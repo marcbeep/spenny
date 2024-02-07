@@ -9,12 +9,11 @@ const AssignFundsModal = ({ isOpen, closeModal }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [amount, setAmount] = useState('');
 
-  const handleAssignFunds = async () => {
+  const handleAssignFunds = async (e) => {
+    e.preventDefault();
     const numericAmount = parseFloat(amount);
     if (!selectedCategory || isNaN(numericAmount) || numericAmount <= 0) return;
 
-    // API call to assign funds to the selected category
-    // Assuming backendURL and the API endpoint "/assign" exists for this operation
     const url = `${backendURL}/budget/assign`;
     const data = { categoryId: selectedCategory, amount: numericAmount };
 
@@ -26,7 +25,6 @@ const AssignFundsModal = ({ isOpen, closeModal }) => {
       });
       const result = await response.json();
       if (response.ok) {
-    // Assume response.json() returns the updated category directly
         dispatchCategory({ type: 'UPDATE_CATEGORY', payload: result.category });
         closeModal(); 
       } else {
