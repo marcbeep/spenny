@@ -21,13 +21,17 @@ const categoryReducer = (state, action) => {
         ...state,
         categories: state.categories.filter(category => category._id !== action.payload),
       };
-    case 'UPDATE_CATEGORY':
-      return {
-        ...state,
-        categories: state.categories.map((category) =>
-          category._id === action.payload._id ? action.payload : category
-        ),
-      };
+      case 'UPDATE_CATEGORY':
+        if (!action.payload || !action.payload._id) {
+          console.error('Invalid payload for UPDATE_CATEGORY:', action.payload);
+          return state; // Return current state if payload is invalid
+        }
+        return {
+          ...state,
+          categories: state.categories.map((category) =>
+            category._id === action.payload._id ? action.payload : category
+          ),
+        };
     default:
       return state;
   }

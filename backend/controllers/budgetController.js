@@ -43,11 +43,18 @@ exports.assignMoneyToCategory = async (req, res) => {
       return res.status(404).json({ error: 'Category not found' });
     }
 
-    category.available += amount; // Assuming this increases the available funds without affecting the activity
+    // Convert amount to a number
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount)) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    // Ensure category.available is treated as a number
+    category.available = (category.available ? parseFloat(category.available) : 0) + numericAmount;
     await category.save();
 
     res.status(200).json({
-      message: `£${amount} successfully assigned to ${category.name}`,
+      message: `£${numericAmount} successfully assigned to ${category.name}`,
       category: { id: category._id, available: category.available }
     });
   } catch (err) {

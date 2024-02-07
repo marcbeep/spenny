@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useCategoryContext } from '../context/CategoryContext';
 import CategoryModal from '../components/CategoryModal';
+import AssignFundsModal from '../components/AssignFundsModal';
 import backendURL from '../config';
 
 const Category = () => {
@@ -12,6 +13,7 @@ const Category = () => {
   const { categories, dispatch: dispatchCategory } = useCategoryContext();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const colors = ['bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 'bg-purple-400'];
 
@@ -60,6 +62,10 @@ const Category = () => {
             <FontAwesomeIcon icon={faPlus} size='sm' /> Add Category
           </button>
         </motion.div>
+        <div>
+          <button className="btn btn-secondary" onClick={() => setIsAssignModalOpen(true)}>Ready to Assign</button>
+          <AssignFundsModal isOpen={isAssignModalOpen} closeModal={() => setIsAssignModalOpen(false)} />
+      </div>
       </div>
       <CategoryModal 
         isOpen={isModalOpen} 
