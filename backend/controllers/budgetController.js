@@ -20,7 +20,7 @@ exports.assignMoneyToCategory = async (req, res) => {
     res.status(200).json({
       message: `£${numericAmount.toFixed(2)} successfully assigned to ${category.name}`,
       category: {
-        id: category._id,
+        _id: category._id,
         name: category.name,
         available: category.available
       }
