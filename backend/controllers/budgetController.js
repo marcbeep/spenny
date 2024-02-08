@@ -6,6 +6,11 @@ exports.assignMoneyToCategory = async (req, res) => {
   const userId = req.user._id;
 
   try {
+    const category = await Category.findById(categoryId); // Fetch the category
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
     const totalFunds = await calculateTotalFunds(userId);
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount)) {
