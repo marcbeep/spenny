@@ -109,3 +109,20 @@ exports.removeMoneyFromCategory = async (req, res) => {
   }
 };
 
+exports.getAvailableFunds = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const totalFunds = await calculateTotalFunds(userId); // Assuming this utility function exists
+    const totalAssigned = await Category.find({ user: userId })
+      .then(categories => categories.reduce((acc, category) => acc + parseFloat(category.budgetedAmount), 0));
+
+    const availableToAssign = totalFunds - totalAssigned;
+
+    res.status(200).json({ availableToAssign });
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to calculate available funds' });
+  }
+};
+
+
