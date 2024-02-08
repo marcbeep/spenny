@@ -59,8 +59,8 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
     res.status(200).json({
       message: `£${numericAmount.toFixed(2)} successfully moved from ${fromCategory.name} to ${toCategory.name}`,
       details: {
-        fromCategory: { id: fromCategory._id, available: fromCategory.available },
-        toCategory: { id: toCategory._id, available: toCategory.available }
+        fromCategory: { _id: fromCategory._id, available: fromCategory.available },
+        toCategory: { _id: toCategory._id, available: toCategory.available }
       }
     });
   } catch (err) {
@@ -92,9 +92,10 @@ exports.removeMoneyFromCategory = async (req, res) => {
 
     res.status(200).json({
       message: `£${numericAmount.toFixed(2)} successfully removed from ${category.name}`,
-      category: { id: category._id, available: category.available }
+      category: { _id: category._id, available: category.available }
     });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
+

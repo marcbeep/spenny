@@ -55,15 +55,14 @@ const Category = () => {
 
   return (
     <>
-      <h1 className='font-semibold text-lg mb-4'>Categories</h1>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-center my-4">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <button className='btn btn-primary' onClick={openModalForNewCategory}>
             <FontAwesomeIcon icon={faPlus} size='sm' /> Add Category
           </button>
         </motion.div>
-        <div>
-          <button className="btn btn-secondary" onClick={() => setIsAssignModalOpen(true)}>Ready to Assign</button>
+        <div className='ml-4'>
+          <button className="btn btn-secondary" onClick={() => setIsAssignModalOpen(true)}>Assign Funds</button>
           <AssignFundsModal isOpen={isAssignModalOpen} closeModal={() => setIsAssignModalOpen(false)} />
       </div>
       </div>
@@ -79,14 +78,9 @@ const Category = () => {
             className={`card rounded-lg cursor-pointer w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 m-2 ${colors[index % colors.length]}`}
             onClick={() => openModalForEdit(category)}
           >
-            <div className="card-body">
+            <div className="card-body text-black">
               <h2 className="card-title">{category.name}</h2>
               <p>Available: £{category.available}</p>
-              <div className="card-actions justify-end">
-                <button className="btn btn-square btn-sm" onClick={() => openModalForEdit(category)}>
-                  <FontAwesomeIcon icon={faEdit} />
-                </button>
-              </div>
             </div>
           </div>
         )) : <div>No categories available</div>}

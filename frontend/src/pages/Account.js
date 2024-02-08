@@ -74,12 +74,11 @@ const Account = () => {
 
   return (
     <>
-      <h1 className='font-semibold'>Accounts</h1>
-      <div className="total-balance">Total Balance: £{totalBalance}</div>
-      <div className="flex justify-end">
+      <div className="flex justify-center">Total Balance: £{totalBalance}</div>
+      <div className="flex justify-center my-4">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <button className='btn btn-primary mb-4' onClick={openModalForNewAccount}>
-            <FontAwesomeIcon icon={faPlus} size='sm' />
+          <button className='btn btn-primary' onClick={openModalForNewAccount}>
+            <FontAwesomeIcon icon={faPlus} size='sm' /> Add Account
           </button>
         </motion.div>
       </div>

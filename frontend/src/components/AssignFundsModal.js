@@ -40,17 +40,17 @@ const AssignFundsModal = ({ isOpen, closeModal }) => {
   return (
     <div className="modal modal-open">
       <div className="modal-box">
+      <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>✕</button>
         <h3 className="font-bold text-lg">Assign Funds to Category</h3>
-        <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="select select-bordered w-full max-w-xs">
+        <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="select select-bordered w-full my-4">
           <option disabled value="">Select a category</option>
           {categories.map((category) => (
             <option key={category._id} value={category._id}>{category.name}</option>
           ))}
         </select>
-        <input type="number" placeholder="Amount" className="input input-bordered w-full max-w-xs" value={amount} onChange={(e) => setAmount(e.target.value)} />
+        <input type="number" placeholder="Amount" className="input input-bordered w-full" value={amount} onChange={(e) => setAmount(e.target.value)} />
         <div className="modal-action">
-          <button className="btn" onClick={handleAssignFunds}>Assign</button>
-          <button className="btn btn-ghost" onClick={closeModal}>Cancel</button>
+          <button className="btn btn-primary" onClick={handleAssignFunds}>Assign</button>
         </div>
       </div>
     </div>

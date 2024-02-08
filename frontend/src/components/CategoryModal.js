@@ -99,7 +99,6 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
                   Delete
                 </button>
               )}
-              <button type='button' className='btn' onClick={closeModal}>Cancel</button>
             </div>
           </form>
         </div>

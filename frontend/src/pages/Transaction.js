@@ -83,11 +83,10 @@ const Transaction = () => {
 
   return (
     <div className='home'>
-      <h1 className='font-semibold'>Transactions</h1>
-      <div className="flex justify-end">
+      <div className="flex justify-center my-4">
         <motion.div>
-          <button className='btn btn-primary mb-4' onClick={openModalForNewTransaction}>
-            <FontAwesomeIcon icon={faPlus} size='sm' />
+          <button className='btn btn-primary' onClick={openModalForNewTransaction}>
+            <FontAwesomeIcon icon={faPlus} size='sm' /> Add Transaction
           </button>
         </motion.div>
       </div>
@@ -96,10 +95,13 @@ const Transaction = () => {
         closeModal={() => setIsModalOpen(false)} 
         editingTransaction={editingTransaction} 
       />
+      <div className = "flex justify-center">
       <Table 
         data={transactionData} 
         onRowClick={openModalForEdit} 
       />
+      </div>
+      <div className = "flex justify-center">
       {transactions.length > 0 && ( 
         <Pagination 
           currentPage={currentPage} 
@@ -107,6 +109,7 @@ const Transaction = () => {
           onPageChange={handlePageChange} 
         />
       )}
+      </div>
     </div>
   );
 };
