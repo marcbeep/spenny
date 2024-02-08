@@ -1,17 +1,22 @@
 const Category = require('../models/categoryModel');
+const { calculateTotalFunds } = require('../utils/calculateTotalFunds');
 
 exports.assignMoneyToCategory = async (req, res) => {
   const { categoryId, amount } = req.body;
+  const userId = req.user._id;
 
   try {
-    const category = await Category.findById(categoryId);
-    if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
-    }
-
+    const totalFunds = await calculateTotalFunds(userId);
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount)) {
       return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    // Ensure the assigned amount does not exceed total available funds
+    const totalAssigned = await Category.find({ user: userId }).then(categories => 
+      categories.reduce((acc, category) => acc + parseFloat(category.available), 0));
+    if (totalAssigned + numericAmount > totalFunds) {
+      return res.status(400).json({ error: 'Assigning amount exceeds total available funds' });
     }
 
     category.available = ((parseFloat(category.available) || 0) + numericAmount).toFixed(2);
