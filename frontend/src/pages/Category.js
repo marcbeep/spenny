@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useCategoryContext } from '../context/CategoryContext';
 import CategoryModal from '../components/CategoryModal';
@@ -15,30 +15,43 @@ const Category = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [availableFunds, setAvailableFunds] = useState(0); // State for tracking available funds to assign
   const colors = ['bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 'bg-purple-400'];
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategoriesAndFunds = async () => {
       if (!user) return;
       setIsLoading(true);
       try {
-        const response = await fetch(`${backendURL}/category`, {
+        // Fetch categories
+        const catResponse = await fetch(`${backendURL}/category`, {
           headers: { 'Authorization': `Bearer ${user.token}` },
         });
-        const json = await response.json();
-        if (response.ok) {
-          dispatchCategory({ type: 'SET_CATEGORIES', payload: json });
+        const catJson = await catResponse.json();
+        if (catResponse.ok) {
+          dispatchCategory({ type: 'SET_CATEGORIES', payload: catJson });
         } else {
-          console.error('Failed to fetch categories:', json.error);
+          console.error('Failed to fetch categories:', catJson.error);
+        }
+        
+        // Fetch available funds
+        const fundsResponse = await fetch(`${backendURL}/budget/available-funds`, {
+          headers: { 'Authorization': `Bearer ${user.token}` },
+        });
+        const fundsJson = await fundsResponse.json();
+        if (fundsResponse.ok) {
+          setAvailableFunds(fundsJson.availableToAssign);
+        } else {
+          console.error('Failed to fetch available funds:', fundsJson.error);
         }
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCategories();
+    fetchCategoriesAndFunds();
   }, [user, dispatchCategory]);
 
   const openModalForNewCategory = () => {
@@ -49,6 +62,17 @@ const Category = () => {
   const openModalForEdit = (category) => {
     setEditingCategory(category);
     setIsModalOpen(true);
+  };
+
+  // Refresh available funds after assigning funds
+  const refreshAvailableFunds = async () => {
+    const fundsResponse = await fetch(`${backendURL}/budget/available-funds`, {
+      headers: { 'Authorization': `Bearer ${user.token}` },
+    });
+    const fundsJson = await fundsResponse.json();
+    if (fundsResponse.ok) {
+      setAvailableFunds(fundsJson.availableToAssign);
+    }
   };
 
   if (isLoading) return <div>Loading categories...</div>;
@@ -62,9 +86,11 @@ const Category = () => {
           </button>
         </motion.div>
         <div className='ml-4'>
-          <button className="btn btn-secondary" onClick={() => setIsAssignModalOpen(true)}>Assign Funds</button>
-          <AssignFundsModal isOpen={isAssignModalOpen} closeModal={() => setIsAssignModalOpen(false)} />
-      </div>
+          <button className="btn btn-secondary" onClick={() => { setIsAssignModalOpen(true); refreshAvailableFunds(); }}>
+            £{availableFunds} to Assign
+          </button>
+          <AssignFundsModal isOpen={isAssignModalOpen} closeModal={() => { setIsAssignModalOpen(false); refreshAvailableFunds(); }} />
+        </div>
       </div>
       <CategoryModal 
         isOpen={isModalOpen} 
