@@ -13,12 +13,12 @@ import Category from './pages/Category';
 import Navbar from './components/Navbar';
 
 function App() {
-  // const { user } = useAuthContext();
-  const { user, authIsReady } = useAuthContext();
+  const { user } = useAuthContext();
+  // const { user, authIsReady } = useAuthContext();
 
-  if (!authIsReady) {
-    return <div>Loading...</div>;
-  };
+  // if (!authIsReady) {
+  //   return <div>Loading...</div>;
+  // };
 
   return (
     <div className='App'>
