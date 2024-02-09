@@ -1,22 +1,15 @@
 **To Do**
 
-- [x] Display accounts
-- [x] Add accounts (frontend)
-- [x] Add categories (backend)
-- [x] Display categories
-- [x] Add categories (frontend)
-- [x] Assign to categories - transactions
-- [ ] Showcase "ready to assign"
-- [ ] Create modal when a user clicks "ready to assign" to move money to different categories.
-- [ ] When user clicks category, they can move money around.
+- [ ] Show "ready to assign" with correct amount.
+- [ ] Create a "move money" modal.
+- [ ] Implement "move money".
 - [ ] Dynamically update category amounts as money is moved around.
-- [ ] Transactions should be linked to bank accounts and dynamically affect both accounts and categories.
 - [ ] Users can "reconcile" bank accounts.
 - [ ] When a user deletes a category, users must first reassign all transactions to another category.
 
-**Notes**
+### Spenny
 
-- App is meant to function like YNAB.
+- The web app is meant to function like YNAB.
 - Users can add bank accounts.
 - Users can define own budget categories.
 - Users can log transactions (associated with categories & accounts).
@@ -102,27 +95,41 @@
 
 ### Routes
 
-1. **category.js** (new file in routes):
+**account.js:**
 
-   - POST `/categories` for adding a new category.
-   - GET `/categories` for listing all categories for a user.
-   - PUT `/categories/:id` for updating a category.
-   - DELETE `/categories/:id` for deleting a category.
+- `POST` /accounts
+- `GET` /accounts
+- `DELETE` /accounts/:id
+- `PATCH` /accounts/:id
+- `GET` /accounts/totalBalance
 
-2. **budget.js** (new file in routes):
+**budget.js:**
 
-   - POST `/assign` for assigning money to a category.
-   - PUT `/updateAssignment/:categoryId` for updating the assigned amount.
+- `POST` /budget/move
+- `POST` /budget/assign
+- `POST` /budget/remove
+- `GET` /budget/available-funds
 
-3. **transaction.js**:
-   - Modify existing routes if necessary to support assigning transactions to categories and affecting the budget.
+**category.js:**
 
-### Implementing Budget Logic
+- `POST` /categories
+- `GET` /categories
+- `GET` /categories/:id
+- `PATCH` /categories/:id
+- `DELETE` /categories/:id
 
-- **Assigning to Categories**: When money is assigned to a category, update the `budgetedAmount` and `available` fields in `CategoryModel`.
-- **Transactions**: When a transaction is added, decrease the `available` amount in the associated category. If a transaction is deleted or modified, adjust accordingly.
-- **Overspending**: If the `available` amount in a category goes negative, it indicates overspending. This should be visually indicated in your frontend.
-- **Moving Money Between Categories**: Implement a function that decreases the `available` amount in one category and increases it in another.
+**transaction.js:**
+
+- `GET` /transactions
+- `GET` /transactions/:id
+- `POST` /transactions
+- `DELETE` /transactions/:id
+- `PATCH` /transactions/:id
+
+**user.js:**
+
+- `POST` /users/login
+- `POST` /users/signup
 
 ### HTTP Status codes
 
