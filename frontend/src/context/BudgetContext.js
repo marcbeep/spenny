@@ -1,117 +1,53 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { AuthContext } from './AuthContext'; // Adjust the import path as necessary
 
-// Define the initial state of the budget context
 const initialState = {
-  totalAvailable: 0,
-  totalAssigned: 0,
   readyToAssign: 0,
-  categories: [], // Assuming you want to manage categories here as well
 };
 
-// Create a context
 export const BudgetContext = createContext();
 
-// Define a reducer function for managing state changes
-// Define a reducer function for managing state changes
-export const budgetReducer = (state, action) => {
+const budgetReducer = (state, action) => {
   switch (action.type) {
-    case 'SET_BUDGET':
+    case 'SET_READY_TO_ASSIGN':
       return {
         ...state,
-        totalAvailable: action.payload.totalAvailable,
-        totalAssigned: action.payload.totalAssigned,
-        readyToAssign: action.payload.readyToAssign,
-        categories: action.payload.categories, // Ensure categories are updated
+        readyToAssign: action.payload,
       };
-    case 'UPDATE_CATEGORY_ASSIGNMENT':
-      // Assuming action.payload has { categoryId, amountAssigned }
-      const updatedCategories = state.categories.map(category => {
-        if (category.id === action.payload.categoryId) {
-          const newAssignedAmount = category.assignedAmount + action.payload.amountAssigned;
-          return {
-            ...category,
-            assignedAmount: newAssignedAmount,
-            available: category.available + action.payload.amountAssigned, // Assuming this logic fits your needs
-          };
-        }
-        return category;
-      });
-      return {
-        ...state,
-        categories: updatedCategories,
-        // Update totalAssigned and readyToAssign as needed
-      };
-    case 'MOVE_FUNDS_BETWEEN_CATEGORIES':
-      // Assuming action.payload has { fromCategoryId, toCategoryId, amount }
-      const categoriesAfterMovingFunds = state.categories.map(category => {
-        if (category.id === action.payload.fromCategoryId) {
-          return {
-            ...category,
-            assignedAmount: category.assignedAmount - action.payload.amount,
-            available: category.available - action.payload.amount,
-          };
-        }
-        if (category.id === action.payload.toCategoryId) {
-          return {
-            ...category,
-            assignedAmount: category.assignedAmount + action.payload.amount,
-            available: category.available + action.payload.amount,
-          };
-        }
-        return category;
-      });
-      return {
-        ...state,
-        categories: categoriesAfterMovingFunds,
-      };
-      case 'ADD_FUNDS_TO_CATEGORY':
-        // Assuming action.payload has { categoryId, amount }
-        const categoriesAfterAddingFunds = state.categories.map(category => {
-          if (category.id === action.payload.categoryId) {
-            // Increase the assignedAmount and available by the specified amount
-            return {
-              ...category,
-              assignedAmount: category.assignedAmount + action.payload.amount,
-              available: category.available + action.payload.amount,
-            };
-          }
-          return category;
-        });
-        return {
-          ...state,
-          categories: categoriesAfterAddingFunds,
-          totalAssigned: state.totalAssigned + action.payload.amount,
-          readyToAssign: state.readyToAssign - action.payload.amount,
-        };
-  
-      case 'REMOVE_FUNDS_FROM_CATEGORY':
-        // Assuming action.payload has { categoryId, amount }
-        const categoriesAfterRemovingFunds = state.categories.map(category => {
-          if (category.id === action.payload.categoryId) {
-            // Decrease the assignedAmount and available by the specified amount
-            return {
-              ...category,
-              assignedAmount: category.assignedAmount - action.payload.amount,
-              available: category.available - action.payload.amount,
-            };
-          }
-          return category;
-        });
-        return {
-          ...state,
-          categories: categoriesAfterRemovingFunds,
-          totalAssigned: state.totalAssigned - action.payload.amount,
-          readyToAssign: state.readyToAssign + action.payload.amount,
-        };
-    // Implement cases for handling transactions that affect category funds
     default:
       return state;
   }
 };
 
-// Define a provider component
 export const BudgetContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(budgetReducer, initialState);
+  const { user } = useContext(AuthContext); // Use AuthContext to get the current user
+
+  // Function to fetch "ready to assign" funds from the backend
+  const fetchReadyToAssign = async () => {
+    if (!user) return; // Ensure there's a user and token available
+    try {
+      const response = await fetch('/budget/readyToAssign', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`, // Use the token from AuthContext
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch ready to assign funds');
+      }
+      const data = await response.json();
+      dispatch({ type: 'SET_READY_TO_ASSIGN', payload: data.readyToAssign });
+      console.log(`${data.readyToAssign} ready to assign funds fetched`);
+    } catch (error) {
+      console.error('Error fetching ready to assign funds:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReadyToAssign();
+  }, [user]); // Rerun when the user changes
 
   return (
     <BudgetContext.Provider value={{ ...state, dispatch }}>
@@ -120,7 +56,6 @@ export const BudgetContextProvider = ({ children }) => {
   );
 };
 
-// Hook for consuming context
 export const useBudgetContext = () => {
   const context = useContext(BudgetContext);
   if (context === undefined) {

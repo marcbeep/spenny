@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useCategoryContext } from '../context/CategoryContext';
+import { useBudgetContext } from '../context/BudgetContext'; // Import the useBudgetContext hook
 import CategoryModal from '../components/CategoryModal';
 import AssignFundsModal from '../components/AssignFundsModal';
 import backendURL from '../config';
@@ -11,15 +12,15 @@ import backendURL from '../config';
 const Category = () => {
   const { user } = useAuthContext();
   const { categories, dispatch: dispatchCategory } = useCategoryContext();
+  const { readyToAssign } = useBudgetContext();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
-  const [availableFunds, setAvailableFunds] = useState(0); // State for tracking available funds to assign
   const colors = ['bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 'bg-purple-400'];
 
   useEffect(() => {
-    const fetchCategoriesAndFunds = async () => {
+    const fetchCategories = async () => {
       if (!user) return;
       setIsLoading(true);
       try {
@@ -33,17 +34,6 @@ const Category = () => {
         } else {
           console.error('Failed to fetch categories:', catJson.error);
         }
-        
-        // Fetch available funds
-        const fundsResponse = await fetch(`${backendURL}/budget/available-funds`, {
-          headers: { 'Authorization': `Bearer ${user.token}` },
-        });
-        const fundsJson = await fundsResponse.json();
-        if (fundsResponse.ok) {
-          setAvailableFunds(fundsJson.availableToAssign);
-        } else {
-          console.error('Failed to fetch available funds:', fundsJson.error);
-        }
       } catch (error) {
         console.error('Error:', error);
       } finally {
@@ -51,7 +41,7 @@ const Category = () => {
       }
     };
 
-    fetchCategoriesAndFunds();
+    fetchCategories();
   }, [user, dispatchCategory]);
 
   const openModalForNewCategory = () => {
@@ -62,17 +52,6 @@ const Category = () => {
   const openModalForEdit = (category) => {
     setEditingCategory(category);
     setIsModalOpen(true);
-  };
-
-  // Refresh available funds after assigning funds
-  const refreshAvailableFunds = async () => {
-    const fundsResponse = await fetch(`${backendURL}/budget/available-funds`, {
-      headers: { 'Authorization': `Bearer ${user.token}` },
-    });
-    const fundsJson = await fundsResponse.json();
-    if (fundsResponse.ok) {
-      setAvailableFunds(fundsJson.availableToAssign);
-    }
   };
 
   if (isLoading) return <div>Loading categories...</div>;
@@ -86,10 +65,10 @@ const Category = () => {
           </button>
         </motion.div>
         <div className='ml-4'>
-          <button className="btn btn-secondary" onClick={() => { setIsAssignModalOpen(true); refreshAvailableFunds(); }}>
-            £{availableFunds} to Assign
+          <button className="btn btn-secondary" onClick={() => { setIsAssignModalOpen(true); }}>
+            £{readyToAssign} to Assign
           </button>
-          <AssignFundsModal isOpen={isAssignModalOpen} closeModal={() => { setIsAssignModalOpen(false); refreshAvailableFunds(); }} />
+          <AssignFundsModal isOpen={isAssignModalOpen} closeModal={() => setIsAssignModalOpen(false)} />
         </div>
       </div>
       <CategoryModal 
@@ -116,4 +95,3 @@ const Category = () => {
 };
 
 export default Category;
-
