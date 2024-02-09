@@ -18,21 +18,48 @@
 - App is meant to function like YNAB.
 - Users can add bank accounts.
 - Users can define own budget categories.
-- Users can log transactions (associated with categories).
+- Users can log transactions (associated with categories & accounts).
 - The total of the user's bank accounts are "Ready to assign" to categories.
 - Users must assign all money to categories such that the "Ready to assign" is 0.
 - Users can move money allocation from category to category.
 - Users may overspend from categories (negative category balance).
 
-### Relevant Models
+### Schemas
 
-1. **CategoryModel**: To manage budget categories.
+**accountModel:**
 
-   - Fields: `name`, `user` (reference to `UserModel`), `budgetedAmount` (money allocated), `activity` (money spent), `available` (money left to spend).
+- `user`: Represents the user associated with the account.
+- `name`: Name of the account.
+- `type`: Type of the account (e.g., checking, savings, credit card).
+- `balance`: Current balance of the account.
 
-2. **TransactionModel**: Modify if necessary to include a reference to `CategoryModel`.
+**budgetModel:**
 
-   - Add a field: `category` (reference to `CategoryModel`).
+- `user`: Represents the user associated with the budget.
+- `totalAvailable`: Total amount available for budgeting.
+- `totalAssigned`: Total amount already assigned to categories.
+- `readyToAssign`: Amount available for further assignment to categories.
+
+**categoryModel:**
+
+- `user`: Represents the user associated with the category.
+- `name`: Name of the category (e.g., groceries, utilities).
+- `budgetedAmount`: Amount budgeted for the category.
+- `available`: Amount currently available in the category for spending.
+- `activity`: Total amount of transactions associated with the category.
+
+**transactionModel:**
+
+- `user`: Represents the user associated with the transaction.
+- `title`: Title or description of the transaction.
+- `amount`: Amount of the transaction.
+- `category`: Reference to the category associated with the transaction.
+- `account`: Reference to the account associated with the transaction.
+
+**userModel:**
+
+- `email`: Email address of the user (unique identifier).
+- `password`: Encrypted password for user authentication.
 
 ### Controllers
 
