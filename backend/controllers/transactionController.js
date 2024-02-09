@@ -34,10 +34,6 @@ exports.getSingleTransaction = async (req, res) => {
   }
 };
 
-/**
- * Creates a new transaction, updates the associated category's activity and available funds,
- * and adjusts the account balance.
- */
 exports.createTransaction = async (req, res) => {
   const { title, amount, category: categoryId, account: accountId } = req.body;
 
@@ -58,12 +54,12 @@ exports.createTransaction = async (req, res) => {
       user: req.user._id,
     });
 
-    // Update category's activity and available funds
+    // Update category's activity and adjust available funds accordingly
     await Category.findByIdAndUpdate(categoryId, { $inc: { activity: amount, available: -amount } });
     
     // Update the account balance
     const account = await Account.findById(accountId);
-    account.balance -= amount;
+    account.balance -= amount; // Assuming all transactions are expenses for simplicity
     await account.save();
 
     res.status(201).json(newTransaction);
@@ -72,10 +68,6 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
-/**
- * Deletes a transaction, reverses its effects on the associated category's activity and available funds,
- * and adjusts the account balance.
- */
 exports.deleteSingleTransaction = async (req, res) => {
   const { id } = req.params;
 
@@ -88,9 +80,9 @@ exports.deleteSingleTransaction = async (req, res) => {
     // Reverse the transaction's effects on the category
     await Category.findByIdAndUpdate(transaction.category, { $inc: { activity: -transaction.amount, available: transaction.amount } });
     
-    // Reverse the transaction's effects on the account balance here
+    // Reverse the transaction's effects on the account balance
     const account = await Account.findById(transaction.account);
-    account.balance += transaction.amount;
+    account.balance += transaction.amount; // Assuming all transactions are expenses for simplicity
     await account.save();
 
     res.status(200).json({ message: 'Transaction successfully deleted' });
@@ -99,14 +91,11 @@ exports.deleteSingleTransaction = async (req, res) => {
   }
 };
 
-/**
- * Updates a transaction, adjusts the associated categories' and account's activity and available funds accordingly.
- */
 exports.updateSingleTransaction = async (req, res) => {
   const { id } = req.params;
   const { title, amount, category: newCategoryId, account: newAccountId } = req.body;
 
-  // Verify the new category and account exist before proceeding
+  // Verify the new category and account exist
   const categoryExists = await Category.exists({ _id: newCategoryId });
   const accountExists = await Account.exists({ _id: newAccountId });
 
@@ -118,25 +107,38 @@ exports.updateSingleTransaction = async (req, res) => {
     const transaction = await Transaction.findById(id);
     if (!transaction) return handleNoTransactionFound(res);
 
-    // Adjust categories and accounts
-    if (transaction.category.toString() !== newCategoryId || transaction.amount !== amount) {
+    // Calculate differences for adjusting categories and accounts
+    const amountDifference = amount - transaction.amount;
+    const isCategoryChanged = transaction.category.toString() !== newCategoryId;
+    const isAccountChanged = transaction.account.toString() !== newAccountId;
+
+    if (isCategoryChanged) {
       // Reverse old category's changes
       await Category.findByIdAndUpdate(transaction.category, { $inc: { activity: -transaction.amount, available: transaction.amount } });
       // Apply changes to the new category
       await Category.findByIdAndUpdate(newCategoryId, { $inc: { activity: amount, available: -amount } });
+    } else if (amountDifference !== 0) {
+      // Adjust the same category if only the amount has changed
+      await Category.findByIdAndUpdate(transaction.category, { $inc: { activity: amountDifference, available: -amountDifference } });
     }
 
-    // Adjust the old and new account balances 
-    if (transaction.account.toString() !== newAccountId || transaction.amount !== amount) {
+    if (isAccountChanged) {
+      // Adjust old and new account balances
       const oldAccount = await Account.findById(transaction.account);
-      oldAccount.balance += transaction.amount;
+      oldAccount.balance += transaction.amount; // Revert original transaction from old account
       await oldAccount.save();
 
       const newAccount = await Account.findById(newAccountId);
-      newAccount.balance -= amount;
+      newAccount.balance -= amount; // Apply new transaction to new account
       await newAccount.save();
+    } else if (amountDifference !== 0) {
+      // Adjust the same account if only the amount has changed
+      const account = await Account.findById(transaction.account);
+      account.balance -= amountDifference;
+      await account.save();
     }
 
+    // Update the transaction
     const updatedTransaction = await Transaction.findByIdAndUpdate(id, {
       title,
       amount,
