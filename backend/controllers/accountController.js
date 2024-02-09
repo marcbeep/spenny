@@ -2,7 +2,7 @@ const Account = require('../models/accountModel');
 const Budget = require('../models/budgetModel');
 
 // Utility function to update the user's budget
-async function updateUserBudget(userId, balanceChange, isNewAccount = false) {
+async function updateUserBudget(userId, balanceChange) {
   const budget = await Budget.findOne({ user: userId });
   if (!budget) {
     console.error("Budget not found for user:", userId);
@@ -11,10 +11,9 @@ async function updateUserBudget(userId, balanceChange, isNewAccount = false) {
 
   // Adjusting budget based on account addition, deletion, or balance update
   budget.totalAvailable += balanceChange;
-  if (isNewAccount) {
-    // Only increase readyToAssign if it's a new account addition
-    budget.readyToAssign += balanceChange;
-  }
+  // Always adjust readyToAssign, as it reflects the total funds available for new assignments
+  budget.readyToAssign += balanceChange;
+  
   await budget.save();
 }
 
@@ -74,7 +73,7 @@ exports.deleteAccount = async (req, res) => {
 };
 
 
-// Updates an account by its ID
+// Updates an account by its ID and adjusts the budget accordingly
 exports.updateAccount = async (req, res) => {
   const { id } = req.params;
   const { balance } = req.body;
@@ -83,11 +82,13 @@ exports.updateAccount = async (req, res) => {
     const accountToUpdate = await Account.findById(id);
     if (!accountToUpdate) return handleAccountNotFound(res);
 
+    // Calculate the difference after finding the original account but before updating it
     const balanceDifference = balance - accountToUpdate.balance;
 
-    const updatedAccount = await Account.findByIdAndUpdate(id, req.body, { new: true });
-
-    // Update the budget after account update
+    // Proceed to update the account
+    const updatedAccount = await Account.findByIdAndUpdate(id, { balance }, { new: true });
+    
+    // Update the budget to reflect the new balance
     await updateUserBudget(req.user._id, balanceDifference);
 
     res.status(200).json(updatedAccount);
@@ -95,6 +96,7 @@ exports.updateAccount = async (req, res) => {
     res.status(400).json({ error: 'Failed to update account' });
   }
 };
+
 
 // Calculates and returns the total balance across all accounts of the logged-in user
 exports.getTotalBalance = async (req, res) => {
