@@ -8,21 +8,22 @@ const handleNoCategoryFound = (res) => res.status(404).json({ error: 'Category n
  * Creates a new category for the logged-in user.
  */
 exports.addCategory = async (req, res) => {
-  const { title, assignedAmount } = req.body; 
+  const { title } = req.body; // Only accept title for category creation
 
   try {
     const category = await Category.create({
       user: req.user._id,
       title,
-      assignedAmount,
-      available: assignedAmount, // Initialize 'available' with the 'assignedAmount' value
-      activity: 0 // Initialise 'activity' as 0 for a new category
+      assignedAmount: 0, 
+      available: 0, 
+      activity: 0,
     });
     res.status(201).json(category);
   } catch (err) {
     res.status(400).json({ error: 'Failed to create category' });
   }
 };
+
 
 /**
  * Retrieves all categories associated with the logged-in user.
