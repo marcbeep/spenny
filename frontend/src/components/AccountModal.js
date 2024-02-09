@@ -5,7 +5,7 @@ import backendURL from '../config';
 
 const AccountModal = ({ isOpen, closeModal, editingAccount }) => {
   // Define initialState using useMemo to prevent unnecessary re-renders
-  const initialState = useMemo(() => ({ name: '', balance: '', type: '' }), []);
+  const initialState = useMemo(() => ({ title: '', balance: '', type: '' }), []);
   const [formData, setFormData] = useState(editingAccount || initialState);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +31,7 @@ const AccountModal = ({ isOpen, closeModal, editingAccount }) => {
 
   const validateForm = () => {
     let errors = {};
-    if (!formData.name) errors.name = 'Name is required';
+    if (!formData.title) errors.title = 'Title is required';
     if (!/^\d+(\.\d{1,2})?$/.test(formData.balance)) errors.balance = 'Balance must be a valid number';
     else if (parseFloat(formData.balance) > 1000000) errors.balance = 'Balance must be less than or equal to £1,000,000.00';
     if (!formData.type) errors.type = 'Type is required';
@@ -100,7 +100,7 @@ const AccountModal = ({ isOpen, closeModal, editingAccount }) => {
     <div className='modal modal-open' aria-labelledby='modalTitle' aria-describedby='modalDescription'>
       <div className='modal-box'>
         <form onSubmit={handleSubmit} className='form-control'>
-          {['name', 'balance', 'type'].map((field) => (
+          {['title', 'balance', 'type'].map((field) => (
             <Field
               key={field}
               type={field === 'balance' ? 'number' : 'text'}

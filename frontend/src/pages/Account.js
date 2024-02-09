@@ -95,7 +95,7 @@ const Account = () => {
             className={`card rounded-xl cursor-pointer w-96 ${colors[index % colors.length]} lg:w-1/4 md:w-1/2 sm:w-full m-2 p-4`}
           >
             <div className="card-body">
-              <h2 className="card-title">{account.name}</h2>
+              <h2 className="card-title">{account.title}</h2>
               <p>Balance: £{account.balance}</p>
               <div className="badge badge-outline">{account.type}</div>
             </div>
