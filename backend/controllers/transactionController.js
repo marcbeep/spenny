@@ -1,5 +1,6 @@
 const Transaction = require('../models/transactionModel');
 const Category = require('../models/categoryModel');
+const Account = require('../models/accountModel');
 const mongoose = require('mongoose');
 
 // Utility function to handle "Transaction not found" responses
