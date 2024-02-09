@@ -149,4 +149,86 @@ exports.readyToAssign = async (req, res) => {
   }
 };
 
+/**
+ * Adds funds to a category from the budget's ready-to-assign pool.
+ */
+exports.addFundsToCategory = async (req, res) => {
+  const { categoryId, amount } = req.body;
+  const userId = req.user._id;
 
+  try {
+    const budget = await Budget.findOne({ user: userId });
+    const category = await Category.findById(categoryId);
+
+    if (!budget || !category) {
+      return res.status(404).json({ error: 'Budget or category not found.' });
+    }
+
+    // Directly modify the category's and budget's funds
+    category.assignedAmount += amount;
+    category.available += amount;
+    budget.readyToAssign -= amount;
+
+    await category.save();
+    await budget.save();
+
+    res.status(200).json({
+      message: `£${amount} added to '${category.title}'.`,
+      category: {
+        id: category._id,
+        title: category.title,
+        assignedAmount: category.assignedAmount,
+        available: category.available,
+      },
+      budget: {
+        readyToAssign: budget.readyToAssign,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+/**
+ * Moves funds from a category back to the budget's ready-to-assign pool.
+ */
+exports.removeFundsFromCategory = async (req, res) => {
+  const { categoryId, amount } = req.body;
+  const userId = req.user._id;
+
+  try {
+    const budget = await Budget.findOne({ user: userId });
+    const category = await Category.findById(categoryId);
+
+    if (!budget || !category) {
+      return res.status(404).json({ error: 'Budget or category not found.' });
+    }
+
+    if (category.available < amount) {
+      return res.status(400).json({ error: 'Insufficient funds in category.' });
+    }
+
+    // Adjust the category's funds and update the budget
+    category.assignedAmount -= amount;
+    category.available -= amount;
+    budget.readyToAssign += amount;
+
+    await category.save();
+    await budget.save();
+
+    res.status(200).json({
+      message: `£${amount} moved back to ready-to-assign from '${category.title}'.`,
+      category: {
+        id: category._id,
+        title: category.title,
+        assignedAmount: category.assignedAmount,
+        available: category.available,
+      },
+      budget: {
+        readyToAssign: budget.readyToAssign,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
