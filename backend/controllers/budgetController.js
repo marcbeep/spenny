@@ -136,7 +136,7 @@ exports.removeMoneyFromCategory = async (req, res) => {
 /**
 * Calculates and returns the total available funds for assignment to categories.
 **/ 
-exports.getAvailableFunds = async (req, res) => {
+exports.readyToAssign = async (req, res) => {
   const userId = req.user._id;
 
   try {
