@@ -2,15 +2,15 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;400;600;800&display=swap');
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Nunito', sans;
+  font-family: 'Inconsolata', sans;
   font-size: 2rem;
 }
 
 body, p, a, span, div {
-  font-family: 'Nunito', sans;
+  font-family: 'Inconsolata', sans;
   font-size: 1rem;
 }
 

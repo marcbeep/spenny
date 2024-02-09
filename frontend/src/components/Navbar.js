@@ -32,7 +32,7 @@ const Navbar = () => {
 
           <div className='flex-grow'>
             <Link to='/' className='text-3xl font-bold ml-4'>
-              Spenny 💸
+              spenny
             </Link>
           </div>
 
