@@ -105,7 +105,7 @@ const Category = () => {
             onClick={() => openModalForEdit(category)}
           >
             <div className="card-body text-black">
-              <h2 className="card-title">{category.name}</h2>
+              <h2 className="card-title">{category.title}</h2>
               <p>Available: £{category.available}</p>
             </div>
           </div>

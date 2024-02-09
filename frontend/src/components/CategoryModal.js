@@ -22,7 +22,7 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
   
     const validateForm = () => {
       const errors = {};
-      if (!formData.name) errors.name = 'Name is required';
+      if (!formData.title) errors.title = 'Title is required';
       setFormErrors(errors);
       return Object.keys(errors).length === 0;
     };
@@ -83,12 +83,9 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
       <div className='modal modal-open'>
         <div className='modal-box'>
           <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>✕</button>
-          <h3 className='font-bold text-lg'>{editingCategory ? 'Edit Category' : 'Add Category'}</h3>
+          <h3 className='font-bold text-lg mb-4'>{editingCategory ? 'Edit Category' : 'Add Category'}</h3>
           <form onSubmit={handleSubmit}>
-            <label className='label'>
-              <span className='label-text'>Name</span>
-            </label>
-            <input type='text' name='name' value={formData.name} onChange={handleInputChange} className='input input-bordered w-full mb-4' />
+            <input type='text' name='title' placeholder='Category Name' value={formData.title} onChange={handleInputChange} className='input input-bordered w-full mb-4' />
             
             <div className='modal-action'>
               <button type='submit' className='btn btn-primary'>
