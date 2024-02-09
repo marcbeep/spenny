@@ -12,6 +12,7 @@
 - [ ] Dynamically update category amounts as money is moved around.
 - [ ] Transactions should be linked to bank accounts and dynamically affect both accounts and categories.
 - [ ] Users can "reconcile" bank accounts.
+- [ ] When a user deletes a category, users must first reassign all transactions to another category.
 
 **Notes**
 

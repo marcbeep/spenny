@@ -19,6 +19,7 @@ const transactionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
       required: true,
+      default: null,
     },
     account: {
       type: mongoose.Schema.Types.ObjectId,
