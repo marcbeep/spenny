@@ -63,16 +63,41 @@
 
 ### Controllers
 
-1. **categoryController.js**: To manage CRUD operations for categories.
+**accountcontroller:**
 
-   - `addCategory`, `getCategories`, `updateCategory`, `deleteCategory`.
+- `addAccount`: Creates a new account associated with the logged-in user.
+- `getAccounts`: Retrieves all accounts associated with the logged-in user.
+- `deleteAccount`: Deletes the specified account belonging to the logged-in user.
+- `updateAccount`: Updates the details of the specified account belonging to the logged-in user.
+- `getTotalBalance`: Calculates and returns the total balance across all accounts associated with the logged-in user.
 
-2. **budgetController.js** (new): To handle assigning money to categories and calculating overspent amounts.
+**budgetcontroller:**
 
-   - `assignToCategory` (move money to a category), `updateAssignment` (change the assigned money).
+- `assignMoneyToCategory`: Assigns a specified amount of money to a category, ensuring it does not exceed the total available funds.
+- `moveMoneyBetweenCategories`: Moves a specified amount of money from one category to another, ensuring sufficient funds in the source category.
+- `removeMoneyFromCategory`: Removes a specified amount of money from a category, ensuring sufficient available funds.
+- `getAvailableFunds`: Calculates and returns the total available funds for assignment to categories.
 
-3. **transactionController.js**: Modify to handle transactions that are assigned to categories.
-   - Ensure transactions update the `activity` and `available` fields in the related `CategoryModel`.
+**categorycontroller:**
+
+- `addCategory`: Creates a new category associated with the logged-in user.
+- `getCategories`: Retrieves all categories associated with the logged-in user.
+- `getSingleCategory`: Retrieves the details of a single category specified by its ID.
+- `deleteCategory`: Deletes the specified category belonging to the logged-in user.
+- `updateCategory`: Updates the details of the specified category belonging to the logged-in user.
+
+**transactioncontroller:**
+
+- `getAllTransactions`: Retrieves all transactions associated with the logged-in user.
+- `getSingleTransaction`: Retrieves the details of a single transaction specified by its ID.
+- `createTransaction`: Creates a new transaction associated with the logged-in user and updates the available funds in the associated category.
+- `deleteSingleTransaction`: Deletes the specified transaction belonging to the logged-in user and updates the available funds in the associated category.
+- `updateSingleTransaction`: Updates the details of the specified transaction belonging to the logged-in user and adjusts the available funds in the associated categories.
+
+**usercontroller:**
+
+- `loginUser`: Authenticates the user with the provided email and password, returning a JWT token upon successful login.
+- `signupUser`: Registers a new user with the provided email and password, returning a JWT token upon successful signup and creates generic categories for the user.
 
 ### Routes
 
