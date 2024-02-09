@@ -9,6 +9,6 @@ router.post('/', addAccount);
 router.get('/', getAccounts);
 router.delete('/:id', deleteAccount);
 router.patch('/:id', updateAccount);
-router.get('/totalBalance', requireAuth, getTotalBalance);
+router.get('/totalBalance', getTotalBalance);
 
 module.exports = router;
