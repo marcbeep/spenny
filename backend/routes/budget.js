@@ -9,14 +9,12 @@ const {
 
 const router = express.Router();
 
-// Apply authentication middleware to all routes
 router.use(requireAuth);
 
-// Routes for managing the budget
-router.post('/move', moveMoneyBetweenCategories); // Moving money between categories
-router.post('/assign', assignMoneyToCategory); // Assigning money to a category
-router.post('/remove', removeMoneyFromCategory); // Removing money from a category
-router.get('/available-funds', getAvailableFunds); // Get available funds
+router.post('/move', moveMoneyBetweenCategories); 
+router.post('/assign', assignMoneyToCategory); 
+router.post('/remove', removeMoneyFromCategory); 
+router.get('/available-funds', getAvailableFunds); 
 
 module.exports = router;
 
