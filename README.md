@@ -44,7 +44,7 @@
 
 - `user`: Represents the user associated with the category.
 - `name`: Name of the category (e.g., groceries, utilities).
-- `budgetedAmount`: Amount budgeted for the category.
+- `assignedAmount`: Amount budgeted for the category.
 - `available`: Amount currently available in the category for spending.
 - `activity`: Total amount of transactions associated with the category.
 

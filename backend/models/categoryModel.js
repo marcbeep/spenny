@@ -6,11 +6,11 @@ const categorySchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  name: {
+  title: {
     type: String,
     required: true,
   },
-  budgetedAmount: {
+  assignedAmount: {
     type: Number,
     default: 0,
     required: true,
