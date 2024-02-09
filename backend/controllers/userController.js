@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const Category = require('../models/categoryModel');
+const Budget = require('../models/budgetModel');
 const jwt = require('jsonwebtoken');
 
 /**
@@ -9,6 +10,23 @@ const jwt = require('jsonwebtoken');
  */
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
+};
+
+/**
+ * Creates an initial budget for a new user.
+ * @param {string} userId - The user's database ID.
+ */
+const createInitialBudgetForUser = async (userId) => {
+  try {
+    await Budget.create({
+      user: userId,
+      totalAvailable: 0, // Initial setup, adjust as necessary
+      totalAssigned: 0,
+      readyToAssign: 0,
+    });
+  } catch (err) {
+    console.error("Error creating initial budget for user:", err);
+  }
 };
 
 /**
@@ -59,9 +77,16 @@ exports.signupUser = async (req, res) => {
   try {
     const user = await User.signup(email, password);
     const token = createToken(user._id);
+
+    // Create generic categories for the new user
     await createGenericCategoriesForUser(user._id);
+
+    // Create an initial budget for the new user
+    await createInitialBudgetForUser(user._id);
+
     res.status(201).json({ email: user.email, token });
   } catch (err) {
     res.status(400).json({ error: 'Signup failed' });
   }
 };
+
