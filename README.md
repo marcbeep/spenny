@@ -29,7 +29,7 @@
 **accountModel:**
 
 - `user`: Represents the user associated with the account.
-- `name`: Name of the account.
+- `title`: Title of the account.
 - `type`: Type of the account (e.g., checking, savings, credit card).
 - `balance`: Current balance of the account.
 
@@ -43,7 +43,7 @@
 **categoryModel:**
 
 - `user`: Represents the user associated with the category.
-- `name`: Name of the category (e.g., groceries, utilities).
+- `title`: Title of the category (e.g., groceries, utilities).
 - `assignedAmount`: Amount budgeted for the category.
 - `available`: Amount currently available in the category for spending.
 - `activity`: Total amount of transactions associated with the category.
