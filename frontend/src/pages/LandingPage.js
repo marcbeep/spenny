@@ -5,12 +5,9 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto flex flex-col items-center justify-center text-center">
-        <h1 className="text-5xl font-bold mt-0 mb-4">
-          Spenny
-        </h1>
-        <h2 className="text-2xl mb-8 font-bold max-w-lg">
+        <h1 className="text-4xl mb-8 font-bold max-w-lg">
           An ultra-simple money management tool to get your financial act together.
-        </h2>
+        </h1>
         <img
           src="https://images.pexels.com/photos/6207714/pexels-photo-6207714.jpeg" 
           alt="Finance Management"

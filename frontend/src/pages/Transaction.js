@@ -5,6 +5,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext'; 
 import { useCategoryContext } from '../context/CategoryContext';
+import { useAccountContext } from '../context/AccountContext';
 import TransactionModal from '../components/TransactionModal';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
@@ -14,7 +15,9 @@ const Transaction = () => {
   const { user } = useAuthContext();
   const { transactions, dispatch } = useTransactionContext();
   const { categories } = useCategoryContext();
+  const { accounts } = useAccountContext();
   const { dispatch: categoryDispatch } = useCategoryContext();
+  const { dispatch: accountDispatch } = useAccountContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,7 +56,23 @@ const Transaction = () => {
   
     fetchCategories();
   }, [user, categoryDispatch]); 
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      if (user) {
+        const response = await fetch(`${backendURL}/account`, {
+          headers: { 'Authorization': `Bearer ${user.token}` },
+        });
+        const json = await response.json();
   
+        if (response.ok) {
+          accountDispatch({ type: 'SET_ACCOUNTS', payload: json }); 
+        }
+      }
+    };
+  
+    fetchAccounts();
+  }, [user, accountDispatch]); 
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -75,9 +94,11 @@ const Transaction = () => {
 
   const transactionData = currentTransactions.map(transaction => {
     const category = categories.find(c => c._id === transaction.category);
+    const account = accounts.find(a => a._id === transaction.account);
     return {
       ...transaction,
-      categoryName: category ? category.name : 'No Category', // Replace 'category' with 'categoryName' which has the actual category name
+      categoryName: category ? category.title : 'No Category', 
+      accountName: account ? account.title : 'No Account',
     };
   });
 

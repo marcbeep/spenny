@@ -2,33 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext';
 import { useCategoryContext } from '../context/CategoryContext';
+import { useAccountContext } from '../context/AccountContext'; 
 import backendURL from '../config';
 
 const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
-  const initialState = { title: '', amount: '', category: '' };
+  const initialState = { title: '', amount: '', category: '', account: '' };
   const [formData, setFormData] = useState(initialState);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuthContext();
-  const { dispatch } = useTransactionContext();
+  const { dispatch: transactionDispatch } = useTransactionContext();
   const { categories } = useCategoryContext();
+  const { accounts } = useAccountContext(); // Use accounts from AccountContext
 
   useEffect(() => {
     if (isOpen) {
-      setFormData(editingTransaction || { title: '', amount: '', category: '' });
+      setFormData(editingTransaction || initialState);
     }
   }, [editingTransaction, isOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(formData => ({ ...formData, [name]: value }));
+    setFormData({ ...formData, [name]: value });
   };
 
   const validateForm = () => {
     const errors = {};
     if (!formData.title) errors.title = 'Title is required';
-    if (!formData.amount || isNaN(formData.amount)) errors.amount = 'Amount must be a valid number';
+    if (!formData.amount || isNaN(formData.amount) || formData.amount <= 0) errors.amount = 'Amount must be a valid number and greater than 0';
     if (!formData.category) errors.category = 'Category is required';
+    if (!formData.account) errors.account = 'Account is required';
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -55,7 +58,7 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
 
       if (response.ok) {
         const data = await response.json();
-        dispatch({ type: editingTransaction ? 'UPDATE_TRANSACTION' : 'ADD_TRANSACTION', payload: data });
+        transactionDispatch({ type: editingTransaction ? 'UPDATE_TRANSACTION' : 'ADD_TRANSACTION', payload: data });
         closeModal();
       } else {
         const error = await response.json();
@@ -80,7 +83,7 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
       });
 
       if (response.ok) {
-        dispatch({ type: 'DELETE_TRANSACTION', payload: editingTransaction._id });
+        transactionDispatch({ type: 'DELETE_TRANSACTION', payload: editingTransaction._id });
         closeModal();
       } else {
         console.error('Failed to delete the transaction');
@@ -91,7 +94,7 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
       setIsSubmitting(false);
     }
   };
-
+  
   if (!isOpen) return null;
 
   return (
@@ -100,22 +103,31 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
         <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-4 top-4' aria-label="Close">✕</button>
         <h3 className='text-lg font-bold mb-4'>{editingTransaction ? 'Edit Transaction' : 'Add Transaction'}</h3>
         <form onSubmit={handleSubmit}>
-          <div className='form-control mb-4'>
+          <div className='form-control my-4'>
             <input type='text' id='title' name='title' placeholder='Transaction Title' className='input input-bordered w-full' value={formData.title} onChange={handleInputChange} />
             {formErrors.title && <span className='text-error text-sm'>{formErrors.title}</span>}
           </div>
-          <div className='form-control mb-4'>
+          <div className='form-control my-4'>
             <input type='number' id='amount' name='amount' placeholder='Amount' className='input input-bordered w-full' value={formData.amount} onChange={handleInputChange} />
             {formErrors.amount && <span className='text-error text-sm'>{formErrors.amount}</span>}
           </div>
-          <div className='form-control'>
+          <div className='form-control my-4'>
             <select id='category' name='category' className='select select-bordered w-full' value={formData.category} onChange={handleInputChange}>
               <option value=''>Select Category</option>
               {categories.map((category) => (
-                <option key={category._id} value={category._id}>{category.name}</option>
+                <option key={category._id} value={category._id}>{category.title}</option>
               ))}
             </select>
             {formErrors.category && <span className='text-error text-sm'>{formErrors.category}</span>}
+          </div>
+          <div className='form-control my-4'>
+          <select id='account' name='account' className='select select-bordered w-full' value={formData.account || ''} onChange={handleInputChange}>
+          <option value=''>Select Account</option>
+          {accounts.map((account) => (
+          <option key={account._id} value={account._id}>{account.title}</option>
+          ))}
+          </select>
+          {formErrors.account && <span className='text-error text-sm'>{formErrors.account}</span>}
           </div>
           <div className='modal-action'>
             {editingTransaction && (
@@ -134,4 +146,3 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
 };
 
 export default TransactionModal;
-

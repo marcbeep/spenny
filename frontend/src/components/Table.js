@@ -23,6 +23,7 @@ const Table = ({ data, onRowClick }) => {
               <th>ITEM</th>
               <th>AMOUNT</th>
               <th>CATEGORY</th>
+              <th>ACCOUNT</th>
             </tr>
           </thead>
           <tbody>
@@ -38,6 +39,7 @@ const Table = ({ data, onRowClick }) => {
                 <td>{item.title}</td>
                 <td>£{item.amount.toFixed(2)}</td>
                 <td>{item.categoryName || 'No Category'}</td>
+                <td>{item.accountName || 'No Account'}</td>
               </motion.tr>
             ))}
           </tbody>
