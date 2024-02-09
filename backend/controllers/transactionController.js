@@ -74,19 +74,26 @@ exports.deleteSingleTransaction = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) return handleNoTransactionFound(res);
 
   try {
-    const transaction = await Transaction.findByIdAndRemove(id);
+    const transaction = await Transaction.findByIdAndDelete(id);
     if (!transaction) return handleNoTransactionFound(res);
 
-    // Reverse the transaction's effects on the category
-    await Category.findByIdAndUpdate(transaction.category, { $inc: { activity: -transaction.amount, available: transaction.amount } });
-    
-    // Reverse the transaction's effects on the account balance
-    const account = await Account.findById(transaction.account);
-    account.balance += transaction.amount; // Assuming all transactions are expenses for simplicity
-    await account.save();
+    try {
+      await Category.findByIdAndUpdate(transaction.category, { $inc: { activity: -transaction.amount, available: transaction.amount } });
+    } catch (err) {
+      console.error('Failed to update category:', err);
+    }
+
+    try {
+      const account = await Account.findById(transaction.account);
+      account.balance += transaction.amount;
+      await account.save();
+    } catch (err) {
+      console.error('Failed to update account:', err);
+    }
 
     res.status(200).json({ message: 'Transaction successfully deleted' });
   } catch (err) {
+    console.error('Failed to delete transaction:', err);
     return handleNoTransactionFound(res);
   }
 };
