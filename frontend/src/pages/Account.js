@@ -4,59 +4,55 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useAccountContext } from '../context/AccountContext';
+import { useBudgetContext } from '../context/BudgetContext'; // Import BudgetContext
 import AccountModal from '../components/AccountModal';
 import backendURL from '../config';
 
 const Account = () => {
   const { user } = useAuthContext();
   const { accounts, dispatch: dispatchAccount } = useAccountContext();
+  const { readyToAssign, fetchReadyToAssign } = useBudgetContext(); // Use readyToAssign and fetch function
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState(null);
   const colors = ['bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 'bg-purple-400'];
   const [totalBalance, setTotalBalance] = useState(0);
 
+  // Fetch accounts and total balance
   useEffect(() => {
-    const fetchAccounts = async () => {
+    const fetchData = async () => {
       if (!user) return;
       setIsLoading(true);
       try {
-        const response = await fetch(`${backendURL}/account`, {
+        // Fetch accounts
+        const accountsResp = await fetch(`${backendURL}/account`, {
           headers: { 'Authorization': `Bearer ${user.token}` },
         });
-        const json = await response.json();
-        if (response.ok) {
-          dispatchAccount({ type: 'SET_ACCOUNTS', payload: json });
-        } else {
-          console.error('Failed to fetch accounts:', json.error);
+        const accountsData = await accountsResp.json();
+        if (accountsResp.ok) {
+          dispatchAccount({ type: 'SET_ACCOUNTS', payload: accountsData });
         }
+
+        // Fetch total balance and ready to assign in parallel
+        const totalBalanceResp = await fetch(`${backendURL}/account/totalBalance`, {
+          headers: { 'Authorization': `Bearer ${user.token}` },
+        });
+        const totalBalanceData = await totalBalanceResp.json();
+        if (totalBalanceResp.ok) {
+          setTotalBalance(totalBalanceData.totalBalance);
+        }
+
+        // This will update readyToAssign value
+        await fetchReadyToAssign();
       } catch (error) {
-        console.error('Error fetching accounts:', error);
+        console.error('Error:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    const fetchTotalBalance = async () => {
-      if (!user) return;
-      try {
-        const response = await fetch(`${backendURL}/account/totalBalance`, {
-          headers: { 'Authorization': `Bearer ${user.token}` },
-        });
-        const json = await response.json();
-        if (response.ok) {
-          setTotalBalance(json.totalBalance);
-        } else {
-          console.error('Failed to fetch total balance:', json.error);
-        }
-      } catch (error) {
-        console.error('Error fetching total balance:', error);
-      }
-    };
-
-    fetchAccounts();
-    fetchTotalBalance();
-  }, [user, accounts.length, dispatchAccount]);
+    fetchData();
+  }, [user, dispatchAccount]);
 
   const openModalForNewAccount = () => {
     setEditingAccount(null);
@@ -64,17 +60,18 @@ const Account = () => {
   };
 
   const openModalForEdit = (account) => {
-    console.log(account); // This should include an 'id'
     setEditingAccount(account);
     setIsModalOpen(true);
   };
-  
 
   if (isLoading) return <div>Loading accounts...</div>;
 
   return (
     <>
-      <div className="flex justify-center">Total Balance: £{totalBalance}</div>
+      <div className="flex justify-around">
+        <div>Total Balance: £{totalBalance}</div>
+        <div>Ready to Assign: £{readyToAssign}</div>
+      </div>
       <div className="flex justify-center my-4">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <button className='btn btn-primary' onClick={openModalForNewAccount}>
@@ -86,6 +83,7 @@ const Account = () => {
         isOpen={isModalOpen} 
         closeModal={() => setIsModalOpen(false)} 
         editingAccount={editingAccount}
+        fetchReadyToAssign={fetchReadyToAssign} // Pass fetchReadyToAssign down to modal
       />
       <div className="flex flex-wrap justify-center gap-4 p-4 text-base-100">
         {accounts.length > 0 ? accounts.map((account, index) => (

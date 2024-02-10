@@ -53,7 +53,7 @@ export const BudgetContextProvider = ({ children }) => {
   }, [user]); // Depend on user to re-fetch when the user logs in/out
 
   return (
-    <BudgetContext.Provider value={{ ...state, dispatch }}>
+    <BudgetContext.Provider value={{ ...state, dispatch, fetchReadyToAssign}}>
       {children}
     </BudgetContext.Provider>
   );
