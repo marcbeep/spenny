@@ -8,6 +8,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import Category from './pages/Category';
+import Budget from './pages/Budget';
 
 // components
 import Navbar from './components/Navbar';
@@ -28,6 +29,7 @@ function App() {
         <div className='px-16 py-12 bg-base'>
           <Routes>
             <Route path='/' element={!user ? <LandingPage /> : <Navigate to="/transaction" />} />
+            <Route path='/budget' element={user ? <Budget /> : <Navigate to="/" />} />
             <Route path='/transaction' element={user ? <Transaction /> : <Navigate to="/" />} />
             <Route path='/account' element={user ? <Account /> : <Navigate to="/" />} />
             <Route path='/category' element={user ? <Category /> : <Navigate to="/" />} />

@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { AuthContext } from './AuthContext'; // Adjust the import path as necessary
+// TODO: set budget, add funds to category, move funds between categories, remove funds from category 
 
-const initialState = {
-  readyToAssign: 0,
-};
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import backendURL from '../config';
+import { useAuthContext } from '../hooks/useAuthContext'; 
 
 export const BudgetContext = createContext();
 
+// Define the actions and the reducer function
 const budgetReducer = (state, action) => {
   switch (action.type) {
     case 'SET_READY_TO_ASSIGN':
@@ -19,35 +19,38 @@ const budgetReducer = (state, action) => {
   }
 };
 
+// Define the BudgetContextProvider
 export const BudgetContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(budgetReducer, initialState);
-  const { user } = useContext(AuthContext); // Use AuthContext to get the current user
+  const [state, dispatch] = useReducer(budgetReducer, { readyToAssign: 0 });
+  const { user } = useAuthContext(); // Use AuthContext to access the user and token
 
-  // Function to fetch "ready to assign" funds from the backend
+  // Function to fetch "Ready to Assign" amount
   const fetchReadyToAssign = async () => {
-    if (!user) return; // Ensure there's a user and token available
-    try {
-      const response = await fetch('/budget/readyToAssign', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`, // Use the token from AuthContext
-        },
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch ready to assign funds');
+    if (user && user.token) {
+      try {
+        const response = await fetch(`${backendURL}/budget/readyToAssign`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+          },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          dispatch({ type: 'SET_READY_TO_ASSIGN', payload: data.readyToAssign });
+        } else {
+          console.error('Failed to fetch ready to assign amount');
+        }
+      } catch (error) {
+        console.error('Error fetching ready to assign amount:', error);
       }
-      const data = await response.json();
-      dispatch({ type: 'SET_READY_TO_ASSIGN', payload: data.readyToAssign });
-      console.log(`${data.readyToAssign} ready to assign funds fetched`);
-    } catch (error) {
-      console.error('Error fetching ready to assign funds:', error);
     }
   };
 
+  // Use useEffect to fetch the "Ready to Assign" amount when the component mounts
+  // and when the user changes (logs in/out)
   useEffect(() => {
     fetchReadyToAssign();
-  }, [user]); // Rerun when the user changes
+  }, [user]); // Depend on user to re-fetch when the user logs in/out
 
   return (
     <BudgetContext.Provider value={{ ...state, dispatch }}>
@@ -56,6 +59,7 @@ export const BudgetContextProvider = ({ children }) => {
   );
 };
 
+// Define a hook for easy context consumption
 export const useBudgetContext = () => {
   const context = useContext(BudgetContext);
   if (context === undefined) {
