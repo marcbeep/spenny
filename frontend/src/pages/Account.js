@@ -10,50 +10,56 @@ import backendURL from '../config';
 
 const Account = () => {
   const { user } = useAuthContext();
-  const { accounts, dispatch: dispatchAccount } = useAccountContext();
-  const { readyToAssign, fetchReadyToAssign } = useBudgetContext(); // Use readyToAssign and fetch function
+  const { accounts, totalBalance, fetchTotalBalance } = useAccountContext();
+  const { readyToAssign, fetchReadyToAssign } = useBudgetContext();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState(null);
   const colors = ['bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 'bg-purple-400'];
-  const [totalBalance, setTotalBalance] = useState(0);
+  // const [totalBalance, setTotalBalance] = useState(0);
 
-  // Fetch accounts and total balance
+  // // Fetch accounts and total balance
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (!user) return;
+  //     setIsLoading(true);
+  //     try {
+  //       // Fetch accounts
+  //       const accountsResp = await fetch(`${backendURL}/account`, {
+  //         headers: { 'Authorization': `Bearer ${user.token}` },
+  //       });
+  //       const accountsData = await accountsResp.json();
+  //       if (accountsResp.ok) {
+  //         dispatchAccount({ type: 'SET_ACCOUNTS', payload: accountsData });
+  //       }
+
+  //       // Fetch total balance and ready to assign in parallel
+  //       const totalBalanceResp = await fetch(`${backendURL}/account/totalBalance`, {
+  //         headers: { 'Authorization': `Bearer ${user.token}` },
+  //       });
+  //       const totalBalanceData = await totalBalanceResp.json();
+  //       if (totalBalanceResp.ok) {
+  //         setTotalBalance(totalBalanceData.totalBalance);
+  //       }
+
+  //       // This will update readyToAssign value
+  //       await fetchReadyToAssign();
+  //     } catch (error) {
+  //       console.error('Error:', error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [user, dispatchAccount]);
+  
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-      setIsLoading(true);
-      try {
-        // Fetch accounts
-        const accountsResp = await fetch(`${backendURL}/account`, {
-          headers: { 'Authorization': `Bearer ${user.token}` },
-        });
-        const accountsData = await accountsResp.json();
-        if (accountsResp.ok) {
-          dispatchAccount({ type: 'SET_ACCOUNTS', payload: accountsData });
-        }
-
-        // Fetch total balance and ready to assign in parallel
-        const totalBalanceResp = await fetch(`${backendURL}/account/totalBalance`, {
-          headers: { 'Authorization': `Bearer ${user.token}` },
-        });
-        const totalBalanceData = await totalBalanceResp.json();
-        if (totalBalanceResp.ok) {
-          setTotalBalance(totalBalanceData.totalBalance);
-        }
-
-        // This will update readyToAssign value
-        await fetchReadyToAssign();
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user, dispatchAccount]);
-
+    if (user) {
+      fetchReadyToAssign(); // Ensures "Ready to Assign" updates are fetched
+      fetchTotalBalance(); // Ensures "Total Balance" updates are fetched
+    }
+  }, [user, fetchReadyToAssign, fetchTotalBalance]);
   const openModalForNewAccount = () => {
     setEditingAccount(null);
     setIsModalOpen(true);
