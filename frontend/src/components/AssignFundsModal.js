@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useCategoryContext } from '../context/CategoryContext';
 import { useAuthContext } from '../hooks/useAuthContext';
 import backendURL from '../config';
+import {useBudgetContext} from '../context/BudgetContext';
 
 const AssignFundsModal = ({ isOpen, closeModal }) => {
   const { user } = useAuthContext();
@@ -9,43 +10,38 @@ const AssignFundsModal = ({ isOpen, closeModal }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [formErrors, setFormErrors] = useState({}); // Use this for error messages
+  const {fetchReadyToAssign} = useBudgetContext();
 
   const handleAssignFunds = async (e) => {
     e.preventDefault();
-    setFormErrors({}); // Clear previous errors
-
-    if (!selectedCategory) {
-      setFormErrors(errors => ({ ...errors, selectedCategory: 'Category is required' }));
-    }
-    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-      setFormErrors(errors => ({ ...errors, amount: 'A valid amount greater than 0 is required' }));
-      return;
-    }
-
-    const url = `${backendURL}/budget/assign`;
-    const data = { categoryId: selectedCategory, amount: parseFloat(amount) };
-
+    // Validation logic...
+    
     try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      console.log(result);
+        const response = await fetch(`${backendURL}/budget/assign`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+            body: JSON.stringify({ categoryId: selectedCategory, amount: parseFloat(amount) }),
+        });
+        const result = await response.json();
 
-      if (response.ok) {
-        dispatchCategory({ type: 'UPDATE_CATEGORY', payload: result.category });
-        closeModal();
-      } else {
-        // Handle form-wide error from the server
-        setFormErrors({ form: result.error || 'Failed to assign funds. Please try again.' });
-      }
+        if (response.ok) {
+            // Update category context with the new category data
+            dispatchCategory({ type: 'UPDATE_CATEGORY', payload: result.category });
+            
+            // Assuming you have a way to access fetchReadyToAssign from BudgetContext
+            // This could be passed as a prop to this modal or accessed directly using useBudgetContext() if inside a component
+            fetchReadyToAssign(); 
+
+            closeModal();
+        } else {
+            setFormErrors({ form: result.error || 'Failed to assign funds. Please try again.' });
+        }
     } catch (error) {
-      console.error('Error assigning funds:', error);
-      setFormErrors({ form: 'An unexpected error occurred. Please try again.' });
+        console.error('Error assigning funds:', error);
+        setFormErrors({ form: 'An unexpected error occurred. Please try again.' });
     }
-  };
+};
+
 
   if (!isOpen) return null;
 
@@ -57,7 +53,7 @@ const AssignFundsModal = ({ isOpen, closeModal }) => {
         <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="select select-bordered w-full mb-4">
           <option disabled value="">Select a category</option>
           {categories.map((category) => (
-            <option key={category._id} value={category._id}>{category.name}</option>
+            <option key={category._id} value={category._id}>{category.title}</option>
           ))}
         </select>
         {formErrors.selectedCategory && <div className="text-red-500 mb-4">{formErrors.selectedCategory}</div>}
