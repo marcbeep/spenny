@@ -43,13 +43,20 @@ const AccountModal = ({ isOpen, closeModal, editingAccount }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+
+    // Convert balance to a float before submitting
+    const submitData = {
+        ...formData,
+        balance: parseFloat(formData.balance),
+    };
+
     setIsSubmitting(true);
 
     try {
       const response = await fetch(url, {
         method: isEditing ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData), // Use submitData with the converted balance
       });
 
       if (response.ok) {
@@ -67,7 +74,8 @@ const AccountModal = ({ isOpen, closeModal, editingAccount }) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+};
+
 
   const handleDelete = async () => {
     if (!editingAccount?._id) return;

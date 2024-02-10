@@ -13,12 +13,10 @@ const router = express.Router();
 
 router.use(requireAuth);
 
-router.post('/move', moveMoneyBetweenCategories); 
 router.post('/assign', assignMoneyToCategory); 
+router.post('/move', moveMoneyBetweenCategories); 
 router.post('/remove', removeMoneyFromCategory); 
 router.get('/readyToAssign', readyToAssign); 
-router.post('/addFunds', addFundsToCategory);
-router.post('/removeFunds', removeFundsFromCategory);
 
 module.exports = router;
 
