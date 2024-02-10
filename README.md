@@ -1,8 +1,7 @@
 **To Do**
 
-- [ ] Show "ready to assign" with correct amount.
+- [x] Show "ready to assign" with correct amount.
 - [ ] Create a "move money" modal.
-- [ ] Implement "move money".
 - [ ] Dynamically update category amounts as money is moved around.
 - [ ] Users can "reconcile" bank accounts.
 - [ ] When a user deletes a category, users must first reassign all transactions to another category.
