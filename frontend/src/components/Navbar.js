@@ -63,11 +63,6 @@ const Navbar = () => {
               Categories
             </Link>
           </li>
-          <li>
-            <Link to='/budget' className={`p-2 ${isActive('/budget')}`} onClick={closeDrawer}>
-              Budget
-            </Link>
-          </li>
         </ul>
       </div>
     </div>
