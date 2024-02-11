@@ -9,7 +9,7 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
   const { categories } = useCategoryContext();
   const { fetchReadyToAssign } = useBudgetContext();
 
-  const [fromCategory, setFromCategory] = useState(category ? category._id : '');
+  const [fromCategory, setFromCategory] = useState('');
   const [toCategory, setToCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
@@ -17,6 +17,9 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
   useEffect(() => {
     if (category) {
       setFromCategory(category._id);
+      setAmount(category.available.toString()); 
+    } else {
+      resetForm(); // Reset form if no category is selected
     }
   }, [category]);
 
@@ -41,11 +44,10 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
       });
 
       if (response.ok) {
-        // Assuming the server returns a successful operation in the response body
         refreshCategories();
         fetchReadyToAssign();
+        resetForm();
         closeModal();
-        resetForm(); // Clear form values
       } else {
         const result = await response.json();
         setError(result.message || 'An error occurred');
@@ -55,7 +57,6 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
     }
   };
 
-  // Clear form values
   const resetForm = () => {
     setFromCategory('');
     setToCategory('');
@@ -63,7 +64,6 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
     setError('');
   };
 
-  // Close modal and reset form
   const handleClose = () => {
     closeModal();
     resetForm();
@@ -90,8 +90,7 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
           <option value="readyToAssign">Ready to Assign</option>
         </select>
         <input type="number" placeholder="Amount" className="input input-bordered w-full mb-2" value={amount} onChange={(e) => setAmount(e.target.value)} />
-        {error && <p className="text-red-500">{error}</p>}
-        <div className="modal-action">
+        {error && <p className="text-red-500">{error}</p>}        <div className="modal-action">
           <button className="btn btn-primary" onClick={handleMoveFunds}>Move</button>
         </div>
       </div>
