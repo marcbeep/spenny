@@ -4,7 +4,7 @@ import { useBudgetContext } from '../context/BudgetContext';
 import { useCategoryContext } from '../context/CategoryContext';
 import backendURL from '../config';
 
-const MoveFundsModal = ({ isOpen, closeModal }) => {
+const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => {
   const { user } = useAuthContext();
   const { categories, dispatch: categoryDispatch } = useCategoryContext();
   const { fetchReadyToAssign } = useBudgetContext();
@@ -19,32 +19,43 @@ const MoveFundsModal = ({ isOpen, closeModal }) => {
       setError('Please enter a valid amount');
       return;
     }
+  
     const url = `${backendURL}/budget/move`;
     const data = {
       fromCategoryId: fromCategory,
       toCategoryId: toCategory === 'readyToAssign' ? null : toCategory,
       amount: parseFloat(amount)
     };
-
+  
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
         body: JSON.stringify(data),
       });
+  
+      // Log the response for debugging
+      console.log('Response:', response);
+  
       if (response.ok) {
-        // Trigger updates in CategoryContext and BudgetContext
-        categoryDispatch({ type: 'UPDATE_CATEGORY_FUNDS', payload: { fromCategory, toCategory, amount } });
-        fetchReadyToAssign();
+        const result = await response.json(); // Make sure to await the parsing of the response body
+        console.log('Success:', result);
+        
+        // Assuming the server returns a successful operation in the response body
+        refreshCategories();
+        fetchReadyToAssign(); // Make sure you're updating the "Ready to Assign" value if needed
         closeModal();
       } else {
-        const result = await response.json();
+        const result = await response.json(); // Make sure to await the parsing of the response body
+        console.error('Error occurred:', result);
         setError(result.message || 'An error occurred');
       }
     } catch (err) {
+      console.error('Fetch error:', err);
       setError('Failed to move funds');
     }
   };
+  
 
   if (!isOpen) return null;
 
@@ -74,3 +85,5 @@ const MoveFundsModal = ({ isOpen, closeModal }) => {
     </div>
   );
 };
+
+export default MoveFundsModal;

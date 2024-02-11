@@ -5,7 +5,7 @@ import App from './App';
 import { AuthContextProvider } from './context/AuthContext';
 import { TransactionContextProvider } from './context/TransactionContext';
 import { AccountContextProvider } from './context/AccountContext';
-import { CategoryContextProvider } from './context/CategoryContext'; 
+import { CategoryContextProvider } from './context/CategoryContext'; // Make sure this import is correct
 import { BudgetContextProvider } from './context/BudgetContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -15,7 +15,7 @@ root.render(
       <BudgetContextProvider>
         <AccountContextProvider>
           <TransactionContextProvider>
-           <CategoryContextProvider> 
+          <CategoryContextProvider>
             <App />
           </CategoryContextProvider>
         </TransactionContextProvider>
