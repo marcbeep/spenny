@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useBudgetContext } from '../context/BudgetContext';
 import { useCategoryContext } from '../context/CategoryContext';
@@ -6,62 +6,75 @@ import backendURL from '../config';
 
 const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => {
   const { user } = useAuthContext();
-  const { categories, dispatch: categoryDispatch } = useCategoryContext();
+  const { categories } = useCategoryContext();
   const { fetchReadyToAssign } = useBudgetContext();
-  
-  const [fromCategory, setFromCategory] = useState('');
+
+  const [fromCategory, setFromCategory] = useState(category ? category._id : '');
   const [toCategory, setToCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (category) {
+      setFromCategory(category._id);
+    }
+  }, [category]);
 
   const handleMoveFunds = async () => {
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
       setError('Please enter a valid amount');
       return;
     }
-  
+
     const url = `${backendURL}/budget/move`;
     const data = {
       fromCategoryId: fromCategory,
       toCategoryId: toCategory === 'readyToAssign' ? null : toCategory,
-      amount: parseFloat(amount)
+      amount: parseFloat(amount),
     };
-  
+
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
         body: JSON.stringify(data),
       });
-  
-      // Log the response for debugging
-      console.log('Response:', response);
-  
+
       if (response.ok) {
-        const result = await response.json(); // Make sure to await the parsing of the response body
-        console.log('Success:', result);
-        
         // Assuming the server returns a successful operation in the response body
         refreshCategories();
-        fetchReadyToAssign(); // Make sure you're updating the "Ready to Assign" value if needed
+        fetchReadyToAssign();
         closeModal();
+        resetForm(); // Clear form values
       } else {
-        const result = await response.json(); // Make sure to await the parsing of the response body
-        console.error('Error occurred:', result);
+        const result = await response.json();
         setError(result.message || 'An error occurred');
       }
     } catch (err) {
-      console.error('Fetch error:', err);
       setError('Failed to move funds');
     }
   };
-  
+
+  // Clear form values
+  const resetForm = () => {
+    setFromCategory('');
+    setToCategory('');
+    setAmount('');
+    setError('');
+  };
+
+  // Close modal and reset form
+  const handleClose = () => {
+    closeModal();
+    resetForm();
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="modal modal-open">
       <div className="modal-box">
+        <button onClick={handleClose} className="btn btn-sm btn-circle absolute right-2 top-2">✕</button>
         <h3 className="font-bold text-lg">Move Funds</h3>
         <select value={fromCategory} onChange={(e) => setFromCategory(e.target.value)} className="select select-bordered w-full mb-2">
           <option value="">Select source category</option>
@@ -87,3 +100,4 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
 };
 
 export default MoveFundsModal;
+
