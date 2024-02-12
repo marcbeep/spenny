@@ -136,3 +136,53 @@ exports.readyToAssign = async (req, res) => {
     res.status(400).json({ error: 'Failed to retrieve available funds' });
   }
 };
+
+/**
+ * Moves specified amount of money from a category back to Ready to Assign.
+ */
+exports.moveMoneyToReadyToAssign = async (req, res) => {
+  const { categoryId, amount } = req.body;
+  const userId = req.user._id;
+  const numericAmount = parseFloat(amount);
+
+  try {
+    // Validate amount
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount specified.' });
+    }
+
+    // Find the category and budget for the user
+    const category = await Category.findById(categoryId);
+    const budget = await Budget.findOne({ user: userId });
+
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found.' });
+    }
+
+    if (!budget) {
+      return res.status(404).json({ error: 'Budget not found.' });
+    }
+
+    // Ensure there are sufficient funds in the category
+    if (category.available < numericAmount) {
+      return res.status(400).json({ error: 'Insufficient funds in the category.' });
+    }
+
+    // Update category and budget
+    category.available -= numericAmount;
+    budget.readyToAssign += numericAmount;
+
+    await category.save();
+    await budget.save();
+
+    res.status(200).json({
+      message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${category.title}.`,
+      category: { _id: category._id, title: category.title, available: category.available },
+      readyToAssign: budget.readyToAssign,
+    });
+  } catch (err) {
+    console.error("Error moving funds to Ready to Assign:", err);
+    res.status(500).json({ error: 'An error occurred while moving funds.' });
+  }
+};
+
