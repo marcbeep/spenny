@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useBudgetContext } from '../context/BudgetContext';
-import { useCategoryContext } from '../context/CategoryContext'; // Make sure this import is correct
+import { useCategoryContext } from '../context/CategoryContext';
 import backendURL from '../config';
 
 const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => {
   const { user } = useAuthContext();
-  const { categories, dispatch: categoryDispatch } = useCategoryContext(); // Extract categoryDispatch here
+  const { categories } = useCategoryContext();
   const { fetchReadyToAssign } = useBudgetContext();
 
-  const [fromCategory, setFromCategory] = useState(category ? category._id : '');
+  const [fromCategory, setFromCategory] = useState('');
   const [toCategory, setToCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
@@ -20,7 +20,7 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
       setFromCategory(category._id);
       setAmount(category.available.toString());
     } else {
-      resetForm(); // Reset the form if no category is selected
+      resetForm();
     }
   }, [category]);
 
@@ -30,24 +30,30 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
       return;
     }
 
-    const url = `${backendURL}/budget/move`;
+    // Determine the appropriate URL based on the selection
+    const url = toCategory === 'readyToAssign'
+      ? `${backendURL}/budget/moveToReadyToAssign`
+      : `${backendURL}/budget/move`;
+
     const data = {
       fromCategoryId: fromCategory,
-      toCategoryId: toCategory === 'readyToAssign' ? null : toCategory,
+      toCategoryId: toCategory === 'readyToAssign' ? undefined : toCategory,
       amount: parseFloat(amount),
     };
 
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
         body: JSON.stringify(data),
       });
 
       if (response.ok) {
-        // Update categories after moving funds successfully
         refreshCategories();
-        fetchReadyToAssign(); // Update "Ready to Assign" amount
+        fetchReadyToAssign();
         closeModal();
       } else {
         const result = await response.json();
@@ -91,7 +97,8 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
           <option value="readyToAssign">Ready to Assign</option>
         </select>
         <input type="number" placeholder="Amount" className="input input-bordered w-full mb-2" value={amount} onChange={(e) => setAmount(e.target.value)} />
-        {error && <p className="text-red-500">{error}</p>}        <div className="modal-action">
+        {error && <p className="text-red-500">{error}</p>}
+        <div className="modal-action">
           <button className="btn btn-primary" onClick={handleMoveFunds}>Move</button>
         </div>
       </div>
@@ -100,4 +107,5 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
 };
 
 export default MoveFundsModal;
+
 

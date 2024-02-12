@@ -16,7 +16,7 @@ router.post('/assign', assignMoneyToCategory);
 router.post('/move', moveMoneyBetweenCategories); 
 router.post('/remove', removeMoneyFromCategory); 
 router.get('/readyToAssign', readyToAssign); 
-router.post('/moveToReadyToAssign', budgetController.moveMoneyToReadyToAssign);
+router.post('/moveToReadyToAssign', moveMoneyToReadyToAssign);
 
 module.exports = router;
 
