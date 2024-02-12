@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useBudgetContext } from '../context/BudgetContext';
-import { useCategoryContext } from '../context/CategoryContext';
+import { useCategoryContext } from '../context/CategoryContext'; // Make sure this import is correct
 import backendURL from '../config';
 
 const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => {
   const { user } = useAuthContext();
-  const { categories } = useCategoryContext();
+  const { categories, dispatch: categoryDispatch } = useCategoryContext(); // Extract categoryDispatch here
   const { fetchReadyToAssign } = useBudgetContext();
 
-  const [fromCategory, setFromCategory] = useState('');
+  const [fromCategory, setFromCategory] = useState(category ? category._id : '');
   const [toCategory, setToCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Pre-populate form when category is selected
     if (category) {
       setFromCategory(category._id);
-      setAmount(category.available.toString()); 
+      setAmount(category.available.toString());
     } else {
-      resetForm(); // Reset form if no category is selected
+      resetForm(); // Reset the form if no category is selected
     }
   }, [category]);
 
@@ -44,9 +45,9 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
       });
 
       if (response.ok) {
+        // Update categories after moving funds successfully
         refreshCategories();
-        fetchReadyToAssign();
-        resetForm();
+        fetchReadyToAssign(); // Update "Ready to Assign" amount
         closeModal();
       } else {
         const result = await response.json();

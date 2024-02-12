@@ -97,8 +97,6 @@ Spenny is a powerful web application designed to help users manage their finance
 2. `moveMoneyBetweenCategories`: Moves a specified amount of money from one category to another, ensuring sufficient funds in the source category.
 3. `removeMoneyFromCategory`: Removes a specified amount of money from a category, ensuring sufficient available funds.
 4. `readyToAssign`: Calculates and returns the total available funds for assignment to categories.
-5. `addFundsToCategory`: Adds funds to a category from the budget's ready-to-assign pool.
-6. `removeFundsFromCategory`: Moves funds from a category back to the budget's ready-to-assign pool.
 
 **categoryController:**
 
