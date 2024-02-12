@@ -32,6 +32,16 @@ const categoryReducer = (state, action) => {
             category._id === action.payload._id ? action.payload : category
           ),
         };
+        case 'UPDATE_CATEGORIES_AFTER_MOVE':
+          const updatedCategories = state.categories.map((category) => {
+            if (category._id === action.payload.fromCategoryId) {
+              return { ...category, available: category.available - action.payload.amount };
+            } else if (category._id === action.payload.toCategoryId) {
+              return { ...category, available: category.available + action.payload.amount };
+            }
+            return category;
+          });
+          return { ...state, categories: updatedCategories };        
     default:
       return state;
   }
