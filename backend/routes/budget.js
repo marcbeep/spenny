@@ -5,8 +5,7 @@ const {
   assignMoneyToCategory,
   removeMoneyFromCategory,
   readyToAssign,
-  addFundsToCategory,
-  removeFundsFromCategory,
+  moveMoneyToReadyToAssign
 } = require('../controllers/budgetController');
 
 const router = express.Router();
@@ -17,6 +16,7 @@ router.post('/assign', assignMoneyToCategory);
 router.post('/move', moveMoneyBetweenCategories); 
 router.post('/remove', removeMoneyFromCategory); 
 router.get('/readyToAssign', readyToAssign); 
+router.post('/moveToReadyToAssign', budgetController.moveMoneyToReadyToAssign);
 
 module.exports = router;
 
