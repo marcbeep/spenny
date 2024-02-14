@@ -5,6 +5,7 @@
 - [ ] Dynamically update category amounts as money is moved around.
 - [ ] Users can "reconcile" bank accounts.
 - [ ] When a user deletes a category, users must first reassign all transactions to another category.
+- [ ] Make it time sensitive (goals).
 
 ---
 
