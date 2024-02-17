@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inconsolata', 'sans'],
+        sans: ['Inter', 'sans'],
       },
       fontWeight: {
         light: 200,
