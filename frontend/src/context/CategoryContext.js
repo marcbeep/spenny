@@ -1,47 +1,31 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import backendURL from '../config';
-import { useAuthContext } from '../hooks/useAuthContext'; 
+import { useAuthContext } from '../hooks/useAuthContext';
 
 export const CategoryContext = createContext();
 
 const categoryReducer = (state, action) => {
   switch (action.type) {
     case 'SET_CATEGORIES':
-      return {
-        ...state,
-        categories: action.payload,
-      };
+      return { ...state, categories: action.payload };
     case 'ADD_CATEGORY':
-      return {
-        ...state,
-        categories: [action.payload, ...state.categories],
-      };
+      return { ...state, categories: [action.payload, ...state.categories] };
     case 'DELETE_CATEGORY':
+      return { ...state, categories: state.categories.filter(category => category._id !== action.payload) };
+    case 'UPDATE_CATEGORY':
+      return { ...state, categories: state.categories.map(category => category._id === action.payload._id ? action.payload : category) };
+    case 'UPDATE_CATEGORIES_AFTER_MOVE':
       return {
         ...state,
-        categories: state.categories.filter(category => category._id !== action.payload),
+        categories: state.categories.map(category => {
+          if (category._id === action.payload.fromCategoryId) {
+            return { ...category, available: category.available - action.payload.amount };
+          } else if (category._id === action.payload.toCategoryId) {
+            return { ...category, available: category.available + action.payload.amount };
+          }
+          return category;
+        })
       };
-      case 'UPDATE_CATEGORY':
-        if (!action.payload || !action.payload._id) {
-          console.error('Invalid payload for UPDATE_CATEGORY:', action.payload);
-          return state; // Return current state if payload is invalid
-        }
-        return {
-          ...state,
-          categories: state.categories.map((category) =>
-            category._id === action.payload._id ? action.payload : category
-          ),
-        };
-        case 'UPDATE_CATEGORIES_AFTER_MOVE':
-          const updatedCategories = state.categories.map((category) => {
-            if (category._id === action.payload.fromCategoryId) {
-              return { ...category, available: category.available - action.payload.amount };
-            } else if (category._id === action.payload.toCategoryId) {
-              return { ...category, available: category.available + action.payload.amount };
-            }
-            return category;
-          });
-          return { ...state, categories: updatedCategories };        
     default:
       return state;
   }
@@ -68,11 +52,11 @@ export const CategoryContextProvider = ({ children }) => {
         console.error('Error fetching categories:', error);
       }
     }
-  }, [user]);
+  }, [user?.token]); // Updated to depend on user.token
 
   useEffect(() => {
     fetchCategories();
-  }, [fetchCategories, user]);
+  }, [fetchCategories]);
 
   return (
     <CategoryContext.Provider value={{ ...state, dispatch, fetchCategories }}>

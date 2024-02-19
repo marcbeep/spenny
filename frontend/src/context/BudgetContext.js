@@ -1,12 +1,9 @@
-// TODO: set budget, add funds to category, move funds between categories, remove funds from category 
-
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import backendURL from '../config';
-import { useAuthContext } from '../hooks/useAuthContext'; 
+import { useAuthContext } from '../hooks/useAuthContext';
 
 export const BudgetContext = createContext();
 
-// Define the actions and the reducer function
 const budgetReducer = (state, action) => {
   switch (action.type) {
     case 'SET_READY_TO_ASSIGN':
@@ -19,13 +16,11 @@ const budgetReducer = (state, action) => {
   }
 };
 
-// Define the BudgetContextProvider
 export const BudgetContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(budgetReducer, { readyToAssign: 0 });
-  const { user } = useAuthContext(); // Use AuthContext to access the user and token
+  const { user } = useAuthContext();
 
-  // Function to fetch "Ready to Assign" amount
-  const fetchReadyToAssign = async () => {
+  const fetchReadyToAssign = useCallback(async () => {
     if (user && user.token) {
       try {
         const response = await fetch(`${backendURL}/budget/readyToAssign`, {
@@ -44,22 +39,19 @@ export const BudgetContextProvider = ({ children }) => {
         console.error('Error fetching ready to assign amount:', error);
       }
     }
-  };
+  }, [user?.token]); // Depend on user.token to re-fetch when the user or token changes
 
-  // Use useEffect to fetch the "Ready to Assign" amount when the component mounts
-  // and when the user changes (logs in/out)
   useEffect(() => {
     fetchReadyToAssign();
-  }, [user]); // Depend on user to re-fetch when the user logs in/out
+  }, [fetchReadyToAssign]); // Depend on fetchReadyToAssign to re-fetch when the function changes
 
   return (
-    <BudgetContext.Provider value={{ ...state, dispatch, fetchReadyToAssign}}>
+    <BudgetContext.Provider value={{ ...state, dispatch, fetchReadyToAssign }}>
       {children}
     </BudgetContext.Provider>
   );
 };
 
-// Define a hook for easy context consumption
 export const useBudgetContext = () => {
   const context = useContext(BudgetContext);
   if (context === undefined) {
