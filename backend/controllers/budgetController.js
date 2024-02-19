@@ -141,9 +141,14 @@ exports.readyToAssign = async (req, res) => {
  * Moves specified amount of money from a category back to Ready to Assign.
  */
 exports.moveMoneyToReadyToAssign = async (req, res) => {
+  console.log("Auth Header:", req.headers.authorization);
+  console.log("Request Body:", req.body);
+  console.log("User making request:", req.user);
   const { categoryId, amount } = req.body;
   const userId = req.user._id;
   const numericAmount = parseFloat(amount);
+
+  console.log(categoryId, amount, userId, numericAmount)
 
   try {
     // Validate amount
