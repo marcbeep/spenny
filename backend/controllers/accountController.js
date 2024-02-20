@@ -5,7 +5,7 @@ const Budget = require('../models/budgetModel');
 async function updateUserBudget(userId, balanceChange) {
   const budget = await Budget.findOne({ user: userId });
   if (!budget) {
-    console.error("Budget not found for user:", userId);
+    console.error('Budget not found for user:', userId);
     return;
   }
 
@@ -13,7 +13,7 @@ async function updateUserBudget(userId, balanceChange) {
   budget.totalAvailable += balanceChange;
   // Always adjust readyToAssign, as it reflects the total funds available for new assignments
   budget.readyToAssign += balanceChange;
-  
+
   await budget.save();
 }
 
@@ -72,7 +72,6 @@ exports.deleteAccount = async (req, res) => {
   }
 };
 
-
 // Updates an account by its ID and adjusts the budget accordingly
 exports.updateAccount = async (req, res) => {
   const { id } = req.params;
@@ -87,7 +86,7 @@ exports.updateAccount = async (req, res) => {
 
     // Proceed to update the account
     const updatedAccount = await Account.findByIdAndUpdate(id, { balance }, { new: true });
-    
+
     // Update the budget to reflect the new balance
     await updateUserBudget(req.user._id, balanceDifference);
 
@@ -96,7 +95,6 @@ exports.updateAccount = async (req, res) => {
     res.status(400).json({ error: 'Failed to update account' });
   }
 };
-
 
 // Calculates and returns the total balance across all accounts of the logged-in user
 exports.getTotalBalance = async (req, res) => {

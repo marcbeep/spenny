@@ -20,12 +20,12 @@ const createInitialBudgetForUser = async (userId) => {
   try {
     await Budget.create({
       user: userId,
-      totalAvailable: 0, // Initial setup, adjust as necessary
+      totalAvailable: 0,
       totalAssigned: 0,
       readyToAssign: 0,
     });
   } catch (err) {
-    console.error("Error creating initial budget for user:", err);
+    console.error('Error creating initial budget for user:', err);
   }
 };
 
@@ -43,9 +43,9 @@ const createGenericCategoriesForUser = async (userId) => {
   ];
 
   try {
-    await Promise.all(genericCategories.map(category => Category.create(category)));
+    await Promise.all(genericCategories.map((category) => Category.create(category)));
   } catch (err) {
-    console.error("Error creating generic categories for user:", err);
+    console.error('Error creating generic categories for user:', err);
   }
 };
 
@@ -62,7 +62,8 @@ exports.loginUser = async (req, res) => {
     const token = createToken(user._id);
     res.status(200).json({ email: user.email, token });
   } catch (err) {
-    res.status(401).json({ error: 'Authentication failed' });
+    // Use the model's error message
+    res.status(401).json({ error: err.message || 'Authentication failed' });
   }
 };
 
@@ -78,15 +79,20 @@ exports.signupUser = async (req, res) => {
     const user = await User.signup(email, password);
     const token = createToken(user._id);
 
-    // Create generic categories for the new user
+    // Create generic categories and initial budget for the new user
     await createGenericCategoriesForUser(user._id);
-
-    // Create an initial budget for the new user
     await createInitialBudgetForUser(user._id);
 
     res.status(201).json({ email: user.email, token });
   } catch (err) {
-    res.status(400).json({ error: 'Signup failed' });
+    // Directly use the error message from the model
+    const errorMessage = err.message || 'Signup failed due to an unexpected error.';
+
+    // Detect if the error is due to a duplicate email with the unique index error code (11000)
+    if (err.code === 11000) {
+      res.status(400).json({ error: 'Email already exists. Please try another one.' });
+    } else {
+      res.status(400).json({ error: errorMessage });
+    }
   }
 };
-

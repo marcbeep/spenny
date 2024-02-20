@@ -4,7 +4,7 @@ const Category = require('../models/categoryModel');
 async function updateUserBudgetForCategoryActions(userId, amountChange, actionType) {
   const budget = await Budget.findOne({ user: userId });
   if (!budget) {
-    console.error("Budget not found for user:", userId);
+    console.error('Budget not found for user:', userId);
     return;
   }
   switch (actionType) {
@@ -37,7 +37,7 @@ exports.assignMoneyToCategory = async (req, res) => {
 
   res.status(200).json({
     message: `£${numericAmount.toFixed(2)} successfully assigned to ${category.title}`,
-    category: { _id: category._id, title: category.title, available: category.available }
+    category: { _id: category._id, title: category.title, available: category.available },
   });
 };
 
@@ -62,7 +62,9 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
   await toCategory.save();
 
   res.status(200).json({
-    message: `£${numericAmount.toFixed(2)} successfully moved from ${fromCategory.title} to ${toCategory.title}`
+    message: `£${numericAmount.toFixed(2)} successfully moved from ${fromCategory.title} to ${
+      toCategory.title
+    }`,
   });
 };
 
@@ -80,7 +82,7 @@ exports.removeMoneyFromCategory = async (req, res) => {
 
   res.status(200).json({
     message: `£${numericAmount.toFixed(2)} successfully removed from ${category.title}`,
-    category: { _id: category._id, title: category.title, available: category.available }
+    category: { _id: category._id, title: category.title, available: category.available },
   });
 };
 
@@ -116,7 +118,9 @@ exports.moveMoneyToReadyToAssign = async (req, res) => {
   await budget.save();
 
   res.status(200).json({
-    message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${category.title}.`,
+    message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${
+      category.title
+    }.`,
     category: { _id: category._id, title: category.title, available: category.available },
     readyToAssign: budget.readyToAssign,
   });

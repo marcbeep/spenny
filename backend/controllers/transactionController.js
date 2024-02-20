@@ -55,8 +55,10 @@ exports.createTransaction = async (req, res) => {
     });
 
     // Update category's activity and adjust available funds accordingly
-    await Category.findByIdAndUpdate(categoryId, { $inc: { activity: amount, available: -amount } });
-    
+    await Category.findByIdAndUpdate(categoryId, {
+      $inc: { activity: amount, available: -amount },
+    });
+
     // Update the account balance
     const account = await Account.findById(accountId);
     account.balance -= amount; // Assuming all transactions are expenses for simplicity
@@ -78,7 +80,9 @@ exports.deleteSingleTransaction = async (req, res) => {
     if (!transaction) return handleNoTransactionFound(res);
 
     try {
-      await Category.findByIdAndUpdate(transaction.category, { $inc: { activity: -transaction.amount, available: transaction.amount } });
+      await Category.findByIdAndUpdate(transaction.category, {
+        $inc: { activity: -transaction.amount, available: transaction.amount },
+      });
     } catch (err) {
       console.error('Failed to update category:', err);
     }
@@ -121,12 +125,18 @@ exports.updateSingleTransaction = async (req, res) => {
 
     if (isCategoryChanged) {
       // Reverse old category's changes
-      await Category.findByIdAndUpdate(transaction.category, { $inc: { activity: -transaction.amount, available: transaction.amount } });
+      await Category.findByIdAndUpdate(transaction.category, {
+        $inc: { activity: -transaction.amount, available: transaction.amount },
+      });
       // Apply changes to the new category
-      await Category.findByIdAndUpdate(newCategoryId, { $inc: { activity: amount, available: -amount } });
+      await Category.findByIdAndUpdate(newCategoryId, {
+        $inc: { activity: amount, available: -amount },
+      });
     } else if (amountDifference !== 0) {
       // Adjust the same category if only the amount has changed
-      await Category.findByIdAndUpdate(transaction.category, { $inc: { activity: amountDifference, available: -amountDifference } });
+      await Category.findByIdAndUpdate(transaction.category, {
+        $inc: { activity: amountDifference, available: -amountDifference },
+      });
     }
 
     if (isAccountChanged) {
@@ -146,12 +156,16 @@ exports.updateSingleTransaction = async (req, res) => {
     }
 
     // Update the transaction
-    const updatedTransaction = await Transaction.findByIdAndUpdate(id, {
-      title,
-      amount,
-      category: newCategoryId,
-      account: newAccountId,
-    }, { new: true });
+    const updatedTransaction = await Transaction.findByIdAndUpdate(
+      id,
+      {
+        title,
+        amount,
+        category: newCategoryId,
+        account: newAccountId,
+      },
+      { new: true },
+    );
 
     res.status(200).json(updatedTransaction);
   } catch (err) {

@@ -14,8 +14,8 @@ exports.addCategory = async (req, res) => {
     const category = await Category.create({
       user: req.user._id,
       title,
-      assignedAmount: 0, 
-      available: 0, 
+      assignedAmount: 0,
+      available: 0,
       activity: 0,
     });
     res.status(201).json(category);
@@ -23,7 +23,6 @@ exports.addCategory = async (req, res) => {
     res.status(400).json({ error: 'Failed to create category' });
   }
 };
-
 
 /**
  * Retrieves all categories associated with the logged-in user.
@@ -67,7 +66,7 @@ exports.deleteCategory = async (req, res) => {
   try {
     const result = await Category.findByIdAndDelete(id);
     if (!result) return handleNoCategoryFound(res);
-    res.status(204).send(); 
+    res.status(204).send();
   } catch (err) {
     res.status(400).json({ error: 'Failed to delete category' });
   }
@@ -80,7 +79,7 @@ exports.deleteCategory = async (req, res) => {
  */
 exports.updateCategory = async (req, res) => {
   const { id } = req.params;
-  const { title } = req.body; 
+  const { title } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return handleNoCategoryFound(res);

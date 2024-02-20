@@ -13,20 +13,28 @@ const userRoutes = require('./routes/user');
 const app = express();
 
 // Global CORS Configuration
-const allowedOrigins = ['https://spenny.reeflink.org', 'https://getspenny.com', 'https://www.getspenny.com', 'http://localhost:4000'];
+const allowedOrigins = [
+  'https://spenny.reeflink.org',
+  'https://getspenny.com',
+  'https://www.getspenny.com',
+  'http://localhost:4000',
+];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // Allow requests with no origin (like mobile apps or curl requests)
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // Allow requests with no origin (like mobile apps or curl requests)
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      const message = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(message), false);
-    }
-  }
-}));
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        const message =
+          'The CORS policy for this site does not allow access from the specified Origin.';
+        return callback(new Error(message), false);
+      }
+    },
+  }),
+);
 
 // Middleware
 app.use(express.json());

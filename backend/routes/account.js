@@ -1,5 +1,11 @@
 const express = require('express');
-const { addAccount, deleteAccount, updateAccount, getAccounts, getTotalBalance } = require('../controllers/accountController');
+const {
+  addAccount,
+  deleteAccount,
+  updateAccount,
+  getAccounts,
+  getTotalBalance,
+} = require('../controllers/accountController');
 const requireAuth = require('../middleware/requireAuth');
 
 const router = express.Router();
