@@ -32,7 +32,6 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
     }
   };
 
-
   const validateForm = () => {
     const errors = {};
     if (!formData.title) errors.title = 'Title is required';

@@ -68,6 +68,7 @@ const Category = () => {
             isOpen={isAssignModalOpen}
             closeModal={() => setIsAssignModalOpen(false)}
             readyToAssign={readyToAssign}
+            fetchCategories={fetchCategories}
           />
         </div>
       </div>

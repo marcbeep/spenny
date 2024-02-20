@@ -5,7 +5,7 @@ import { useBudgetContext } from '../context/BudgetContext';
 import { formatCurrencyInput } from '../utils/currencyInputFormatter'; // Import the utility function
 import backendURL from '../config';
 
-const AssignFundsModal = ({ isOpen, closeModal, readyToAssign }) => {
+const AssignFundsModal = ({ isOpen, closeModal, readyToAssign, fetchCategories }) => {
   const { user } = useAuthContext();
   const { categories } = useCategoryContext();
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -40,6 +40,7 @@ const AssignFundsModal = ({ isOpen, closeModal, readyToAssign }) => {
       });
       if (response.ok) {
         fetchReadyToAssign();
+        fetchCategories();
         closeModal();
       } else {
         const result = await response.json();

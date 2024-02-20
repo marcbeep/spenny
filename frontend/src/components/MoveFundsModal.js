@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {formatCurrencyInput} from '../utils/currencyInputFormatter';
+import { formatCurrencyInput } from '../utils/currencyInputFormatter';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useBudgetContext } from '../context/BudgetContext';
 import { useCategoryContext } from '../context/CategoryContext';
