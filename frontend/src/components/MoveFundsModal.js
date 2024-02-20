@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { formatCurrencyInput } from '../utils/currencyInputFormatter';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useBudgetContext } from '../context/BudgetContext';
 import { useCategoryContext } from '../context/CategoryContext';
+import { faCaretDown, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import backendURL from '../config';
 
 const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => {
@@ -14,6 +16,9 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
   const [toCategory, setToCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
+  const fromDropdownRef = useRef(null);
+  const toDropdownRef = useRef(null);
+
 
   useEffect(() => {
     if (category) {
@@ -24,9 +29,7 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
     }
   }, [category]);
 
-  // Modify the setAmount call within the onChange handler for the amount input
   const handleAmountChange = (e) => {
-    // Use the utility function to format input dynamically
     setAmount(formatCurrencyInput(e.target.value));
   };
 
@@ -98,65 +101,76 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
     resetForm();
   };
 
-  const handleFromCategoryChange = (e) => {
-    setFromCategory(e.target.value);
-    console.log(`From category changed to: ${e.target.value}`);
+  const selectFromCategory = (categoryId) => {
+    setFromCategory(categoryId);
+    fromDropdownRef.current.removeAttribute("open");
   };
 
-  const handleToCategoryChange = (e) => {
-    setToCategory(e.target.value);
-    console.log(`To category changed to: ${e.target.value}`);
+  const selectToCategory = (categoryId) => {
+    setToCategory(categoryId);
+    toDropdownRef.current.removeAttribute("open");
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className='modal modal-open'>
-      <div className='modal-box'>
-        <button onClick={handleClose} className='btn btn-sm btn-circle absolute right-2 top-2'>
-          ✕
-        </button>
-        <h3 className='font-bold text-lg'>Move Funds</h3>
-        <select
-          value={fromCategory}
-          onChange={handleFromCategoryChange}
-          className='select select-bordered w-full mb-2'
-        >
-          <option value=''>Select source category</option>
+    <div className='modal modal-open items-center justify-center'>
+  <div className='modal-box relative'>
+    <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>✕</button>
+
+    <div className='flex items-center justify-center gap-4 mb-4'>
+      {/* From Category Dropdown */}
+      <details className="dropdown" ref={fromDropdownRef}>
+        <summary className="btn flex items-center gap-2">
+          {fromCategory ? categories.find(c => c._id === fromCategory).title : "MOVE FROM"} <FontAwesomeIcon icon={faCaretDown} />
+        </summary>
+        <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
           {categories.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.title}
-            </option>
+            <li key={category._id} onClick={() => { setFromCategory(category._id); fromDropdownRef.current.removeAttribute("open"); }}>
+              <a>{category.title}</a>
+            </li>
           ))}
-        </select>
-        <input
-          type='number'
-          placeholder='Amount'
-          className='input input-bordered w-full mb-2'
-          value={amount}
-          onChange={handleAmountChange}
-        />
-        <select
-          value={toCategory}
-          onChange={handleToCategoryChange}
-          className='select select-bordered w-full mb-2'
-        >
-          <option value=''>Select destination</option>
-          <option value='readyToAssign'>Ready to Assign</option>
-          {categories.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.title}
-            </option>
+        </ul>
+      </details>
+
+      <FontAwesomeIcon icon={faArrowRight} size="lg" />
+
+      {/* To Category Dropdown */}
+      <details className="dropdown" ref={toDropdownRef}>
+        <summary className="btn flex items-center gap-2">
+          {toCategory ? categories.find(c => c._id === toCategory)?.title || "Ready to Assign" : "MOVE TO"} <FontAwesomeIcon icon={faCaretDown} />
+        </summary>
+        <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+          <li onClick={() => { setToCategory('readyToAssign'); toDropdownRef.current.removeAttribute("open"); }}>
+            <a>Ready to Assign</a>
+          </li>
+          {categories.filter((c) => c._id !== fromCategory).map((filteredCategory) => (
+            <li key={filteredCategory._id} onClick={() => { setToCategory(filteredCategory._id); toDropdownRef.current.removeAttribute("open"); }}>
+              <a>{filteredCategory.title}</a>
+            </li>
           ))}
-        </select>
-        {error && <p className='text-red-500'>{error}</p>}
-        <div className='modal-action'>
-          <button className='btn btn-primary' onClick={handleMoveFunds}>
-            Move
-          </button>
-        </div>
-      </div>
+        </ul>
+      </details>
     </div>
+
+    {/* Amount Input */}
+    <div className='flex justify-center'>
+      <input
+        type='text'
+        placeholder='Amount'
+        className='input input-bordered w-full max-w-xs text-4xl text-center font-extrabold'
+        value={amount}
+        onChange={handleAmountChange}
+        style={{ fontFamily: 'Inter, sans-serif' }}
+      />
+    </div>
+
+    {error && <p className='text-red-500 text-center'>{error}</p>}
+    <div className='modal-action justify-center mt-4'>
+      <button className='btn btn-primary' onClick={handleMoveFunds}>Move</button>
+    </div>
+  </div>
+</div>
   );
 };
 
