@@ -26,7 +26,7 @@ export const BudgetContextProvider = ({ children }) => {
         const response = await fetch(`${backendURL}/budget/readyToAssign`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${user.token}`,
+            Authorization: `Bearer ${user.token}`,
           },
         });
         const data = await response.json();

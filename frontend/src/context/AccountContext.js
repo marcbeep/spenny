@@ -11,9 +11,17 @@ const accountReducer = (state, action) => {
     case 'ADD_ACCOUNT':
       return { ...state, accounts: [action.payload, ...state.accounts] };
     case 'DELETE_ACCOUNT':
-      return { ...state, accounts: state.accounts.filter(account => account._id !== action.payload) };
+      return {
+        ...state,
+        accounts: state.accounts.filter((account) => account._id !== action.payload),
+      };
     case 'UPDATE_ACCOUNT':
-      return { ...state, accounts: state.accounts.map(account => account._id === action.payload._id ? action.payload : account) };
+      return {
+        ...state,
+        accounts: state.accounts.map((account) =>
+          account._id === action.payload._id ? action.payload : account,
+        ),
+      };
     case 'SET_TOTAL_BALANCE':
       return { ...state, totalBalance: action.payload };
     default:
@@ -30,7 +38,7 @@ export const AccountContextProvider = ({ children }) => {
       try {
         const response = await fetch(`${backendURL}/account/totalBalance`, {
           method: 'GET',
-          headers: { 'Authorization': `Bearer ${user.token}` },
+          headers: { Authorization: `Bearer ${user.token}` },
         });
         const data = await response.json();
         if (response.ok) {

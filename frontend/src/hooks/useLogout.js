@@ -1,4 +1,4 @@
-import { useAuthContext } from './useAuthContext'; 
+import { useAuthContext } from './useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,10 +8,10 @@ export const useLogout = () => {
   const navigate = useNavigate();
 
   const logout = () => {
-    localStorage.removeItem('user'); 
+    localStorage.removeItem('user');
     dispatch({ type: 'LOGOUT' });
     dispatchTransaction({ type: 'SET_TRANSACTIONS', payload: [] });
-    navigate("/");
+    navigate('/');
   };
 
   return logout;

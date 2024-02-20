@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext';
 import { useCategoryContext } from '../context/CategoryContext';
-import { useAccountContext } from '../context/AccountContext'; 
+import { useAccountContext } from '../context/AccountContext';
 import backendURL from '../config';
 
 const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
@@ -29,7 +29,8 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
   const validateForm = () => {
     const errors = {};
     if (!formData.title) errors.title = 'Title is required';
-    if (!formData.amount || isNaN(formData.amount) || formData.amount <= 0) errors.amount = 'Amount must be a valid number and greater than 0';
+    if (!formData.amount || isNaN(formData.amount) || formData.amount <= 0)
+      errors.amount = 'Amount must be a valid number and greater than 0';
     if (!formData.category) errors.category = 'Category is required';
     if (!formData.account) errors.account = 'Account is required';
 
@@ -51,14 +52,17 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         const data = await response.json();
-        transactionDispatch({ type: editingTransaction ? 'UPDATE_TRANSACTION' : 'ADD_TRANSACTION', payload: data });
+        transactionDispatch({
+          type: editingTransaction ? 'UPDATE_TRANSACTION' : 'ADD_TRANSACTION',
+          payload: data,
+        });
         closeModal();
       } else {
         const error = await response.json();
@@ -79,7 +83,7 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
     try {
       const response = await fetch(`${backendURL}/transaction/${editingTransaction._id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${user.token}` },
+        headers: { Authorization: `Bearer ${user.token}` },
       });
 
       if (response.ok) {
@@ -94,44 +98,91 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
       setIsSubmitting(false);
     }
   };
-  
+
   if (!isOpen) return null;
 
   return (
-    <div className='modal modal-open' aria-modal="true" role="dialog">
+    <div className='modal modal-open' aria-modal='true' role='dialog'>
       <div className='modal-box'>
-        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-4 top-4' aria-label="Close">✕</button>
-        <h3 className='text-lg font-bold mb-4'>{editingTransaction ? 'Edit Transaction' : 'Add Transaction'}</h3>
+        <button
+          onClick={closeModal}
+          className='btn btn-sm btn-circle absolute right-4 top-4'
+          aria-label='Close'
+        >
+          ✕
+        </button>
+        <h3 className='text-lg font-bold mb-4'>
+          {editingTransaction ? 'Edit Transaction' : 'Add Transaction'}
+        </h3>
         <form onSubmit={handleSubmit}>
           <div className='form-control my-4'>
-            <input type='text' id='title' name='title' placeholder='Transaction Title' className='input input-bordered w-full' value={formData.title} onChange={handleInputChange} />
+            <input
+              type='text'
+              id='title'
+              name='title'
+              placeholder='Transaction Title'
+              className='input input-bordered w-full'
+              value={formData.title}
+              onChange={handleInputChange}
+            />
             {formErrors.title && <span className='text-error text-sm'>{formErrors.title}</span>}
           </div>
           <div className='form-control my-4'>
-            <input type='number' id='amount' name='amount' placeholder='Amount' className='input input-bordered w-full' value={formData.amount} onChange={handleInputChange} />
+            <input
+              type='number'
+              id='amount'
+              name='amount'
+              placeholder='Amount'
+              className='input input-bordered w-full'
+              value={formData.amount}
+              onChange={handleInputChange}
+            />
             {formErrors.amount && <span className='text-error text-sm'>{formErrors.amount}</span>}
           </div>
           <div className='form-control my-4'>
-            <select id='category' name='category' className='select select-bordered w-full' value={formData.category} onChange={handleInputChange}>
+            <select
+              id='category'
+              name='category'
+              className='select select-bordered w-full'
+              value={formData.category}
+              onChange={handleInputChange}
+            >
               <option value=''>Select Category</option>
               {categories.map((category) => (
-                <option key={category._id} value={category._id}>{category.title}</option>
+                <option key={category._id} value={category._id}>
+                  {category.title}
+                </option>
               ))}
             </select>
-            {formErrors.category && <span className='text-error text-sm'>{formErrors.category}</span>}
+            {formErrors.category && (
+              <span className='text-error text-sm'>{formErrors.category}</span>
+            )}
           </div>
           <div className='form-control my-4'>
-          <select id='account' name='account' className='select select-bordered w-full' value={formData.account || ''} onChange={handleInputChange}>
-          <option value=''>Select Account</option>
-          {accounts.map((account) => (
-          <option key={account._id} value={account._id}>{account.title}</option>
-          ))}
-          </select>
-          {formErrors.account && <span className='text-error text-sm'>{formErrors.account}</span>}
+            <select
+              id='account'
+              name='account'
+              className='select select-bordered w-full'
+              value={formData.account || ''}
+              onChange={handleInputChange}
+            >
+              <option value=''>Select Account</option>
+              {accounts.map((account) => (
+                <option key={account._id} value={account._id}>
+                  {account.title}
+                </option>
+              ))}
+            </select>
+            {formErrors.account && <span className='text-error text-sm'>{formErrors.account}</span>}
           </div>
           <div className='modal-action'>
             {editingTransaction && (
-              <button type='button' className='btn btn-error' onClick={handleDelete} disabled={isSubmitting}>
+              <button
+                type='button'
+                className='btn btn-error'
+                onClick={handleDelete}
+                disabled={isSubmitting}
+              >
                 Delete
               </button>
             )}

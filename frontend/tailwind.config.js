@@ -19,12 +19,12 @@ module.exports = {
   },
   plugins: [require('daisyui')],
   daisyui: {
-    themes: ["light"],
+    themes: ['light'],
     base: true,
     styled: true,
     utils: true,
-    prefix: "",
+    prefix: '',
     logs: true,
-    themeRoot: ":root",
+    themeRoot: ':root',
   },
 };

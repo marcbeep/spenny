@@ -11,20 +11,28 @@ const categoryReducer = (state, action) => {
     case 'ADD_CATEGORY':
       return { ...state, categories: [action.payload, ...state.categories] };
     case 'DELETE_CATEGORY':
-      return { ...state, categories: state.categories.filter(category => category._id !== action.payload) };
+      return {
+        ...state,
+        categories: state.categories.filter((category) => category._id !== action.payload),
+      };
     case 'UPDATE_CATEGORY':
-      return { ...state, categories: state.categories.map(category => category._id === action.payload._id ? action.payload : category) };
+      return {
+        ...state,
+        categories: state.categories.map((category) =>
+          category._id === action.payload._id ? action.payload : category,
+        ),
+      };
     case 'UPDATE_CATEGORIES_AFTER_MOVE':
       return {
         ...state,
-        categories: state.categories.map(category => {
+        categories: state.categories.map((category) => {
           if (category._id === action.payload.fromCategoryId) {
             return { ...category, available: category.available - action.payload.amount };
           } else if (category._id === action.payload.toCategoryId) {
             return { ...category, available: category.available + action.payload.amount };
           }
           return category;
-        })
+        }),
       };
     default:
       return state;
@@ -40,7 +48,7 @@ export const CategoryContextProvider = ({ children }) => {
       try {
         const response = await fetch(`${backendURL}/category`, {
           method: 'GET',
-          headers: { 'Authorization': `Bearer ${user.token}` },
+          headers: { Authorization: `Bearer ${user.token}` },
         });
         const data = await response.json();
         if (response.ok) {

@@ -13,9 +13,7 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }
   const { dispatch } = useAccountContext();
 
   const isEditing = !!editingAccount;
-  const url = isEditing
-    ? `${backendURL}/account/${editingAccount._id}`
-    : `${backendURL}/account/`;
+  const url = isEditing ? `${backendURL}/account/${editingAccount._id}` : `${backendURL}/account/`;
 
   useEffect(() => {
     setFormData(editingAccount || initialState);
@@ -32,8 +30,10 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }
   const validateForm = () => {
     let errors = {};
     if (!formData.title) errors.title = 'Title is required';
-    if (!/^\d+(\.\d{1,2})?$/.test(formData.balance)) errors.balance = 'Balance must be a valid number';
-    else if (parseFloat(formData.balance) > 1000000) errors.balance = 'Balance must be less than or equal to £1,000,000.00';
+    if (!/^\d+(\.\d{1,2})?$/.test(formData.balance))
+      errors.balance = 'Balance must be a valid number';
+    else if (parseFloat(formData.balance) > 1000000)
+      errors.balance = 'Balance must be less than or equal to £1,000,000.00';
     if (!formData.type) errors.type = 'Type is required';
 
     setFormErrors(errors);
@@ -46,8 +46,8 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }
 
     // Convert balance to a float before submitting
     const submitData = {
-        ...formData,
-        balance: parseFloat(formData.balance),
+      ...formData,
+      balance: parseFloat(formData.balance),
     };
 
     setIsSubmitting(true);
@@ -55,7 +55,7 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }
     try {
       const response = await fetch(url, {
         method: isEditing ? 'PATCH' : 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
         body: JSON.stringify(submitData), // Use submitData with the converted balance
       });
 
@@ -75,20 +75,19 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }
     } finally {
       setIsSubmitting(false);
     }
-};
-
+  };
 
   const handleDelete = async () => {
     if (!editingAccount?._id) return;
-  
+
     setIsSubmitting(true);
-  
+
     try {
       const response = await fetch(`${backendURL}/account/${editingAccount._id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${user.token}` },
+        headers: { Authorization: `Bearer ${user.token}` },
       });
-  
+
       if (response.ok) {
         dispatch({ type: 'DELETE_ACCOUNT', payload: editingAccount._id });
         console.log('deleted account:', editingAccount._id);
@@ -103,11 +102,15 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }
       setIsSubmitting(false);
     }
   };
-  
+
   if (!isOpen) return null;
 
   return (
-    <div className='modal modal-open' aria-labelledby='modalTitle' aria-describedby='modalDescription'>
+    <div
+      className='modal modal-open'
+      aria-labelledby='modalTitle'
+      aria-describedby='modalDescription'
+    >
       <div className='modal-box'>
         <form onSubmit={handleSubmit} className='form-control'>
           {['title', 'balance', 'type'].map((field) => (
@@ -126,7 +129,7 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }
               isSubmitting={isSubmitting}
               isEditing={isEditing}
               closeModal={closeModal}
-              handleDelete={handleDelete} 
+              handleDelete={handleDelete}
             />
           </div>
         </form>
@@ -149,14 +152,19 @@ const Field = ({ type, name, placeholder, value, onChange, error }) => (
   </div>
 );
 
-const ActionButton = ({ isSubmitting, isEditing, closeModal, handleDelete }) => { 
+const ActionButton = ({ isSubmitting, isEditing, closeModal, handleDelete }) => {
   return (
     <>
       <button type='button' className='btn' onClick={closeModal} disabled={isSubmitting}>
         Close
       </button>
       {isEditing && (
-        <button type='button' className='btn btn-error' onClick={handleDelete} disabled={isSubmitting}>
+        <button
+          type='button'
+          className='btn btn-error'
+          onClick={handleDelete}
+          disabled={isSubmitting}
+        >
           Delete
         </button>
       )}

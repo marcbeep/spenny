@@ -23,7 +23,6 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
       resetForm();
     }
   }, [category]);
-  
 
   const handleMoveFunds = async () => {
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
@@ -31,11 +30,12 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
       console.error('MoveFundsModal Error: Invalid amount input by user.'); // More specific error log
       return;
     }
-  
-    const url = toCategory === 'readyToAssign'
-      ? `${backendURL}/budget/moveToReadyToAssign`
-      : `${backendURL}/budget/move`;
-  
+
+    const url =
+      toCategory === 'readyToAssign'
+        ? `${backendURL}/budget/moveToReadyToAssign`
+        : `${backendURL}/budget/move`;
+
     const data = {
       fromCategoryId: fromCategory,
       toCategoryId: toCategory === 'readyToAssign' ? undefined : toCategory,
@@ -50,11 +50,11 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify(data),
       });
-  
+
       if (response.ok) {
         console.log('Successfully moved funds.');
         refreshCategories();
@@ -79,7 +79,7 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
       console.error('MoveFundsModal Fetch Error:', err); // Logging fetch error
     }
   };
-  
+
   const resetForm = () => {
     setFromCategory('');
     setToCategory('');
@@ -96,7 +96,7 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
     setFromCategory(e.target.value);
     console.log(`From category changed to: ${e.target.value}`);
   };
-  
+
   const handleToCategoryChange = (e) => {
     setToCategory(e.target.value);
     console.log(`To category changed to: ${e.target.value}`);
@@ -105,27 +105,49 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
   if (!isOpen) return null;
 
   return (
-    <div className="modal modal-open">
-      <div className="modal-box">
-        <button onClick={handleClose} className="btn btn-sm btn-circle absolute right-2 top-2">✕</button>
-        <h3 className="font-bold text-lg">Move Funds</h3>
-        <select value={fromCategory} onChange={handleFromCategoryChange} className="select select-bordered w-full mb-2">
-          <option value="">Select source category</option>
-          {categories.map(category => (
-            <option key={category._id} value={category._id}>{category.title}</option>
+    <div className='modal modal-open'>
+      <div className='modal-box'>
+        <button onClick={handleClose} className='btn btn-sm btn-circle absolute right-2 top-2'>
+          ✕
+        </button>
+        <h3 className='font-bold text-lg'>Move Funds</h3>
+        <select
+          value={fromCategory}
+          onChange={handleFromCategoryChange}
+          className='select select-bordered w-full mb-2'
+        >
+          <option value=''>Select source category</option>
+          {categories.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.title}
+            </option>
           ))}
         </select>
-        <input type="number" placeholder="Amount" className="input input-bordered w-full mb-2" value={amount} onChange={(e) => setAmount(e.target.value)} />
-        <select value={toCategory} onChange={handleToCategoryChange} className="select select-bordered w-full mb-2">
-          <option value="">Select destination</option>
-          <option value="readyToAssign">Ready to Assign</option>
-          {categories.map(category => (
-            <option key={category._id} value={category._id}>{category.title}</option>
+        <input
+          type='number'
+          placeholder='Amount'
+          className='input input-bordered w-full mb-2'
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+        <select
+          value={toCategory}
+          onChange={handleToCategoryChange}
+          className='select select-bordered w-full mb-2'
+        >
+          <option value=''>Select destination</option>
+          <option value='readyToAssign'>Ready to Assign</option>
+          {categories.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.title}
+            </option>
           ))}
         </select>
-        {error && <p className="text-red-500">{error}</p>}
-        <div className="modal-action">
-          <button className="btn btn-primary" onClick={handleMoveFunds}>Move</button>
+        {error && <p className='text-red-500'>{error}</p>}
+        <div className='modal-action'>
+          <button className='btn btn-primary' onClick={handleMoveFunds}>
+            Move
+          </button>
         </div>
       </div>
     </div>
@@ -133,5 +155,3 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
 };
 
 export default MoveFundsModal;
-
-

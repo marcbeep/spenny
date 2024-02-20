@@ -28,10 +28,12 @@ const Category = () => {
     setIsLoading(true);
     const fetchCategories = async () => {
       const response = await fetch(`${backendURL}/category`, {
-        headers: { 'Authorization': `Bearer ${user.token}` },
+        headers: { Authorization: `Bearer ${user.token}` },
       });
       const json = await response.json();
-      response.ok ? dispatchCategory({ type: 'SET_CATEGORIES', payload: json }) : console.error('Failed to fetch categories:', json.error);
+      response.ok
+        ? dispatchCategory({ type: 'SET_CATEGORIES', payload: json })
+        : console.error('Failed to fetch categories:', json.error);
       setIsLoading(false);
     };
     fetchCategories();
@@ -52,38 +54,62 @@ const Category = () => {
 
   return (
     <>
-      <div className="flex justify-center my-4">
+      <div className='flex justify-center my-4'>
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <button onClick={openModalForNewCategory} className='btn btn-primary'>
             <FontAwesomeIcon icon={faPlus} size='sm' /> Add Category
           </button>
         </motion.div>
         <div className='ml-4'>
-          <button onClick={() => setIsAssignModalOpen(true)} className="btn btn-secondary">
+          <button onClick={() => setIsAssignModalOpen(true)} className='btn btn-secondary'>
             £{readyToAssign} to Assign
           </button>
-          <AssignFundsModal isOpen={isAssignModalOpen} closeModal={() => setIsAssignModalOpen(false)} />
+          <AssignFundsModal
+            isOpen={isAssignModalOpen}
+            closeModal={() => setIsAssignModalOpen(false)}
+          />
         </div>
       </div>
-      <CategoryModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} editingCategory={editingCategory} />
-      {categories.length > 0 ? categories.map((category, index) => (
-        <div key={category._id} className={`card rounded-lg cursor-pointer w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 m-2 ${colors[index % colors.length]}`} onClick={() => openModalForEdit(category)}>
-          <div className="card-body text-black">
-            <h2 className="card-title">{category.title}</h2>
-            <p>Available: £{category.available}</p>
-            <button onClick={(e) => { e.stopPropagation(); openMoveFundsModal(category); }} className="btn">Move Funds</button>
+      <CategoryModal
+        isOpen={isModalOpen}
+        closeModal={() => setIsModalOpen(false)}
+        editingCategory={editingCategory}
+      />
+      {categories.length > 0 ? (
+        categories.map((category, index) => (
+          <div
+            key={category._id}
+            className={`card rounded-lg cursor-pointer w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 m-2 ${
+              colors[index % colors.length]
+            }`}
+            onClick={() => openModalForEdit(category)}
+          >
+            <div className='card-body text-black'>
+              <h2 className='card-title'>{category.title}</h2>
+              <p>Available: £{category.available}</p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openMoveFundsModal(category);
+                }}
+                className='btn'
+              >
+                Move Funds
+              </button>
+            </div>
           </div>
-        </div>
-      )) : <div>No categories available</div>}
-      <MoveFundsModal 
-      isOpen={isMoveFundsModalOpen} 
-      closeModal={() => setIsMoveFundsModalOpen(false)} 
-      category={selectedCategoryForMoving} 
-      refreshCategories={fetchCategories}
+        ))
+      ) : (
+        <div>No categories available</div>
+      )}
+      <MoveFundsModal
+        isOpen={isMoveFundsModalOpen}
+        closeModal={() => setIsMoveFundsModalOpen(false)}
+        category={selectedCategoryForMoving}
+        refreshCategories={fetchCategories}
       />
     </>
   );
 };
 
 export default Category;
-

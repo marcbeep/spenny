@@ -21,7 +21,13 @@ const Navbar = () => {
 
   return (
     <div className={`drawer drawer-left ${isDrawerOpen ? 'active' : ''}`}>
-      <input id='my-drawer' type='checkbox' className='drawer-toggle' checked={isDrawerOpen} readOnly />
+      <input
+        id='my-drawer'
+        type='checkbox'
+        className='drawer-toggle'
+        checked={isDrawerOpen}
+        readOnly
+      />
       <div className='drawer-content flex flex-col'>
         <header className='bg-primary text-primary-content px-8 py-8 flex justify-between items-center'>
           {user && (
@@ -46,10 +52,19 @@ const Navbar = () => {
         </header>
       </div>
       <div className='drawer-side'>
-        <label htmlFor='my-drawer' className='drawer-overlay' aria-label='close sidebar' onClick={closeDrawer}></label>
+        <label
+          htmlFor='my-drawer'
+          className='drawer-overlay'
+          aria-label='close sidebar'
+          onClick={closeDrawer}
+        ></label>
         <ul className='menu py-32 overflow-y-auto w-80 h-full bg-primary text-primary-content'>
           <li>
-            <Link to='/transaction' className={`p-2 ${isActive('/transaction')}`} onClick={closeDrawer}>
+            <Link
+              to='/transaction'
+              className={`p-2 ${isActive('/transaction')}`}
+              onClick={closeDrawer}
+            >
               Transactions
             </Link>
           </li>
@@ -70,7 +85,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
-
-

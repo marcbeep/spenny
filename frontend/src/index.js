@@ -15,12 +15,12 @@ root.render(
       <BudgetContextProvider>
         <AccountContextProvider>
           <TransactionContextProvider>
-          <CategoryContextProvider>
-            <App />
-          </CategoryContextProvider>
-        </TransactionContextProvider>
-      </AccountContextProvider>
-     </BudgetContextProvider>
+            <CategoryContextProvider>
+              <App />
+            </CategoryContextProvider>
+          </TransactionContextProvider>
+        </AccountContextProvider>
+      </BudgetContextProvider>
     </AuthContextProvider>
   </React.StrictMode>,
 );

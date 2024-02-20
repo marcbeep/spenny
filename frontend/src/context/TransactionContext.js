@@ -17,16 +17,18 @@ export const transactionReducer = (state, action) => {
     case 'DELETE_TRANSACTION':
       return {
         ...state,
-        transactions: state.transactions.filter(transaction => transaction._id !== action.payload),
+        transactions: state.transactions.filter(
+          (transaction) => transaction._id !== action.payload,
+        ),
       };
-      case 'UPDATE_TRANSACTION':
-        return {
-          ...state,
-          transactions: state.transactions.map((transaction) =>
-            transaction._id === action.payload._id ? action.payload : transaction
-          ),
-        };
-      
+    case 'UPDATE_TRANSACTION':
+      return {
+        ...state,
+        transactions: state.transactions.map((transaction) =>
+          transaction._id === action.payload._id ? action.payload : transaction,
+        ),
+      };
+
     default:
       return state;
   }

@@ -13,7 +13,6 @@ import Category from './pages/Category';
 import Navbar from './components/Navbar';
 
 function App() {
-
   const { user } = useAuthContext();
 
   // const { user, authIsReady } = useAuthContext();
@@ -27,12 +26,12 @@ function App() {
         <Navbar />
         <div className='px-16 py-12 bg-base-100'>
           <Routes>
-            <Route path='/' element={!user ? <LandingPage /> : <Navigate to="/transaction" />} />
-            <Route path='/transaction' element={user ? <Transaction /> : <Navigate to="/" />} />
-            <Route path='/account' element={user ? <Account /> : <Navigate to="/" />} />
-            <Route path='/category' element={user ? <Category /> : <Navigate to="/" />} />
-            <Route path='/signup' element={!user ? <Signup /> : <Navigate to="/transaction" />} />
-            <Route path='/login' element={!user ? <Login /> : <Navigate to="/transaction" />} />
+            <Route path='/' element={!user ? <LandingPage /> : <Navigate to='/transaction' />} />
+            <Route path='/transaction' element={user ? <Transaction /> : <Navigate to='/' />} />
+            <Route path='/account' element={user ? <Account /> : <Navigate to='/' />} />
+            <Route path='/category' element={user ? <Category /> : <Navigate to='/' />} />
+            <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/transaction' />} />
+            <Route path='/login' element={!user ? <Login /> : <Navigate to='/transaction' />} />
           </Routes>
         </div>
       </BrowserRouter>
