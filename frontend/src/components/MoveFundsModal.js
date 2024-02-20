@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {formatCurrencyInput} from '../utils/currencyInputFormatter';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useBudgetContext } from '../context/BudgetContext';
 import { useCategoryContext } from '../context/CategoryContext';
@@ -17,12 +18,17 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
   useEffect(() => {
     if (category) {
       setFromCategory(category._id);
-      setAmount(category.available.toString());
-      console.log(`Selected category: ${category._id}, Available amount: ${category.available}`);
+      setAmount(formatCurrencyInput(category.available.toString()));
     } else {
       resetForm();
     }
   }, [category]);
+
+  // Modify the setAmount call within the onChange handler for the amount input
+  const handleAmountChange = (e) => {
+    // Use the utility function to format input dynamically
+    setAmount(formatCurrencyInput(e.target.value));
+  };
 
   const handleMoveFunds = async () => {
     if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
@@ -128,7 +134,7 @@ const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => 
           placeholder='Amount'
           className='input input-bordered w-full mb-2'
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={handleAmountChange}
         />
         <select
           value={toCategory}

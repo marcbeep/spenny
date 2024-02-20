@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formatCurrencyInput } from '../utils/currencyInputFormatter';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext';
 import { useCategoryContext } from '../context/CategoryContext';
@@ -23,8 +24,14 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (name === 'amount') {
+      // Use formatCurrencyInput for the amount field
+      setFormData({ ...formData, [name]: formatCurrencyInput(value) });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
+
 
   const validateForm = () => {
     const errors = {};
@@ -129,7 +136,7 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
           </div>
           <div className='form-control my-4'>
             <input
-              type='number'
+              type='text'
               id='amount'
               name='amount'
               placeholder='Amount'

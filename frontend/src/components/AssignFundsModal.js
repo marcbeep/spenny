@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useCategoryContext } from '../context/CategoryContext';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useBudgetContext } from '../context/BudgetContext';
+import { formatCurrencyInput } from '../utils/currencyInputFormatter'; // Import the utility function
 import backendURL from '../config';
 
 const AssignFundsModal = ({ isOpen, closeModal, readyToAssign }) => {
@@ -24,14 +25,7 @@ const AssignFundsModal = ({ isOpen, closeModal, readyToAssign }) => {
   };
 
   const handleAmountChange = (e) => {
-    const input = e.target.value.replace(/[^0-9]/g, ''); // Strip non-numeric characters
-    if (input === '') {
-      setAmount('0.00');
-      return;
-    }
-    let integerInput = parseInt(input, 10);
-    let newAmount = (integerInput / 100).toFixed(2); // Shift decimal two places left
-    setAmount(newAmount.toString());
+    setAmount(formatCurrencyInput(e.target.value));
   };
 
   const handleAssignFunds = async (e) => {

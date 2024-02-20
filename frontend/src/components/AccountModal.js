@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { formatCurrencyInput } from '../utils/currencyInputFormatter'; 
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useAccountContext } from '../context/AccountContext';
 import backendURL from '../config';
@@ -21,7 +22,13 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, onSuccess }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === 'balance') {
+      // Use formatCurrencyInput for balance field
+      setFormData((prev) => ({ ...prev, [name]: formatCurrencyInput(value) }));
+    } else {
+      // Handle other inputs normally
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
     if (formErrors[name]) {
       setFormErrors((prev) => ({ ...prev, [name]: '' }));
     }
