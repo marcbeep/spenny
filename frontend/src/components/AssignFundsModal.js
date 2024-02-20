@@ -1,20 +1,43 @@
 import React, { useState } from 'react';
 import { useCategoryContext } from '../context/CategoryContext';
 import { useAuthContext } from '../hooks/useAuthContext';
-import backendURL from '../config';
 import { useBudgetContext } from '../context/BudgetContext';
+import backendURL from '../config';
 
-const AssignFundsModal = ({ isOpen, closeModal }) => {
+const AssignFundsModal = ({ isOpen, closeModal, readyToAssign }) => {
   const { user } = useAuthContext();
-  const { categories, dispatch: dispatchCategory } = useCategoryContext();
+  const { categories } = useCategoryContext();
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [amount, setAmount] = useState('');
-  const [formErrors, setFormErrors] = useState({}); // Use this for error messages
+  const [amount, setAmount] = useState('0.00');
+  const [formErrors, setFormErrors] = useState({});
   const { fetchReadyToAssign } = useBudgetContext();
+
+  const validateAmount = (value) => {
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue > readyToAssign) {
+      setFormErrors({ ...formErrors, amount: 'Cannot assign more than available funds.' });
+      return false;
+    } else {
+      setFormErrors({ ...formErrors, amount: '' }); // Clear error if validation passes
+      return true;
+    }
+  };
+
+  const handleAmountChange = (e) => {
+    const input = e.target.value.replace(/[^0-9]/g, ''); // Strip non-numeric characters
+    if (input === '') {
+        setAmount('0.00');
+        return;
+    }
+    let integerInput = parseInt(input, 10);
+    let newAmount = (integerInput / 100).toFixed(2); // Shift decimal two places left
+    setAmount(newAmount.toString());
+};
+
 
   const handleAssignFunds = async (e) => {
     e.preventDefault();
-    // Validation logic...
+    if (!validateAmount(amount)) return;
 
     try {
       const response = await fetch(`${backendURL}/budget/assign`, {
@@ -22,18 +45,11 @@ const AssignFundsModal = ({ isOpen, closeModal }) => {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
         body: JSON.stringify({ categoryId: selectedCategory, amount: parseFloat(amount) }),
       });
-      const result = await response.json();
-
       if (response.ok) {
-        // Update category context with the new category data
-        dispatchCategory({ type: 'UPDATE_CATEGORY', payload: result.category });
-
-        // Assuming you have a way to access fetchReadyToAssign from BudgetContext
-        // This could be passed as a prop to this modal or accessed directly using useBudgetContext() if inside a component
         fetchReadyToAssign();
-
         closeModal();
       } else {
+        const result = await response.json();
         setFormErrors({ form: result.error || 'Failed to assign funds. Please try again.' });
       }
     } catch (error) {
@@ -47,40 +63,28 @@ const AssignFundsModal = ({ isOpen, closeModal }) => {
   return (
     <div className='modal modal-open'>
       <div className='modal-box'>
-        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>
-          ✕
-        </button>
+        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>✕</button>
         <h3 className='font-bold text-lg'>Assign Funds to Category</h3>
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
           className='select select-bordered w-full mb-4'
         >
-          <option disabled value=''>
-            Select a category
-          </option>
+          <option disabled value=''>Select a category</option>
           {categories.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.title}
-            </option>
+            <option key={category._id} value={category._id}>{category.title}</option>
           ))}
         </select>
-        {formErrors.selectedCategory && (
-          <div className='text-red-500 mb-4'>{formErrors.selectedCategory}</div>
-        )}
         <input
-          type='number'
+          type='text' // Changed to text to manually handle numeric input
           placeholder='Amount'
           className='input input-bordered w-full mb-4'
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={handleAmountChange}
         />
-        {formErrors.form && <div className='text-red-500 mb-4'>{formErrors.form}</div>}
         {formErrors.amount && <div className='text-red-500 mb-4'>{formErrors.amount}</div>}
         <div className='modal-action'>
-          <button className='btn btn-primary' onClick={handleAssignFunds}>
-            Assign
-          </button>
+          <button className='btn btn-primary' onClick={handleAssignFunds}>Assign</button>
         </div>
       </div>
     </div>

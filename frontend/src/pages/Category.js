@@ -67,6 +67,7 @@ const Category = () => {
           <AssignFundsModal
             isOpen={isAssignModalOpen}
             closeModal={() => setIsAssignModalOpen(false)}
+            readyToAssign={readyToAssign}
           />
         </div>
       </div>
