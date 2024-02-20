@@ -4,62 +4,24 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useAccountContext } from '../context/AccountContext';
-import { useBudgetContext } from '../context/BudgetContext'; // Import BudgetContext
+import { useBudgetContext } from '../context/BudgetContext';
 import AccountModal from '../components/AccountModal';
-import backendURL from '../config';
 
 const Account = () => {
   const { user } = useAuthContext();
   const { accounts, totalBalance, fetchTotalBalance } = useAccountContext();
   const { readyToAssign, fetchReadyToAssign } = useBudgetContext();
-  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState(null);
   const colors = ['bg-neutral'];
-  // const [totalBalance, setTotalBalance] = useState(0);
-
-  // // Fetch accounts and total balance
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (!user) return;
-  //     setIsLoading(true);
-  //     try {
-  //       // Fetch accounts
-  //       const accountsResp = await fetch(`${backendURL}/account`, {
-  //         headers: { 'Authorization': `Bearer ${user.token}` },
-  //       });
-  //       const accountsData = await accountsResp.json();
-  //       if (accountsResp.ok) {
-  //         dispatchAccount({ type: 'SET_ACCOUNTS', payload: accountsData });
-  //       }
-
-  //       // Fetch total balance and ready to assign in parallel
-  //       const totalBalanceResp = await fetch(`${backendURL}/account/totalBalance`, {
-  //         headers: { 'Authorization': `Bearer ${user.token}` },
-  //       });
-  //       const totalBalanceData = await totalBalanceResp.json();
-  //       if (totalBalanceResp.ok) {
-  //         setTotalBalance(totalBalanceData.totalBalance);
-  //       }
-
-  //       // This will update readyToAssign value
-  //       await fetchReadyToAssign();
-  //     } catch (error) {
-  //       console.error('Error:', error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [user, dispatchAccount]);
 
   useEffect(() => {
     if (user) {
-      fetchReadyToAssign(); // Ensures "Ready to Assign" updates are fetched
-      fetchTotalBalance(); // Ensures "Total Balance" updates are fetched
+      fetchReadyToAssign(); 
+      fetchTotalBalance(); 
     }
   }, [user, fetchReadyToAssign, fetchTotalBalance]);
+
   const openModalForNewAccount = () => {
     setEditingAccount(null);
     setIsModalOpen(true);
@@ -70,7 +32,10 @@ const Account = () => {
     setIsModalOpen(true);
   };
 
-  if (isLoading) return <div>Loading accounts...</div>;
+  const handleSuccess = () => {
+    fetchTotalBalance();
+    fetchReadyToAssign();
+  };
 
   return (
     <>
@@ -89,7 +54,7 @@ const Account = () => {
         isOpen={isModalOpen}
         closeModal={() => setIsModalOpen(false)}
         editingAccount={editingAccount}
-        fetchReadyToAssign={fetchReadyToAssign} // Pass fetchReadyToAssign down to modal
+        onSuccess={handleSuccess}
       />
       <div className='flex flex-wrap justify-center gap-4 p-4 text-base-100'>
         {accounts.length > 0 ? (

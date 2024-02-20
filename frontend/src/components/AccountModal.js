@@ -3,7 +3,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 import { useAccountContext } from '../context/AccountContext'; // Ensure this import is correct
 import backendURL from '../config';
 
-const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }) => {
+const AccountModal = ({ isOpen, closeModal, editingAccount, onSuccess }) => {
   // Define initialState using useMemo to prevent unnecessary re-renders
   const initialState = useMemo(() => ({ title: '', balance: '', type: '' }), []);
   const [formData, setFormData] = useState(editingAccount || initialState);
@@ -64,7 +64,7 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }
         const data = await response.json();
         dispatch({ type: actionType, payload: data });
         setFormData(initialState);
-        fetchReadyToAssign(); // Fetch readyToAssign after adding or updating an account
+        onSuccess();
         closeModal();
       } else {
         const error = await response.json();
@@ -91,7 +91,7 @@ const AccountModal = ({ isOpen, closeModal, editingAccount, fetchReadyToAssign }
       if (response.ok) {
         dispatch({ type: 'DELETE_ACCOUNT', payload: editingAccount._id });
         console.log('deleted account:', editingAccount._id);
-        fetchReadyToAssign(); // Fetch readyToAssign after deleting an account
+        onSuccess();
         closeModal();
       } else {
         console.error('Failed to delete the account');
