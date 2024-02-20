@@ -42,9 +42,11 @@ export const BudgetContextProvider = ({ children }) => {
   }, [user?.token]); // Depend on user.token to re-fetch when the user or token changes
 
   useEffect(() => {
-    fetchReadyToAssign();
-  }, [fetchReadyToAssign]); // Depend on fetchReadyToAssign to re-fetch when the function changes
-
+    if (user && user.token) {
+      fetchReadyToAssign();
+    }
+  }, [user, fetchReadyToAssign]);
+  
   return (
     <BudgetContext.Provider value={{ ...state, dispatch, fetchReadyToAssign }}>
       {children}
