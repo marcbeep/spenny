@@ -10,10 +10,8 @@ const {
 
 const router = express.Router();
 
-// Apply authentication middleware to all category routes
 router.use(requireAuth);
 
-// Routes for categories
 router.post('/', addCategory);
 router.get('/', getCategories);
 router.get('/:id', getSingleCategory);
