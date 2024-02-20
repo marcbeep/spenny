@@ -26,14 +26,13 @@ const AssignFundsModal = ({ isOpen, closeModal, readyToAssign }) => {
   const handleAmountChange = (e) => {
     const input = e.target.value.replace(/[^0-9]/g, ''); // Strip non-numeric characters
     if (input === '') {
-        setAmount('0.00');
-        return;
+      setAmount('0.00');
+      return;
     }
     let integerInput = parseInt(input, 10);
     let newAmount = (integerInput / 100).toFixed(2); // Shift decimal two places left
     setAmount(newAmount.toString());
-};
-
+  };
 
   const handleAssignFunds = async (e) => {
     e.preventDefault();
@@ -63,16 +62,22 @@ const AssignFundsModal = ({ isOpen, closeModal, readyToAssign }) => {
   return (
     <div className='modal modal-open'>
       <div className='modal-box'>
-        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>✕</button>
+        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>
+          ✕
+        </button>
         <h3 className='font-bold text-lg'>Assign Funds to Category</h3>
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
           className='select select-bordered w-full mb-4'
         >
-          <option disabled value=''>Select a category</option>
+          <option disabled value=''>
+            Select a category
+          </option>
           {categories.map((category) => (
-            <option key={category._id} value={category._id}>{category.title}</option>
+            <option key={category._id} value={category._id}>
+              {category.title}
+            </option>
           ))}
         </select>
         <input
@@ -84,7 +89,9 @@ const AssignFundsModal = ({ isOpen, closeModal, readyToAssign }) => {
         />
         {formErrors.amount && <div className='text-red-500 mb-4'>{formErrors.amount}</div>}
         <div className='modal-action'>
-          <button className='btn btn-primary' onClick={handleAssignFunds}>Assign</button>
+          <button className='btn btn-primary' onClick={handleAssignFunds}>
+            Assign
+          </button>
         </div>
       </div>
     </div>

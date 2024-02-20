@@ -25,7 +25,7 @@ const createInitialBudgetForUser = async (userId) => {
       readyToAssign: 0,
     });
   } catch (err) {
-    console.error("Error creating initial budget for user:", err);
+    console.error('Error creating initial budget for user:', err);
   }
 };
 
@@ -43,9 +43,9 @@ const createGenericCategoriesForUser = async (userId) => {
   ];
 
   try {
-    await Promise.all(genericCategories.map(category => Category.create(category)));
+    await Promise.all(genericCategories.map((category) => Category.create(category)));
   } catch (err) {
-    console.error("Error creating generic categories for user:", err);
+    console.error('Error creating generic categories for user:', err);
   }
 };
 
@@ -94,4 +94,3 @@ exports.signupUser = async (req, res) => {
     }
   }
 };
-

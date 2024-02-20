@@ -78,7 +78,9 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
   await toCategory.save();
 
   res.status(200).json({
-    message: `£${numericAmount.toFixed(2)} successfully moved from ${fromCategory.title} to ${toCategory.title}`,
+    message: `£${numericAmount.toFixed(2)} successfully moved from ${fromCategory.title} to ${
+      toCategory.title
+    }`,
   });
 };
 
@@ -147,7 +149,9 @@ exports.moveMoneyToReadyToAssign = async (req, res) => {
   await budget.save();
 
   res.status(200).json({
-    message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${category.title}.`,
+    message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${
+      category.title
+    }.`,
     category: { _id: category._id, title: category.title, available: category.available },
     readyToAssign: budget.readyToAssign,
   });

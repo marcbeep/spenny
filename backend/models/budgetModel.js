@@ -1,34 +1,37 @@
 const mongoose = require('mongoose');
 
-const budgetSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+const budgetSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    totalAvailable: {
+      type: Number,
+      required: true,
+    },
+    totalAssigned: {
+      type: Number,
+      required: true,
+    },
+    readyToAssign: {
+      type: Number,
+      required: true,
+    },
   },
-  totalAvailable: {
-    type: Number,
-    required: true,
-  },
-  totalAssigned: {
-    type: Number,
-    required: true,
-  },
-  readyToAssign: {
-    type: Number,
-    required: true,
-  },
-}, { timestamps: true });
+  { timestamps: true },
+);
 
-budgetSchema.pre('save', function(next) {
+budgetSchema.pre('save', function (next) {
   this.totalAvailable = parseFloat(this.totalAvailable.toFixed(2));
   this.totalAssigned = parseFloat(this.totalAssigned.toFixed(2));
   this.readyToAssign = parseFloat(this.readyToAssign.toFixed(2));
-  
+
   next();
 });
 
-budgetSchema.pre(['update', 'findOneAndUpdate'], function(next) {
+budgetSchema.pre(['update', 'findOneAndUpdate'], function (next) {
   const update = this.getUpdate();
 
   if (update.totalAvailable !== undefined) {
@@ -42,7 +45,7 @@ budgetSchema.pre(['update', 'findOneAndUpdate'], function(next) {
   }
 
   this.setUpdate(update);
-  
+
   next();
 });
 

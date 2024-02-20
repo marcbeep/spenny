@@ -46,7 +46,7 @@ export const BudgetContextProvider = ({ children }) => {
       fetchReadyToAssign();
     }
   }, [user, fetchReadyToAssign]);
-  
+
   return (
     <BudgetContext.Provider value={{ ...state, dispatch, fetchReadyToAssign }}>
       {children}

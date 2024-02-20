@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
-import { useAccountContext } from '../context/AccountContext'; 
+import { useAccountContext } from '../context/AccountContext';
 import backendURL from '../config';
 
 const AccountModal = ({ isOpen, closeModal, editingAccount, onSuccess }) => {

@@ -17,8 +17,8 @@ const Account = () => {
 
   useEffect(() => {
     if (user) {
-      fetchReadyToAssign(); 
-      fetchTotalBalance(); 
+      fetchReadyToAssign();
+      fetchTotalBalance();
     }
   }, [user, fetchReadyToAssign, fetchTotalBalance]);
 
