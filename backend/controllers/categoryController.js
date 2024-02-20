@@ -1,11 +1,9 @@
-const Category = require('../models/categoryModel');
 const mongoose = require('mongoose');
-
-// Utility function for handling "Category not found" scenarios
-const handleNoCategoryFound = (res) => res.status(404).json({ error: 'Category not found' });
 
 /**
  * Creates a new category for the logged-in user.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
  */
 exports.addCategory = async (req, res) => {
   const { title } = req.body; // Only accept title for category creation
@@ -26,6 +24,8 @@ exports.addCategory = async (req, res) => {
 
 /**
  * Retrieves all categories associated with the logged-in user.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
  */
 exports.getCategories = async (req, res) => {
   try {
@@ -38,6 +38,8 @@ exports.getCategories = async (req, res) => {
 
 /**
  * Retrieves a single category by its ID.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
  */
 exports.getSingleCategory = async (req, res) => {
   const { id } = req.params;
@@ -56,6 +58,8 @@ exports.getSingleCategory = async (req, res) => {
 
 /**
  * Deletes a category by its ID.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
  */
 exports.deleteCategory = async (req, res) => {
   const { id } = req.params;
@@ -76,6 +80,8 @@ exports.deleteCategory = async (req, res) => {
  * Updates the title of a category by its ID.
  * This operation is designed to only affect the category's name,
  * ensuring no impact on budget-related properties.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
  */
 exports.updateCategory = async (req, res) => {
   const { id } = req.params;

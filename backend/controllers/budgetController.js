@@ -1,6 +1,12 @@
 const Budget = require('../models/budgetModel');
 const Category = require('../models/categoryModel');
 
+/**
+ * Updates the user's budget based on category actions like assigning or removing money.
+ * @param {string} userId - The user's database ID.
+ * @param {number} amountChange - The amount of change to be applied to the budget.
+ * @param {string} actionType - The type of action to be performed ('assign', 'move', or 'remove').
+ */
 async function updateUserBudgetForCategoryActions(userId, amountChange, actionType) {
   const budget = await Budget.findOne({ user: userId });
   if (!budget) {
@@ -22,8 +28,13 @@ async function updateUserBudgetForCategoryActions(userId, amountChange, actionTy
   await budget.save();
 }
 
+/**
+ * Assigns money to a category.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.assignMoneyToCategory = async (req, res) => {
-  const { categoryId, amount } = req.body; // CHANGED: No change needed here, kept for context
+  const { categoryId, amount } = req.body;
   const userId = req.user._id;
   const numericAmount = parseFloat(amount);
 
@@ -41,8 +52,13 @@ exports.assignMoneyToCategory = async (req, res) => {
   });
 };
 
+/**
+ * Moves money between categories.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.moveMoneyBetweenCategories = async (req, res) => {
-  const { fromCategoryId, toCategoryId, amount } = req.body; // CHANGED: Harmonized to use fromCategoryId
+  const { fromCategoryId, toCategoryId, amount } = req.body;
   const userId = req.user._id;
   const numericAmount = parseFloat(amount);
 
@@ -62,14 +78,17 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
   await toCategory.save();
 
   res.status(200).json({
-    message: `£${numericAmount.toFixed(2)} successfully moved from ${fromCategory.title} to ${
-      toCategory.title
-    }`,
+    message: `£${numericAmount.toFixed(2)} successfully moved from ${fromCategory.title} to ${toCategory.title}`,
   });
 };
 
+/**
+ * Removes money from a category.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.removeMoneyFromCategory = async (req, res) => {
-  const { categoryId, amount } = req.body; // CHANGED: No change needed here, kept for context
+  const { categoryId, amount } = req.body;
   const userId = req.user._id;
   const numericAmount = parseFloat(amount);
 
@@ -86,6 +105,11 @@ exports.removeMoneyFromCategory = async (req, res) => {
   });
 };
 
+/**
+ * Retrieves the amount of money ready to be assigned.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.readyToAssign = async (req, res) => {
   const userId = req.user._id;
   const budget = await Budget.findOne({ user: userId });
@@ -93,8 +117,13 @@ exports.readyToAssign = async (req, res) => {
   res.status(200).json({ readyToAssign: budget.readyToAssign });
 };
 
+/**
+ * Moves money back to "Ready to Assign" from a category.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.moveMoneyToReadyToAssign = async (req, res) => {
-  const { fromCategoryId, amount } = req.body; // CHANGED: Harmonized to use fromCategoryId
+  const { fromCategoryId, amount } = req.body;
   const userId = req.user._id;
   const numericAmount = parseFloat(amount);
 
@@ -118,9 +147,7 @@ exports.moveMoneyToReadyToAssign = async (req, res) => {
   await budget.save();
 
   res.status(200).json({
-    message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${
-      category.title
-    }.`,
+    message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${category.title}.`,
     category: { _id: category._id, title: category.title, available: category.available },
     readyToAssign: budget.readyToAssign,
   });

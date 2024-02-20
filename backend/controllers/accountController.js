@@ -1,7 +1,11 @@
 const Account = require('../models/accountModel');
 const Budget = require('../models/budgetModel');
 
-// Utility function to update the user's budget
+/**
+ * Updates the user's budget based on changes in account balance.
+ * @param {string} userId - The user's database ID.
+ * @param {number} balanceChange - The change in balance to be applied to the budget.
+ */
 async function updateUserBudget(userId, balanceChange) {
   const budget = await Budget.findOne({ user: userId });
   if (!budget) {
@@ -17,10 +21,17 @@ async function updateUserBudget(userId, balanceChange) {
   await budget.save();
 }
 
-// Handles not found accounts consistently across the controller
+/**
+ * Handles not found accounts consistently across the controller.
+ * @param {Object} res - The response object.
+ */
 const handleAccountNotFound = (res) => res.status(404).json({ error: 'Account not found' });
 
-// Creates a new account for the logged-in user
+/**
+ * Creates a new account for the logged-in user.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.addAccount = async (req, res) => {
   const { title, type, balance } = req.body;
 
@@ -33,7 +44,7 @@ exports.addAccount = async (req, res) => {
     });
 
     // Update the user's budget upon account creation
-    await updateUserBudget(req.user._id, balance, true);
+    await updateUserBudget(req.user._id, balance);
 
     res.status(201).json(account);
   } catch (err) {
@@ -41,7 +52,11 @@ exports.addAccount = async (req, res) => {
   }
 };
 
-// Retrieves all accounts associated with the logged-in user
+/**
+ * Retrieves all accounts associated with the logged-in user.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.getAccounts = async (req, res) => {
   try {
     const accounts = await Account.find({ user: req.user._id });
@@ -51,7 +66,11 @@ exports.getAccounts = async (req, res) => {
   }
 };
 
-// Deletes an account by its ID and updates budget accordingly.
+/**
+ * Deletes an account by its ID and updates budget accordingly.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.deleteAccount = async (req, res) => {
   const { id } = req.params;
 
@@ -72,7 +91,11 @@ exports.deleteAccount = async (req, res) => {
   }
 };
 
-// Updates an account by its ID and adjusts the budget accordingly
+/**
+ * Updates an account by its ID and adjusts the budget accordingly.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.updateAccount = async (req, res) => {
   const { id } = req.params;
   const { balance } = req.body;
@@ -96,7 +119,11 @@ exports.updateAccount = async (req, res) => {
   }
 };
 
-// Calculates and returns the total balance across all accounts of the logged-in user
+/**
+ * Calculates and returns the total balance across all accounts of the logged-in user.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.getTotalBalance = async (req, res) => {
   try {
     const accounts = await Account.find({ user: req.user._id });

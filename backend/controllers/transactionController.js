@@ -3,11 +3,10 @@ const Category = require('../models/categoryModel');
 const Account = require('../models/accountModel');
 const mongoose = require('mongoose');
 
-// Utility function to handle "Transaction not found" responses
-const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
-
 /**
  * Retrieves all transactions for the logged-in user, sorted by creation date.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
  */
 exports.getAllTransactions = async (req, res) => {
   try {
@@ -20,6 +19,8 @@ exports.getAllTransactions = async (req, res) => {
 
 /**
  * Retrieves a single transaction by its ID.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
  */
 exports.getSingleTransaction = async (req, res) => {
   const { id } = req.params;
@@ -34,6 +35,11 @@ exports.getSingleTransaction = async (req, res) => {
   }
 };
 
+/**
+ * Creates a new transaction.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.createTransaction = async (req, res) => {
   const { title, amount, category: categoryId, account: accountId } = req.body;
 
@@ -70,6 +76,11 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
+/**
+ * Deletes a single transaction by its ID.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.deleteSingleTransaction = async (req, res) => {
   const { id } = req.params;
 
@@ -102,6 +113,11 @@ exports.deleteSingleTransaction = async (req, res) => {
   }
 };
 
+/**
+ * Updates a single transaction by its ID.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 exports.updateSingleTransaction = async (req, res) => {
   const { id } = req.params;
   const { title, amount, category: newCategoryId, account: newAccountId } = req.body;

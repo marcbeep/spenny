@@ -1,6 +1,3 @@
-const User = require('../models/userModel');
-const Category = require('../models/categoryModel');
-const Budget = require('../models/budgetModel');
 const jwt = require('jsonwebtoken');
 
 /**
@@ -10,43 +7,6 @@ const jwt = require('jsonwebtoken');
  */
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
-};
-
-/**
- * Creates an initial budget for a new user.
- * @param {string} userId - The user's database ID.
- */
-const createInitialBudgetForUser = async (userId) => {
-  try {
-    await Budget.create({
-      user: userId,
-      totalAvailable: 0,
-      totalAssigned: 0,
-      readyToAssign: 0,
-    });
-  } catch (err) {
-    console.error('Error creating initial budget for user:', err);
-  }
-};
-
-/**
- * Creates a set of generic categories for a new user.
- * @param {string} userId - The user's database ID.
- */
-const createGenericCategoriesForUser = async (userId) => {
-  const genericCategories = [
-    { title: 'Groceries', user: userId },
-    { title: 'Rent', user: userId },
-    { title: 'Eating Out', user: userId },
-    { title: 'Fun Money', user: userId },
-    { title: 'Savings', user: userId },
-  ];
-
-  try {
-    await Promise.all(genericCategories.map((category) => Category.create(category)));
-  } catch (err) {
-    console.error('Error creating generic categories for user:', err);
-  }
 };
 
 /**
@@ -85,10 +45,8 @@ exports.signupUser = async (req, res) => {
 
     res.status(201).json({ email: user.email, token });
   } catch (err) {
-    // Directly use the error message from the model
     const errorMessage = err.message || 'Signup failed due to an unexpected error.';
 
-    // Detect if the error is due to a duplicate email with the unique index error code (11000)
     if (err.code === 11000) {
       res.status(400).json({ error: 'Email already exists. Please try another one.' });
     } else {
@@ -96,3 +54,4 @@ exports.signupUser = async (req, res) => {
     }
   }
 };
+
