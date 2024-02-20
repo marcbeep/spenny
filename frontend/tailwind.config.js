@@ -1,6 +1,6 @@
 module.exports = {
   purge: ['./src/**/*.js', './src/**/*.jsx', './public/index.html'],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: false,
   theme: {
     extend: {
       fontFamily: {
@@ -18,4 +18,13 @@ module.exports = {
     extend: {},
   },
   plugins: [require('daisyui')],
+  daisyui: {
+    themes: ["light"],
+    base: true,
+    styled: true,
+    utils: true,
+    prefix: "",
+    logs: true,
+    themeRoot: ":root",
+  },
 };

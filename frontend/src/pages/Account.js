@@ -15,7 +15,7 @@ const Account = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState(null);
-  const colors = ['bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 'bg-purple-400'];
+  const colors = ['bg-neutral'];
   // const [totalBalance, setTotalBalance] = useState(0);
 
   // // Fetch accounts and total balance
