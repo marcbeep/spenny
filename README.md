@@ -1,13 +1,4 @@
-**To Do**
-
-- [x] Show "ready to assign" with correct amount.
-- [ ] Create a "move money" modal.
-- [ ] Dynamically update category amounts as money is moved around.
-- [ ] Users can "reconcile" bank accounts.
-- [ ] When a user deletes a category, users must first reassign all transactions to another category.
-- [ ] Make it time sensitive (goals).
-
----
+![icon](frontend/public/apple-touch-icon.png)
 
 # Spenny
 
@@ -168,3 +159,12 @@ These functions represent the endpoints and logic for managing accounts, budgets
 - `400` for bad requests where the request cannot be processed due to client-side errors (e.g., validation errors).
 - `201` should be used for creating resources.
 - `204` for successful requests that don't return any content (e.g., delete operations).
+
+---
+
+**Roadmap**
+
+- [ ] Dashboard.
+- [ ] Users can "reconcile" bank accounts.
+- [ ] When a user deletes a category, users must first reassign all transactions to another category.
+- [ ] Make it time sensitive (goals).
