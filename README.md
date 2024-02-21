@@ -1,4 +1,4 @@
-![icon](frontend/public/apple-touch-icon.png)
+<img src="frontend/public/icon.png" alt="icon" width="100"/>
 
 # Spenny
 
