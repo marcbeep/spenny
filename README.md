@@ -165,6 +165,5 @@ These functions represent the endpoints and logic for managing accounts, budgets
 **Roadmap**
 
 - [ ] Dashboard.
-- [ ] Users can "reconcile" bank accounts.
 - [ ] When a user deletes a category, users must first reassign all transactions to another category.
 - [ ] Make it time sensitive (goals).

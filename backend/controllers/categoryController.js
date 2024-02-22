@@ -1,4 +1,5 @@
 const Category = require('../models/categoryModel');
+const Transaction = require('../models/transactionModel');
 const mongoose = require('mongoose');
 
 /**
@@ -58,22 +59,37 @@ exports.getSingleCategory = async (req, res) => {
 };
 
 /**
- * Deletes a category by its ID.
+ * Deletes a category by its ID and reassigns associated transactions to a new category.
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
 exports.deleteCategory = async (req, res) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return handleNoCategoryFound(res);
+  const { id } = req.params; // ID of the category to delete
+  const { newCategoryId } = req.body; // New category ID to reassign transactions
+
+  if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(newCategoryId)) {
+    return res.status(400).json({ error: 'Invalid category ID' });
   }
 
   try {
+    // Check if new category exists to prevent reassigning to a non-existent category
+    const newCategory = await Category.findById(newCategoryId);
+    if (!newCategory) {
+      return res.status(404).json({ error: 'New category not found' });
+    }
+
+    // Reassign transactions associated with the category to be deleted to the new category
+    await Transaction.updateMany({ category: id }, { $set: { category: newCategoryId } });
+
+    // Delete the category after reassigning transactions
     const result = await Category.findByIdAndDelete(id);
-    if (!result) return handleNoCategoryFound(res);
-    res.status(204).send();
+    if (!result) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    res.status(204).send(); // Successfully deleted category and reassigned transactions
   } catch (err) {
-    res.status(400).json({ error: 'Failed to delete category' });
+    res.status(500).json({ error: 'Failed to delete category and reassign transactions' });
   }
 };
 
