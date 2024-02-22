@@ -4,20 +4,18 @@ import { useCategoryContext } from '../context/CategoryContext';
 import backendURL from '../config';
 
 const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
-  const initialState = { name: '', available: 0 };
+  const initialState = { title: '', available: 0, newCategoryId: '' };
   const [formData, setFormData] = useState(initialState);
   const [formErrors, setFormErrors] = useState({});
   const { user } = useAuthContext();
-  const { dispatch } = useCategoryContext();
+  const { categories, dispatch } = useCategoryContext();
 
   useEffect(() => {
-    // Reset form data whenever the modal is opened/closed or an editing category is set/unset
-    setFormData(
-      editingCategory
-        ? { name: editingCategory.name, available: editingCategory.available }
-        : initialState,
-    );
-  }, [editingCategory]);
+    if (isOpen) {
+      setFormData(editingCategory ? { title: editingCategory.title, available: editingCategory.available } : initialState);
+    }
+    // This will ensure that the modal resets its form data when it's opened or when the editingCategory changes
+  }, [isOpen, editingCategory]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,6 +28,7 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,12 +61,20 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
   };
 
   const handleDelete = async () => {
-    if (!editingCategory?._id) return;
+    // Ensure newCategoryId is selected before allowing delete
+    if (!editingCategory?._id || !formData.newCategoryId) {
+      setFormErrors({ ...formErrors, newCategoryId: 'Please select a category to reassign transactions to.' });
+      return;
+    }
 
     try {
       const response = await fetch(`${backendURL}/category/${editingCategory._id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${user.token}` },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ newCategoryId: formData.newCategoryId }),
       });
 
       if (response.ok) {
@@ -82,13 +89,13 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
   };
 
   if (!isOpen) return null;
+  
+  const filteredCategories = categories.filter(c => c._id !== editingCategory?._id);
 
   return (
     <div className='modal modal-open'>
       <div className='modal-box'>
-        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>
-          ✕
-        </button>
+        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>✕</button>
         <h3 className='font-bold text-lg mb-4'>
           {editingCategory ? 'Edit Category' : 'Add Category'}
         </h3>
@@ -101,7 +108,26 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
             onChange={handleInputChange}
             className='input input-bordered w-full mb-4'
           />
-
+          {editingCategory && (
+          <div className="form-control my-4">
+            <label htmlFor="newCategoryId" className="label">Reassign Transactions To:</label>
+            <select
+              id="newCategoryId"
+              name="newCategoryId"
+              className="select select-bordered w-full"
+              value={formData.newCategoryId}
+              onChange={handleInputChange}
+            >
+              <option value="">Select Category</option>
+              {filteredCategories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.title}
+                </option>
+              ))}
+            </select>
+            {formErrors.newCategoryId && <p className="text-error text-sm">{formErrors.newCategoryId}</p>}
+          </div>
+        )}
           <div className='modal-action'>
             <button type='submit' className='btn btn-primary'>
               {editingCategory ? 'Update' : 'Add'}
@@ -119,3 +145,4 @@ const CategoryModal = ({ isOpen, closeModal, editingCategory }) => {
 };
 
 export default CategoryModal;
+
