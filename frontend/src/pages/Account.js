@@ -40,7 +40,7 @@ const Account = () => {
   return (
     <>
       <div className='flex justify-around'>
-        <div className='stats shadow'>
+        <div className='stats stats-vertical lg:stats-horizontal shadow'>
           <div className='stat'>
             <div className='stat-figure text-primary'>
               <FontAwesomeIcon icon={faCreditCard} size='xl' />
