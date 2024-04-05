@@ -77,33 +77,35 @@ const Category = () => {
         closeModal={() => setIsModalOpen(false)}
         editingCategory={editingCategory}
       />
-      {categories.length > 0 ? (
-        categories.map((category, index) => (
-          <div
-            key={category._id}
-            className={`card rounded-lg cursor-pointer w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 m-2 ${
-              colors[index % colors.length]
-            }`}
-            onClick={() => openModalForEdit(category)}
-          >
-            <div className='card-body text-black'>
-              <h2 className='card-title'>{category.title}</h2>
-              <p>Available: £{category.available}</p>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openMoveFundsModal(category);
-                }}
-                className='btn'
-              >
-                Move Funds
-              </button>
-            </div>
+<div className="max-w-2xl mx-auto">
+  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 justify-items-center mx-auto">
+    {categories.length > 0 ? (
+      categories.map((category, index) => (
+        <div
+          key={category._id}
+          className={`card rounded-lg cursor-pointer p-4 m-2 ${colors[index % colors.length]}`}
+          onClick={() => openModalForEdit(category)}
+        >
+          <div className='card-body text-black'>
+            <h2 className='card-title'>{category.title}</h2>
+            <p>Available: £{category.available}</p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                openMoveFundsModal(category);
+              }}
+              className='btn'
+            >
+              Move Funds
+            </button>
           </div>
-        ))
-      ) : (
-        <div>No categories available</div>
-      )}
+        </div>
+      ))
+    ) : (
+      <p>No categories yet</p>
+    )}
+  </div>
+</div>
       <MoveFundsModal
         isOpen={isMoveFundsModalOpen}
         closeModal={() => setIsMoveFundsModalOpen(false)}
