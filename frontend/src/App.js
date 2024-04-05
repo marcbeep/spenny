@@ -26,7 +26,6 @@ function App() {
     <div className='App'>
       <BrowserRouter>
         <Navbar />
-        <div className='px-16 py-12 bg-base-100'>
           <Routes>
             <Route path='/' element={!user ? <LandingPage /> : <Navigate to='/transaction' />} />
             <Route path='/transaction' element={user ? <Transaction /> : <Navigate to='/' />} />
@@ -37,7 +36,6 @@ function App() {
             <Route path='/login' element={!user ? <Login /> : <Navigate to='/transaction' />} />
             <Route path='/dev' element={user ? <Dev /> : <Navigate to='/' />} />
           </Routes>
-        </div>
       </BrowserRouter>
     </div>
   );

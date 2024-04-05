@@ -24,13 +24,10 @@ const TransactionForm = ({ categories, accounts, onSubmit }) => {
     <section className="card col-span-12 bg-base-100 xl:col-span-5 border-2 border-black rounded-xl">
       <form className="card-body" onSubmit={handleSubmit}>
         <div className="form-control">
-          <label className="label">
-            <span className="label-text">Transaction Title</span>
-          </label>
           <input
             type="text"
             name="title"
-            placeholder="E.g., Grocery Shopping"
+            placeholder="Transaction Title"
             className="input input-bordered"
             value={transaction.title}
             onChange={handleChange}
@@ -39,9 +36,6 @@ const TransactionForm = ({ categories, accounts, onSubmit }) => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="form-control">
-            <label className="label">
-              <span className="label-text">Category</span>
-            </label>
             <select
               name="category"
               className="select select-bordered"
@@ -56,9 +50,6 @@ const TransactionForm = ({ categories, accounts, onSubmit }) => {
             </select>
           </div>
           <div className="form-control">
-            <label className="label">
-              <span className="label-text">Account</span>
-            </label>
             <select
               name="account"
               className="select select-bordered"
