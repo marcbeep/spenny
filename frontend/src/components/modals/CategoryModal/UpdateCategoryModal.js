@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useAuthContext } from '../../hooks/useAuthContext';
-import { useCategoryContext } from '../../context/CategoryContext';
-import backendURL from '../../config';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useCategoryContext } from '../../../context/CategoryContext';
+import backendURL from '../../../config';
 
 const UpdateCategoryModal = ({ isOpen, closeModal, editingCategory }) => {
   const initialState = { title: '', available: 0 };
