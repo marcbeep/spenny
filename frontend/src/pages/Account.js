@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faCreditCard, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useAccountContext } from '../context/AccountContext';
 import { useBudgetContext } from '../context/BudgetContext';
 import AccountModal from '../components/AccountModal';
+import Card from '../components/Card';
 
 const Account = () => {
   const { user } = useAuthContext();
@@ -39,8 +40,25 @@ const Account = () => {
   return (
     <>
       <div className='flex justify-around'>
-        <div>Total Balance: £{totalBalance}</div>
-        <div>Ready to Assign: £{readyToAssign}</div>
+        <div className="stats shadow">
+  
+  <div className="stat">
+    <div className="stat-figure text-primary">
+    <FontAwesomeIcon icon={faCreditCard} size='xl' />
+    </div>
+    <div className="stat-title">Total Balance</div>
+    <div className="stat-value text-primary">£{totalBalance}</div>
+  </div>
+  
+  <div className="stat">
+    <div className="stat-figure text-secondary">
+    <FontAwesomeIcon icon={faPlusCircle} size='xl' />
+    </div>
+    <div className="stat-title">Ready to Assign</div>
+    <div className="stat-value text-secondary">£{readyToAssign}</div>
+  </div>
+  
+</div>
       </div>
       <div className='flex justify-center my-4'>
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -55,26 +73,22 @@ const Account = () => {
         editingAccount={editingAccount}
         onSuccess={handleSuccess}
       />
-      <div className='max-w-2xl mx-auto'>
-        <div className='grid grid-cols-2 sm:grid-cols-2 gap-1 justify-items-center mx-auto'>
-          {accounts.length > 0 ? (
-            accounts.map((account, index) => (
-              <div
-                key={account._id}
-                onClick={() => openModalForEdit(account)}
-                className={`card cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
-              >
-                <div className='card-body'>
-                  <h2 className='card-title'>{account.title}</h2>
-                  <h1>£{account.balance}</h1>
-                  <div className='badge badge-outline'>{account.type}</div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div>No accounts available</div>
-          )}
-        </div>
+      <div
+        className={`max-w-2xl mx-auto grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-center items-start`}
+      >
+        {accounts.length > 0 ? (
+          accounts.map((account) => (
+            <Card
+              key={account._id}
+              onClick={() => openModalForEdit(account)}
+              title={account.title}
+              subtitle={`£${account.balance}`}
+              badgeText={account.type}
+            />
+          ))
+        ) : (
+          <div>No accounts available</div>
+        )}
       </div>
     </>
   );

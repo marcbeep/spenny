@@ -9,6 +9,7 @@ import CategoryModal from '../components/CategoryModal';
 import AssignFundsModal from '../components/AssignFundsModal';
 import MoveFundsModal from '../components/MoveFundsModal';
 import backendURL from '../config';
+import Card from '../components/Card';
 
 const Category = () => {
   const { user } = useAuthContext();
@@ -76,34 +77,23 @@ const Category = () => {
         closeModal={() => setIsModalOpen(false)}
         editingCategory={editingCategory}
       />
-      <div className='max-w-2xl mx-auto'>
-        <div className='grid grid-cols-2 sm:grid-cols-3 gap-1 justify-items-center mx-auto'>
-          {categories.length > 0 ? (
-            categories.map((category, index) => (
-              <div
-                key={category._id}
-                className={`card cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
-                onClick={() => openModalForEdit(category)}
-              >
-                <div className='card-body text-black'>
-                  <h2 className='card-title'>{category.title}</h2>
-                  <h1>£{category.available}</h1>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openMoveFundsModal(category);
-                    }}
-                    className='btn'
-                  >
-                    Move Funds
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p>No categories yet</p>
-          )}
-        </div>
+      <div
+        className={`max-w-2xl mx-auto grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-center items-start'}`}
+      >
+        {categories.length > 0 ? (
+          categories.map((category) => (
+            <Card
+              key={category._id}
+              onClick={() => openModalForEdit(category)}
+              title={category.title}
+              subtitle={`£${category.available}`}
+              buttonText='Move Funds'
+              onButtonClick={() => openMoveFundsModal(category)}
+            />
+          ))
+        ) : (
+          <p>No categories yet</p>
+        )}
       </div>
       <MoveFundsModal
         isOpen={isMoveFundsModalOpen}
