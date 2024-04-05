@@ -20,7 +20,6 @@ const Category = () => {
   const [isMoveFundsModalOpen, setIsMoveFundsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [selectedCategoryForMoving, setSelectedCategoryForMoving] = useState(null);
-  const colors = ['bg-red-400', 'bg-blue-400', 'bg-green-400', 'bg-yellow-400', 'bg-purple-400'];
 
   // Fetch categories on component mount or user change
   useEffect(() => {
@@ -83,12 +82,12 @@ const Category = () => {
       categories.map((category, index) => (
         <div
           key={category._id}
-          className={`card rounded-lg cursor-pointer p-4 m-2 ${colors[index % colors.length]}`}
+          className={`card rounded-lg cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
           onClick={() => openModalForEdit(category)}
         >
           <div className='card-body text-black'>
             <h2 className='card-title'>{category.title}</h2>
-            <p>Available: £{category.available}</p>
+            <h1>£{category.available}</h1>
             <button
               onClick={(e) => {
                 e.stopPropagation();

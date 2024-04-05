@@ -13,7 +13,6 @@ const Account = () => {
   const { readyToAssign, fetchReadyToAssign } = useBudgetContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState(null);
-  const colors = ['bg-neutral'];
 
   useEffect(() => {
     if (user) {
@@ -56,19 +55,18 @@ const Account = () => {
         editingAccount={editingAccount}
         onSuccess={handleSuccess}
       />
-      <div className='flex flex-wrap justify-center gap-4 p-4 text-base-100'>
+<div className="max-w-2xl mx-auto">
+  <div className="grid grid-cols-2 sm:grid-cols-2 gap-1 justify-items-center mx-auto">
         {accounts.length > 0 ? (
           accounts.map((account, index) => (
             <div
               key={account._id}
               onClick={() => openModalForEdit(account)}
-              className={`card rounded-xl cursor-pointer w-96 ${
-                colors[index % colors.length]
-              } lg:w-1/4 md:w-1/2 sm:w-full m-2 p-4`}
+              className={`card rounded-lg cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
             >
               <div className='card-body'>
                 <h2 className='card-title'>{account.title}</h2>
-                <p>Balance: £{account.balance}</p>
+                <h1>£{account.balance}</h1>
                 <div className='badge badge-outline'>{account.type}</div>
               </div>
             </div>
@@ -76,7 +74,8 @@ const Account = () => {
         ) : (
           <div>No accounts available</div>
         )}
-      </div>
+  </div>
+</div>
     </>
   );
 };
