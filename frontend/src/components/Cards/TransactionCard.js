@@ -40,7 +40,7 @@ const TransactionCard = ({ data }) => {
   };
 
   return (
-    <section className='card col-span-12 overflow-hidden bg-base-100 shadow-sm xl:col-span-7'>
+    <section className='card col-span-12 overflow-hidden bg-base-100 shadow-sm xl:col-span-7 border-2 border-black rounded-xl'>
       <div className='card-body grow-0'>
         <div className='flex justify-between gap-2'>
           <h2 className='card-title grow'>

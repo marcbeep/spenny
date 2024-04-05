@@ -1,5 +1,6 @@
 import React from 'react';
-import TransactionCard from '../components/Cards/TransactionCard'; // Adjust the import path as necessary
+import TransactionForm from '../components/Forms/TransactionForm';
+import TransactionCard from '../components/Cards/TransactionCard'; 
 
 const Dev = () => {
   // Sample fake data
@@ -34,9 +35,18 @@ const Dev = () => {
     },
   ];
 
+  const categories = ['Groceries', 'Rent', 'Fun Money', 'Eating Out', 'Savings'];
+  const accounts = ['Checking', 'Savings', 'Credit Card'];
+
+  const handleFormSubmit = (formData) => {
+    console.log('Form Data:', formData);
+    // Add logic to process form data here
+  };
+
   return (
     <div className='container mx-auto px-4'>
       <h1 className='text-2xl font-bold text-center my-8'>Dev Page</h1>
+      <TransactionForm categories={categories} accounts={accounts} onSubmit={handleFormSubmit} />
       <TransactionCard data={transactions} />
     </div>
   );
