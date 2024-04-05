@@ -55,27 +55,27 @@ const Account = () => {
         editingAccount={editingAccount}
         onSuccess={handleSuccess}
       />
-<div className="max-w-2xl mx-auto">
-  <div className="grid grid-cols-2 sm:grid-cols-2 gap-1 justify-items-center mx-auto">
-        {accounts.length > 0 ? (
-          accounts.map((account, index) => (
-            <div
-              key={account._id}
-              onClick={() => openModalForEdit(account)}
-              className={`card rounded-lg cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
-            >
-              <div className='card-body'>
-                <h2 className='card-title'>{account.title}</h2>
-                <h1>£{account.balance}</h1>
-                <div className='badge badge-outline'>{account.type}</div>
+      <div className='max-w-2xl mx-auto'>
+        <div className='grid grid-cols-2 sm:grid-cols-2 gap-1 justify-items-center mx-auto'>
+          {accounts.length > 0 ? (
+            accounts.map((account, index) => (
+              <div
+                key={account._id}
+                onClick={() => openModalForEdit(account)}
+                className={`card rounded-lg cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
+              >
+                <div className='card-body'>
+                  <h2 className='card-title'>{account.title}</h2>
+                  <h1>£{account.balance}</h1>
+                  <div className='badge badge-outline'>{account.type}</div>
+                </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <div>No accounts available</div>
-        )}
-  </div>
-</div>
+            ))
+          ) : (
+            <div>No accounts available</div>
+          )}
+        </div>
+      </div>
     </>
   );
 };

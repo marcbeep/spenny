@@ -12,7 +12,11 @@ const UpdateCategoryModal = ({ isOpen, closeModal, editingCategory }) => {
 
   useEffect(() => {
     if (isOpen) {
-      setFormData(editingCategory ? { title: editingCategory.title, available: editingCategory.available } : initialState);
+      setFormData(
+        editingCategory
+          ? { title: editingCategory.title, available: editingCategory.available }
+          : initialState,
+      );
     }
   }, [isOpen, editingCategory]);
 
@@ -63,7 +67,9 @@ const UpdateCategoryModal = ({ isOpen, closeModal, editingCategory }) => {
   return (
     <div className='modal modal-open'>
       <div className='modal-box'>
-        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>✕</button>
+        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>
+          ✕
+        </button>
         <h3 className='font-bold text-lg mb-4'>
           {editingCategory ? 'Edit Category' : 'Add Category'}
         </h3>

@@ -76,35 +76,35 @@ const Category = () => {
         closeModal={() => setIsModalOpen(false)}
         editingCategory={editingCategory}
       />
-<div className="max-w-2xl mx-auto">
-  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 justify-items-center mx-auto">
-    {categories.length > 0 ? (
-      categories.map((category, index) => (
-        <div
-          key={category._id}
-          className={`card rounded-lg cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
-          onClick={() => openModalForEdit(category)}
-        >
-          <div className='card-body text-black'>
-            <h2 className='card-title'>{category.title}</h2>
-            <h1>£{category.available}</h1>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                openMoveFundsModal(category);
-              }}
-              className='btn'
-            >
-              Move Funds
-            </button>
-          </div>
+      <div className='max-w-2xl mx-auto'>
+        <div className='grid grid-cols-2 sm:grid-cols-3 gap-1 justify-items-center mx-auto'>
+          {categories.length > 0 ? (
+            categories.map((category, index) => (
+              <div
+                key={category._id}
+                className={`card rounded-lg cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
+                onClick={() => openModalForEdit(category)}
+              >
+                <div className='card-body text-black'>
+                  <h2 className='card-title'>{category.title}</h2>
+                  <h1>£{category.available}</h1>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openMoveFundsModal(category);
+                    }}
+                    className='btn'
+                  >
+                    Move Funds
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No categories yet</p>
+          )}
         </div>
-      ))
-    ) : (
-      <p>No categories yet</p>
-    )}
-  </div>
-</div>
+      </div>
       <MoveFundsModal
         isOpen={isMoveFundsModalOpen}
         closeModal={() => setIsMoveFundsModalOpen(false)}

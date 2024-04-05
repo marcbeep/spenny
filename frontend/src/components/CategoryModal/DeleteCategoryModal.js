@@ -16,7 +16,7 @@ const DeleteCategoryModal = ({ isOpen, closeModal, categoryId }) => {
     }
   }, [isOpen]);
 
-  const filteredCategories = categories.filter(c => c._id !== categoryId);
+  const filteredCategories = categories.filter((c) => c._id !== categoryId);
 
   const handleDelete = async () => {
     if (!newCategoryId) {
@@ -50,27 +50,35 @@ const DeleteCategoryModal = ({ isOpen, closeModal, categoryId }) => {
   return (
     <div className='modal modal-open'>
       <div className='modal-box'>
-        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>✕</button>
+        <button onClick={closeModal} className='btn btn-sm btn-circle absolute right-2 top-2'>
+          ✕
+        </button>
         <h3 className='font-bold text-lg mb-4'>Delete Category</h3>
         <div>
-          <label htmlFor="newCategoryId" className="label">Reassign Transactions To:</label>
+          <label htmlFor='newCategoryId' className='label'>
+            Reassign Transactions To:
+          </label>
           <select
-            id="newCategoryId"
-            className="select select-bordered w-full mb-4"
+            id='newCategoryId'
+            className='select select-bordered w-full mb-4'
             value={newCategoryId}
             onChange={(e) => setNewCategoryId(e.target.value)}
           >
-            <option value="">Select Category</option>
+            <option value=''>Select Category</option>
             {filteredCategories.map((category) => (
               <option key={category._id} value={category._id}>
                 {category.title}
               </option>
             ))}
           </select>
-          {formErrors.newCategoryId && <p className="text-error text-sm">{formErrors.newCategoryId}</p>}
+          {formErrors.newCategoryId && (
+            <p className='text-error text-sm'>{formErrors.newCategoryId}</p>
+          )}
         </div>
         <div className='modal-action'>
-          <button className='btn btn-error' onClick={handleDelete}>Delete</button>
+          <button className='btn btn-error' onClick={handleDelete}>
+            Delete
+          </button>
         </div>
       </div>
     </div>
