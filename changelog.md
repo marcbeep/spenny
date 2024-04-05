@@ -8,7 +8,7 @@
 - Goals (must be time sensitive).
 - Initial onboarding to add accounts.
 
-## Minor features
+### Minor features
 
 - Modal inputs for prices should conform to the same input as moving funds.
 
