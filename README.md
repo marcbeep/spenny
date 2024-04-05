@@ -2,7 +2,7 @@
 
 # Spenny
 
-Spenny is a powerful web application designed to help users manage their finances effectively, much like the popular You Need A Budget (YNAB) platform. With Spenny, users gain control over their spending, budgeting, and financial goals with intuitive tools and features.
+Spenny is a web application designed to help users manage their finances effectively, much like the popular You Need A Budget (YNAB) platform. With Spenny, users gain control over their spending, budgeting, and financial goals with intuitive tools and features.
 
 ### Key Features:
 
@@ -159,11 +159,3 @@ These functions represent the endpoints and logic for managing accounts, budgets
 - `400` for bad requests where the request cannot be processed due to client-side errors (e.g., validation errors).
 - `201` should be used for creating resources.
 - `204` for successful requests that don't return any content (e.g., delete operations).
-
----
-
-**Roadmap**
-
-- [ ] Dashboard.
-- [ ] When a user deletes a category, users must first reassign all transactions to another category.
-- [ ] Make it time sensitive (goals).
