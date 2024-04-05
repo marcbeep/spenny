@@ -62,7 +62,7 @@ const Account = () => {
               <div
                 key={account._id}
                 onClick={() => openModalForEdit(account)}
-                className={`card rounded-lg cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
+                className={`card cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
               >
                 <div className='card-body'>
                   <h2 className='card-title'>{account.title}</h2>

@@ -82,7 +82,7 @@ const Category = () => {
             categories.map((category, index) => (
               <div
                 key={category._id}
-                className={`card rounded-lg cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
+                className={`card cursor-pointer p-4 m-2 border-2 border-black bg-transparent`}
                 onClick={() => openModalForEdit(category)}
               >
                 <div className='card-body text-black'>
