@@ -21,21 +21,23 @@ ChartJS.register(
   Title,
   Tooltip,
   Filler,
-  Legend
+  Legend,
 );
 
 const DownloadChart = () => {
   const data = {
     labels: Array.from({ length: 20 }, (_, i) => i + 1),
-    datasets: [{
-      label: 'Downloads',
-      data: [6, 5, 2, 11, 13, 16, 14, 14, 14, 15, 18, 16, 18, 15, 19, 16, 20, 18, 12, 14],
-      fill: true,
-      backgroundColor: 'rgba(25, 214, 191, 0.2)',
-      borderColor: '#19D6BF',
-      pointRadius: 0,
-      borderWidth: 2,
-    }]
+    datasets: [
+      {
+        label: 'Downloads',
+        data: [6, 5, 2, 11, 13, 16, 14, 14, 14, 15, 18, 16, 18, 15, 19, 16, 20, 18, 12, 14],
+        fill: true,
+        backgroundColor: 'rgba(25, 214, 191, 0.2)',
+        borderColor: '#19D6BF',
+        pointRadius: 0,
+        borderWidth: 2,
+      },
+    ],
   };
 
   const options = {
@@ -67,10 +69,13 @@ const DownloadChart = () => {
 
   return (
     // Adjust the card's size here with custom width and height
-    <div style={{ maxWidth: '300px', height: '200px', margin: 'auto' }} className="card bg-base-100 shadow-xl">
-      <div className="card-body p-4">
-        <h2 className="card-title text-sm">19,000</h2>
-        <p className="text-xs">Downloads</p>
+    <div
+      style={{ maxWidth: '300px', height: '200px', margin: 'auto' }}
+      className='card bg-base-100 shadow-xl'
+    >
+      <div className='card-body p-4'>
+        <h2 className='card-title text-sm'>19,000</h2>
+        <p className='text-xs'>Downloads</p>
         <div style={{ position: 'relative', height: '100%' }}>
           <Line data={data} options={options} />
         </div>

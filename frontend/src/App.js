@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import Category from './pages/Category';
 import ChartPage from './pages/ChartPage';
+import Dev from './pages/Dev';
 
 // components
 import Navbar from './components/Navbar';
@@ -34,6 +35,7 @@ function App() {
             <Route path='/chart' element={user ? <ChartPage /> : <Navigate to='/' />} />
             <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/transaction' />} />
             <Route path='/login' element={!user ? <Login /> : <Navigate to='/transaction' />} />
+            <Route path='/dev' element={user ? <Dev /> : <Navigate to='/' />} />
           </Routes>
         </div>
       </BrowserRouter>

@@ -83,6 +83,11 @@ const Navbar = () => {
               Chart
             </Link>
           </li> */}
+          <li>
+            <Link to='/dev' className={`p-2 ${isActive('/dev')}`} onClick={closeDrawer}>
+              Dev
+            </Link>
+          </li>
         </ul>
       </div>
     </div>
