@@ -40,25 +40,23 @@ const Account = () => {
   return (
     <>
       <div className='flex justify-around'>
-        <div className="stats shadow">
-  
-  <div className="stat">
-    <div className="stat-figure text-primary">
-    <FontAwesomeIcon icon={faCreditCard} size='xl' />
-    </div>
-    <div className="stat-title">Total Balance</div>
-    <div className="stat-value text-primary">£{totalBalance}</div>
-  </div>
-  
-  <div className="stat">
-    <div className="stat-figure text-secondary">
-    <FontAwesomeIcon icon={faPlusCircle} size='xl' />
-    </div>
-    <div className="stat-title">Ready to Assign</div>
-    <div className="stat-value text-secondary">£{readyToAssign}</div>
-  </div>
-  
-</div>
+        <div className='stats shadow'>
+          <div className='stat'>
+            <div className='stat-figure text-primary'>
+              <FontAwesomeIcon icon={faCreditCard} size='xl' />
+            </div>
+            <div className='stat-title'>Total Balance</div>
+            <div className='stat-value text-primary'>£{totalBalance}</div>
+          </div>
+
+          <div className='stat'>
+            <div className='stat-figure text-secondary'>
+              <FontAwesomeIcon icon={faPlusCircle} size='xl' />
+            </div>
+            <div className='stat-title'>Ready to Assign</div>
+            <div className='stat-value text-secondary'>£{readyToAssign}</div>
+          </div>
+        </div>
       </div>
       <div className='flex justify-center my-4'>
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
