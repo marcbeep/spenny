@@ -41,7 +41,7 @@ exports.getSingleTransaction = async (req, res) => {
  * @param {Object} res - The response object.
  */
 exports.createTransaction = async (req, res) => {
-  const { title, amount, category: categoryId, account: accountId } = req.body;
+  const { title, type, amount, category: categoryId, account: accountId } = req.body;
 
   // Verify both the category and account exist
   const categoryExists = await Category.exists({ _id: categoryId });
