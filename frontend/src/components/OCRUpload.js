@@ -27,7 +27,7 @@ const OCRUpload = () => {
       console.log(text);
       setOcrText(text); // Update state with OCR text
       // Use text directly for GPT analysis
-      const gptPrompt = `Given the following OCR text extracted from a receipt, give your best guess to fill out the following fields: transaction title, amount, category, type (credit or debit). You can generalise. For example, "Ristorante Italiano" might mean "Italian Food". Here is the text: ${text}`;
+      const gptPrompt = `Given the following OCR text extracted from a receipt, give your best guess to fill out the following fields: success (either true or false), transaction_title, amount, category, type (credit or debit). If you can guess, return success: true followed by the rest of fields. If you cannot make an intelligent guess, return success:false in json only. You can generalise for the transaction_title. For example, "Paul's Italiano" might mean "Italian Food". Here is the text: ${text}`;
       analyzeTextWithGPT(gptPrompt)
         .then(result => {
           console.log(result);
