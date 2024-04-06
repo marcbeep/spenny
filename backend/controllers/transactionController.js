@@ -3,6 +3,22 @@ const Category = require('../models/categoryModel');
 const Account = require('../models/accountModel');
 const mongoose = require('mongoose');
 
+// Utility function to update category and account balances
+const updateBalances = async ({ categoryId, accountId, amount, type, revert = false }) => {
+  const multiplier = revert ? -1 : 1;
+  const amountChange = type === 'debit' ? -amount : amount;
+
+  // Update Category
+  await Category.findByIdAndUpdate(categoryId, {
+    $inc: { activity: amount * multiplier, available: amountChange * multiplier },
+  });
+
+  // Update Account
+  const account = await Account.findById(accountId);
+  account.balance += amountChange * multiplier;
+  await account.save();
+};
+
 /**
  * Retrieves all transactions for the logged-in user, sorted by creation date.
  * @param {Object} req - The request object.
@@ -61,15 +77,8 @@ exports.createTransaction = async (req, res) => {
       user: req.user._id,
     });
 
-    // Update category's activity and adjust available funds accordingly
-    await Category.findByIdAndUpdate(categoryId, {
-      $inc: { activity: amount, available: -amount },
-    });
-
-    // Update the account balance
-    const account = await Account.findById(accountId);
-    account.balance -= amount; // Assuming all transactions are expenses for simplicity
-    await account.save();
+    // Update category and account balances
+    await updateBalances({ categoryId, accountId, amount, type });
 
     res.status(201).json(newTransaction);
   } catch (err) {
@@ -91,25 +100,17 @@ exports.deleteSingleTransaction = async (req, res) => {
     const transaction = await Transaction.findByIdAndDelete(id);
     if (!transaction) return handleNoTransactionFound(res);
 
-    try {
-      await Category.findByIdAndUpdate(transaction.category, {
-        $inc: { activity: -transaction.amount, available: transaction.amount },
-      });
-    } catch (err) {
-      console.error('Failed to update category:', err);
-    }
-
-    try {
-      const account = await Account.findById(transaction.account);
-      account.balance += transaction.amount;
-      await account.save();
-    } catch (err) {
-      console.error('Failed to update account:', err);
-    }
+    // Reverse the transaction's effects on the category and account
+    await updateBalances({
+      categoryId: transaction.category,
+      accountId: transaction.account,
+      amount: transaction.amount,
+      type: transaction.type,
+      revert: true,
+    });
 
     res.status(200).json({ message: 'Transaction successfully deleted' });
   } catch (err) {
-    console.error('Failed to delete transaction:', err);
     return handleNoTransactionFound(res);
   }
 };
@@ -135,57 +136,27 @@ exports.updateSingleTransaction = async (req, res) => {
     const transaction = await Transaction.findById(id);
     if (!transaction) return handleNoTransactionFound(res);
 
-    // Calculate differences for adjusting categories and accounts
-    const amountDifference = amount - transaction.amount;
-    const isCategoryChanged = transaction.category.toString() !== newCategoryId;
-    const isAccountChanged = transaction.account.toString() !== newAccountId;
+    // Reverse original transaction's effects
+    await updateBalances({
+      categoryId: transaction.category,
+      accountId: transaction.account,
+      amount: transaction.amount,
+      type: transaction.type,
+      revert: true,
+    });
 
-    if (isCategoryChanged) {
-      // Reverse old category's changes
-      await Category.findByIdAndUpdate(transaction.category, {
-        $inc: { activity: -transaction.amount, available: transaction.amount },
-      });
-      // Apply changes to the new category
-      await Category.findByIdAndUpdate(newCategoryId, {
-        $inc: { activity: amount, available: -amount },
-      });
-    } else if (amountDifference !== 0) {
-      // Adjust the same category if only the amount has changed
-      await Category.findByIdAndUpdate(transaction.category, {
-        $inc: { activity: amountDifference, available: -amountDifference },
-      });
-    }
-
-    if (isAccountChanged) {
-      // Adjust old and new account balances
-      const oldAccount = await Account.findById(transaction.account);
-      oldAccount.balance += transaction.amount; // Revert original transaction from old account
-      await oldAccount.save();
-
-      const newAccount = await Account.findById(newAccountId);
-      newAccount.balance -= amount; // Apply new transaction to new account
-      await newAccount.save();
-    } else if (amountDifference !== 0) {
-      // Adjust the same account if only the amount has changed
-      const account = await Account.findById(transaction.account);
-      account.balance -= amountDifference;
-      await account.save();
-    }
+    // Apply new transaction's effects
+    await updateBalances({ categoryId: newCategoryId, accountId: newAccountId, amount, type });
 
     // Update the transaction
-    const updatedTransaction = await Transaction.findByIdAndUpdate(
-      id,
-      {
-        title,
-        type,
-        amount,
-        category: newCategoryId,
-        account: newAccountId,
-      },
-      { new: true },
-    );
+    transaction.title = title;
+    transaction.type = type;
+    transaction.amount = amount;
+    transaction.category = newCategoryId;
+    transaction.account = newAccountId;
+    await transaction.save();
 
-    res.status(200).json(updatedTransaction);
+    res.status(200).json(transaction);
   } catch (err) {
     return handleNoTransactionFound(res);
   }
