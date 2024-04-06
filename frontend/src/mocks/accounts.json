@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "user": "1",
+    "title": "Checking Account",
+    "type": "checking",
+    "balance": 5000
+  },
+  {
+    "id": "2",
+    "user": "1",
+    "title": "Savings Account",
+    "type": "savings",
+    "balance": 15000
+  }
+]

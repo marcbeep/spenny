@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "user": "1",
+    "title": "Groceries",
+    "assignedAmount": 300,
+    "available": 200,
+    "activity": 100
+  },
+  {
+    "id": "2",
+    "user": "1",
+    "title": "Utilities",
+    "assignedAmount": 200,
+    "available": 150,
+    "activity": 50
+  }
+]

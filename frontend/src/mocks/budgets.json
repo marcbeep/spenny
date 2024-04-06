@@ -1,0 +1,9 @@
+[
+  {
+    "id": "1",
+    "user": "1",
+    "totalAvailable": 20000,
+    "totalAssigned": 15000,
+    "readyToAssign": 5000
+  }
+]
