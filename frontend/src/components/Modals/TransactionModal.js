@@ -7,7 +7,7 @@ import { useAccountContext } from '../../context/AccountContext';
 import backendURL from '../../config';
 
 const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
-  const initialState = { title: '', amount: '', category: '', account: '' };
+  const initialState = { title: '', type: 'debit', amount: '', category: '', account: '' };
   const [formData, setFormData] = useState(initialState);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,9 +23,10 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
   }, [editingTransaction, isOpen]);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'amount') {
-      // Use formatCurrencyInput for the amount field
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      setFormData({ ...formData, [name]: checked ? 'credit' : 'debit' });
+    } else if (name === 'amount') {
       setFormData({ ...formData, [name]: formatCurrencyInput(value) });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -121,6 +122,12 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
           {editingTransaction ? 'Edit Transaction' : 'Add Transaction'}
         </h3>
         <form onSubmit={handleSubmit}>
+        <div className='form-control'>
+            <label className='label cursor-pointer'>
+              <span className='label-text mr-2'>{formData.type === 'debit' ? 'Debit' : 'Credit'}</span>
+              <input type='checkbox' checked={formData.type === 'credit'} onChange={handleInputChange} name='type' className='toggle toggle-primary' />
+            </label>
+          </div>
           <div className='form-control my-4'>
             <input
               type='text'
