@@ -1,5 +1,5 @@
 import React from 'react';
-import DownloadChart from '../components/DownloadChart'; // Adjust the path as necessary
+import DownloadChart from '../../components/DownloadChart'; // Adjust the path as necessary
 
 const ChartPage = () => {
   return (

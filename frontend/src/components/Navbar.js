@@ -78,21 +78,6 @@ const Navbar = () => {
               Categories
             </Link>
           </li>
-          {/* <li>
-            <Link to='/chart' className={`p-2 ${isActive('/chart')}`} onClick={closeDrawer}>
-              Chart
-            </Link>
-          </li> */}
-          <li>
-            <Link to='/dev' className={`p-2 ${isActive('/dev')}`} onClick={closeDrawer}>
-              Dev
-            </Link>
-          </li>
-          <li>
-            <Link to='/transactionpage' className={`p-2 ${isActive('/transactionpage')}`} onClick={closeDrawer}>
-              Transaction Page
-            </Link>
-          </li>
         </ul>
       </div>
     </div>

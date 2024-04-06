@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { loadMockData } from '../utils/mockDataLoader';
-import TransactionForm from '../components/Forms/TransactionForm';
-import OCRUpload from '../components/Forms/OCRUpload';
-import TransactionCard from '../components/Cards/TransactionCard';
+import { loadMockData } from '../../utils/mockDataLoader';
+import TransactionForm from '../../components/Forms/TransactionForm';
+import OCRUpload from '../../components/Forms/OCRUpload';
+import TransactionCard from '../../components/Cards/TransactionCard';
 
 const Dev = () => {
   const [accounts, setAccounts] = useState([]);

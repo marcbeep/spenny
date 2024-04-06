@@ -2,14 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthContext } from './hooks/useAuthContext';
 
 //pages
-import Transaction from './pages/Transaction';
 import Account from './pages/Account';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import Category from './pages/Category';
-import ChartPage from './pages/ChartPage';
-import Dev from './pages/Dev';
 import TransactionPage from './pages/TransactionPage';
 
 // components
@@ -29,14 +26,11 @@ function App() {
         <Navbar />
         <Routes>
           <Route path='/' element={!user ? <LandingPage /> : <Navigate to='/transaction' />} />
-          <Route path='/transaction' element={user ? <Transaction /> : <Navigate to='/' />} />
+          <Route path='/transaction' element={user ? <TransactionPage /> : <Navigate to='/' />} />
           <Route path='/account' element={user ? <Account /> : <Navigate to='/' />} />
           <Route path='/category' element={user ? <Category /> : <Navigate to='/' />} />
-          <Route path='/chart' element={user ? <ChartPage /> : <Navigate to='/' />} />
           <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/transaction' />} />
           <Route path='/login' element={!user ? <Login /> : <Navigate to='/transaction' />} />
-          <Route path='/dev' element={user ? <Dev /> : <Navigate to='/' />} />
-          <Route path='/transactionpage' element={user ? <TransactionPage /> : <Navigate to='/' />} />
         </Routes>
       </BrowserRouter>
     </div>
