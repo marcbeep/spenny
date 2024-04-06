@@ -1,4 +1,5 @@
 import React from 'react';
+import OCRUpload from '../components/OCRUpload';
 import TransactionForm from '../components/Forms/TransactionForm';
 import TransactionCard from '../components/Cards/TransactionCard'; 
 
@@ -46,6 +47,9 @@ const Dev = () => {
   return (
     <div className='container mx-auto px-4'>
       <h1 className='text-2xl font-bold text-center my-8'>Dev Page</h1>
+      <div className='mb-4'>
+        <OCRUpload />
+      </div>
       <div className='mb-4'>
         <TransactionForm categories={categories} accounts={accounts} onSubmit={handleFormSubmit}/>
       </div>
