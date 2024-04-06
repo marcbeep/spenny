@@ -10,7 +10,7 @@ import Category from './pages/Category';
 import TransactionPage from './pages/TransactionPage';
 
 // components
-import Navbar from './components/Navbar';
+import Navbar from './components/Layouts/Navbar';
 
 function App() {
   const { user } = useAuthContext();
