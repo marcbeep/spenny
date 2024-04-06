@@ -54,6 +54,7 @@ exports.createTransaction = async (req, res) => {
   try {
     const newTransaction = await Transaction.create({
       title,
+      type,
       amount,
       category: categoryId,
       account: accountId,
@@ -120,7 +121,7 @@ exports.deleteSingleTransaction = async (req, res) => {
  */
 exports.updateSingleTransaction = async (req, res) => {
   const { id } = req.params;
-  const { title, amount, category: newCategoryId, account: newAccountId } = req.body;
+  const { title, type, amount, category: newCategoryId, account: newAccountId } = req.body;
 
   // Verify the new category and account exist
   const categoryExists = await Category.exists({ _id: newCategoryId });
