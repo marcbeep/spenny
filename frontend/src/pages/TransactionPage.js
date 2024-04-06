@@ -6,7 +6,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext';
 import { useCategoryContext } from '../context/CategoryContext';
 import { useAccountContext } from '../context/AccountContext';
-import TransactionModal from '../components/TransactionModal';
+import TransactionModal from '../components/Modals/TransactionModal';
 import TransactionCard from '../components/Cards/TransactionCard';
 import Pagination from '../components/Pagination';
 import backendURL from '../config';
@@ -14,49 +14,54 @@ import backendURL from '../config';
 const TransactionPage = () => {
   const { user } = useAuthContext();
   const { transactions, dispatch: transactionDispatch } = useTransactionContext();
-  const { categories, dispatch: categoryDispatch } = useCategoryContext();
-  const { accounts, dispatch: accountDispatch } = useAccountContext();
+  const { categories } = useCategoryContext();
+  const { accounts } = useAccountContext();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Fetch Transactions
   useEffect(() => {
-    const fetchTransactions = async () => {
-      if (user) {
-        const response = await fetch(`${backendURL}/transactions`, {
-          headers: { Authorization: `Bearer ${user.token}` },
+    // Consolidated fetchData method for transactions, categories, and accounts
+    const fetchData = async () => {
+      if (!user) return;
+
+      try {
+        const endpoints = ['transactions', 'categories', 'accounts'];
+        const dataFetchers = endpoints.map(async (endpoint) => {
+          const response = await fetch(`${backendURL}/${endpoint}`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          });
+          if (!response.ok) throw new Error(`Failed to fetch ${endpoint}`);
+          return response.json();
         });
-        if (response.ok) {
-          const data = await response.json();
-          transactionDispatch({ type: 'SET_TRANSACTIONS', payload: data });
-        }
+
+        const [transactionsData, categoriesData, accountsData] = await Promise.all(dataFetchers);
+        transactionDispatch({ type: 'SET_TRANSACTIONS', payload: transactionsData });
+        // Assuming similar dispatch functions for categories and accounts in their respective contexts
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchTransactions();
+    fetchData();
   }, [user, transactionDispatch]);
 
-  // Pagination Logic
+  const handleRowClick = (transaction) => {
+    setEditingTransaction(transaction);
+    setIsModalOpen(true);
+  };
+
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
 
-  // Open Modal for New Transaction
   const openModalForNewTransaction = () => {
     setEditingTransaction(null);
     setIsModalOpen(true);
   };
 
-  // Open Modal for Editing Transaction
-  const openModalForEdit = (transaction) => {
-    setEditingTransaction(transaction);
-    setIsModalOpen(true);
-  };
-
-  // Calculating Page Data for Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentTransactions = transactions.slice(indexOfFirstItem, indexOfLastItem);
@@ -78,6 +83,7 @@ const TransactionPage = () => {
       <TransactionCard
         transactions={currentTransactions}
         categories={categories}
+        onRowClick={handleRowClick}
       />
       <Pagination
         currentPage={currentPage}

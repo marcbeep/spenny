@@ -6,7 +6,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 import { useTransactionContext } from '../context/TransactionContext';
 import { useCategoryContext } from '../context/CategoryContext';
 import { useAccountContext } from '../context/AccountContext';
-import TransactionModal from '../components/TransactionModal';
+import TransactionModal from '../components/Modals/TransactionModal';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import backendURL from '../config';
