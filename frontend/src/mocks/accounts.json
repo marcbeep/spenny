@@ -1,16 +1,22 @@
 [
   {
-    "id": "1",
-    "user": "1",
+    "_id": "66111ffe72af4f739ac9daf9",
+    "user": "66111ffd72af4f739ac9daf7",
     "title": "Checking Account",
     "type": "checking",
-    "balance": 5000
+    "balance": 5000,
+    "createdAt": "2024-04-06T10:05:00.000Z",
+    "updatedAt": "2024-04-06T10:05:00.000Z",
+    "__v": 0
   },
   {
-    "id": "2",
-    "user": "1",
+    "_id": "66111ffe72af4f739ac9dafa",
+    "user": "66111ffd72af4f739ac9daf7",
     "title": "Savings Account",
     "type": "savings",
-    "balance": 15000
+    "balance": 15000,
+    "createdAt": "2024-04-06T10:06:00.000Z",
+    "updatedAt": "2024-04-06T10:06:00.000Z",
+    "__v": 0
   }
 ]

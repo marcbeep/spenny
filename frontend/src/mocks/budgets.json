@@ -1,9 +1,12 @@
 [
   {
-    "id": "1",
-    "user": "1",
+    "_id": "66111fff72af4f739ac9dafb",
+    "user": "66111ffd72af4f739ac9daf7",
     "totalAvailable": 20000,
     "totalAssigned": 15000,
-    "readyToAssign": 5000
+    "readyToAssign": 5000,
+    "createdAt": "2024-04-06T10:07:00.000Z",
+    "updatedAt": "2024-04-06T10:07:00.000Z",
+    "__v": 0
   }
 ]

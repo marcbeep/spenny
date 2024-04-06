@@ -1,92 +1,57 @@
 [
   {
-    "_id": "1",
-    "user": "1",
-    "title": "Grocery Store",
-    "amount": 50,
-    "category": "1",
-    "account": "1",
-    "date": "2024-03-01T10:00:00.000Z"
+    "_id": "6611200072af4f739ac9db00",
+    "user": "66111ffd72af4f739ac9daf7",
+    "title": "Supermarket Visit",
+    "amount": 95,
+    "category": "66111ffd72af4f739ac9daf9",
+    "account": "66111ffe72af4f739ac9daf9",
+    "createdAt": "2024-04-01T10:08:00.000Z",
+    "updatedAt": "2024-04-01T10:08:00.000Z",
+    "__v": 0
   },
   {
-    "_id": "2",
-    "user": "1",
-    "title": "Electric Bill",
-    "amount": 75,
-    "category": "2",
-    "account": "2",
-    "date": "2024-03-02T13:00:00.000Z"
-  },
-  {
-    "_id": "3",
-    "user": "1",
-    "title": "Internet Bill",
-    "amount": 60,
-    "category": "2",
-    "account": "1",
-    "date": "2024-03-05T15:00:00.000Z"
-  },
-  {
-    "_id": "4",
-    "user": "1",
-    "title": "Cinema",
-    "amount": 30,
-    "category": "1",
-    "account": "1",
-    "date": "2024-03-08T20:00:00.000Z"
-  },
-  {
-    "_id": "5",
-    "user": "1",
-    "title": "Gas Bill",
-    "amount": 45,
-    "category": "2",
-    "account": "2",
-    "date": "2024-03-10T09:00:00.000Z"
-  },
-  {
-    "_id": "6",
-    "user": "1",
-    "title": "New Shoes",
-    "amount": 100,
-    "category": "1",
-    "account": "1",
-    "date": "2024-03-15T14:00:00.000Z"
-  },
-  {
-    "_id": "7",
-    "user": "1",
-    "title": "Restaurant",
-    "amount": 85,
-    "category": "1",
-    "account": "1",
-    "date": "2024-03-20T19:00:00.000Z"
-  },
-  {
-    "_id": "8",
-    "user": "1",
+    "_id": "6611200072af4f739ac9db01",
+    "user": "66111ffd72af4f739ac9daf7",
     "title": "Coffee Shop",
     "amount": 20,
-    "category": "1",
-    "account": "2",
-    "date": "2024-03-21T10:30:00.000Z"
+    "category": "66111ffd72af4f739ac9dafa",
+    "account": "66111ffe72af4f739ac9dafa",
+    "createdAt": "2024-04-02T10:08:00.000Z",
+    "updatedAt": "2024-04-02T10:08:00.000Z",
+    "__v": 0
   },
   {
-    "_id": "9",
-    "user": "1",
-    "title": "Book Store",
-    "amount": 40,
-    "category": "1",
-    "account": "1",
-    "date": "2024-03-23T12:00:00.000Z"
+    "_id": "6611200072af4f739ac9db02",
+    "user": "66111ffd72af4f739ac9daf7",
+    "title": "Gas Station",
+    "amount": 50,
+    "category": "66111ffd72af4f739ac9dafb",
+    "account": "66111ffe72af4f739ac9daf9",
+    "createdAt": "2024-04-03T10:08:00.000Z",
+    "updatedAt": "2024-04-03T10:08:00.000Z",
+    "__v": 0
   },
   {
-    "_id": "10",
-    "user": "1",
-    "title": "Gym Membership",
-    "amount": 25,
-    "category": "2",
-    "account": "2",
-    "date": "2024-03-25T17:00:00.000Z"
+    "_id": "6611200072af4f739ac9db03",
+    "user": "66111ffd72af4f739ac9daf7",
+    "title": "Online Subscription",
+    "amount": 15,
+    "category": "66111ffd72af4f739ac9dafc",
+    "account": "66111ffe72af4f739ac9dafa",
+    "createdAt": "2024-04-04T10:08:00.000Z",
+    "updatedAt": "2024-04-04T10:08:00.000Z",
+    "__v": 0
+  },
+  {
+    "_id": "6611200072af4f739ac9db04",
+    "user": "66111ffd72af4f739ac9daf7",
+    "title": "Book Store Purchase",
+    "amount": 45,
+    "category": "66111ffd72af4f739ac9dafd",
+    "account": "66111ffe72af4f739ac9daf9",
+    "createdAt": "2024-04-05T10:08:00.000Z",
+    "updatedAt": "2024-04-05T10:08:00.000Z",
+    "__v": 0
   }
 ]

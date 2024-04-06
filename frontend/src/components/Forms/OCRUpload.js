@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Tesseract from 'tesseract.js';
-import { analyzeTextWithGPT } from '../../api'; // Adjust the path as necessary
+import { analyzeTextWithGPT } from '../../utils/analyzeTextWithGPT'; // Adjust the path as necessary
 
 const OCRUpload = () => {
   const [isLoading, setIsLoading] = useState(false);
