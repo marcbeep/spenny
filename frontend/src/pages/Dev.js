@@ -1,5 +1,5 @@
 import React from 'react';
-import OCRUpload from '../components/OCRUpload';
+import OCRUpload from '../components/Forms/OCRUpload';
 import TransactionForm from '../components/Forms/TransactionForm';
 import TransactionCard from '../components/Cards/TransactionCard'; 
 
