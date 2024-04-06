@@ -1,16 +1,12 @@
-import React from 'react';
+import { React, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faShoppingCart,
-  faHome,
-  faFunnelDollar,
-  faUtensils,
-  faPiggyBank,
-  faUser,
-  faArrowUp,
-  faArrowDown,
-} from '@fortawesome/free-solid-svg-icons';
-const TransactionCard = ({ data }) => {
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { getCategoryDetails } from '../../utils/getCategoryDetails';
+import { formatDate } from '../../utils/formatDate';
+
+const TransactionCard = ({ transactions, categories }) => {
+  const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+
   const getTransactionIcon = (type) => {
     switch (type) {
       case 'credit':
@@ -22,21 +18,8 @@ const TransactionCard = ({ data }) => {
     }
   };
 
-  const getCategoryIcon = (categoryName) => {
-    switch (categoryName) {
-      case 'Groceries':
-        return faShoppingCart;
-      case 'Rent':
-        return faHome;
-      case 'Fun Money':
-        return faFunnelDollar;
-      case 'Eating Out':
-        return faUtensils;
-      case 'Savings':
-        return faPiggyBank;
-      default:
-        return faUser; // Default icon if category doesn't match
-    }
+  const handleRowSelect = (id) => {
+    setSelectedTransactionId(id);
   };
 
   return (
@@ -88,33 +71,39 @@ const TransactionCard = ({ data }) => {
       <div className='overflow-x-auto'>
         <table className='table table-zebra'>
           <tbody>
-            {data.map((transaction, index) => (
-              <tr key={index}>
-                <td className='w-0'>
-                  <input type='checkbox' className='checkbox' />
-                </td>
-                <td>
-                  <div className='flex items-center gap-4'>
-                    <FontAwesomeIcon
-                      icon={getCategoryIcon(transaction.categoryName)}
-                      size='lg'
-                      className='text-xl'
+            {transactions.map((transaction, index) => {
+              const { categoryName, icon } = getCategoryDetails(transaction.category, categories);
+              return (
+                <tr
+                  key={index}
+                  className={selectedTransactionId === transaction._id ? 'selected-row' : ''}
+                  onClick={() => handleRowSelect(transaction._id)}
+                >
+                  <td>
+                    <input
+                      type='radio'
+                      name='selectedTransaction'
+                      checked={selectedTransactionId === transaction._id}
+                      onChange={() => handleRowSelect(transaction._id)}
                     />
-                    <div>
-                      <div className='text-sm font-bold'>{transaction.title}</div>
-                      <div className='text-xs opacity-50'>
-                        {transaction.categoryName || 'No Category'}
+                  </td>
+                  <td>
+                    <div className='flex items-center gap-4'>
+                      <FontAwesomeIcon icon={icon} size='lg' className='text-xl' />
+                      <div>
+                        <div className='text-sm font-bold'>{transaction.title}</div>
+                        <div className='text-xs opacity-50'>{categoryName}</div>
                       </div>
                     </div>
-                  </div>
-                </td>
-                <td>{transaction.date}</td>
-                <td>
-                  {getTransactionIcon(transaction.type)}
-                  {transaction.amount.toFixed(2)} USD
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td>
+                    {getTransactionIcon(transaction.type)}
+                    {`${transaction.amount.toFixed(2)}`}
+                  </td>
+                  <td>{formatDate(transaction.createdAt)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

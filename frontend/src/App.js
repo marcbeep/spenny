@@ -26,16 +26,16 @@ function App() {
     <div className='App'>
       <BrowserRouter>
         <Navbar />
-          <Routes>
-            <Route path='/' element={!user ? <LandingPage /> : <Navigate to='/transaction' />} />
-            <Route path='/transaction' element={user ? <Transaction /> : <Navigate to='/' />} />
-            <Route path='/account' element={user ? <Account /> : <Navigate to='/' />} />
-            <Route path='/category' element={user ? <Category /> : <Navigate to='/' />} />
-            <Route path='/chart' element={user ? <ChartPage /> : <Navigate to='/' />} />
-            <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/transaction' />} />
-            <Route path='/login' element={!user ? <Login /> : <Navigate to='/transaction' />} />
-            <Route path='/dev' element={user ? <Dev /> : <Navigate to='/' />} />
-          </Routes>
+        <Routes>
+          <Route path='/' element={!user ? <LandingPage /> : <Navigate to='/transaction' />} />
+          <Route path='/transaction' element={user ? <Transaction /> : <Navigate to='/' />} />
+          <Route path='/account' element={user ? <Account /> : <Navigate to='/' />} />
+          <Route path='/category' element={user ? <Category /> : <Navigate to='/' />} />
+          <Route path='/chart' element={user ? <ChartPage /> : <Navigate to='/' />} />
+          <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/transaction' />} />
+          <Route path='/login' element={!user ? <Login /> : <Navigate to='/transaction' />} />
+          <Route path='/dev' element={user ? <Dev /> : <Navigate to='/' />} />
+        </Routes>
       </BrowserRouter>
     </div>
   );

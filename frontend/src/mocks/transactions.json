@@ -2,7 +2,8 @@
   {
     "_id": "6611200072af4f739ac9db00",
     "user": "66111ffd72af4f739ac9daf7",
-    "title": "Supermarket Visit",
+    "title": "Tesco",
+    "type": "debit",
     "amount": 95,
     "category": "66111ffd72af4f739ac9daf9",
     "account": "66111ffe72af4f739ac9daf9",
@@ -13,7 +14,8 @@
   {
     "_id": "6611200072af4f739ac9db01",
     "user": "66111ffd72af4f739ac9daf7",
-    "title": "Coffee Shop",
+    "title": "105 Edinburgh Road",
+    "type": "debit",
     "amount": 20,
     "category": "66111ffd72af4f739ac9dafa",
     "account": "66111ffe72af4f739ac9dafa",
@@ -24,7 +26,8 @@
   {
     "_id": "6611200072af4f739ac9db02",
     "user": "66111ffd72af4f739ac9daf7",
-    "title": "Gas Station",
+    "title": "Mo's Coffee",
+    "type": "debit",
     "amount": 50,
     "category": "66111ffd72af4f739ac9dafb",
     "account": "66111ffe72af4f739ac9daf9",
@@ -36,6 +39,7 @@
     "_id": "6611200072af4f739ac9db03",
     "user": "66111ffd72af4f739ac9daf7",
     "title": "Online Subscription",
+    "type": "debit",
     "amount": 15,
     "category": "66111ffd72af4f739ac9dafc",
     "account": "66111ffe72af4f739ac9dafa",
@@ -46,7 +50,8 @@
   {
     "_id": "6611200072af4f739ac9db04",
     "user": "66111ffd72af4f739ac9daf7",
-    "title": "Book Store Purchase",
+    "title": "Salary",
+    "type": "credit",
     "amount": 45,
     "category": "66111ffd72af4f739ac9dafd",
     "account": "66111ffe72af4f739ac9daf9",

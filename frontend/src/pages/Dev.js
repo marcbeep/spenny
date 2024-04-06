@@ -1,7 +1,7 @@
 // import React from 'react';
 // import OCRUpload from '../components/Forms/OCRUpload';
 // import TransactionForm from '../components/Forms/TransactionForm';
-// import TransactionCard from '../components/Cards/TransactionCard'; 
+// import TransactionCard from '../components/Cards/TransactionCard';
 
 // const Dev = () => {
 //   // Sample fake data
@@ -64,17 +64,21 @@
 
 import React, { useState, useEffect } from 'react';
 import { loadMockData } from '../utils/mockDataLoader';
+import TransactionCard from '../components/Cards/TransactionCard'; // Adjust the path as necessary
 
 const Dev = () => {
   const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [categories, setCategories] = useState([]); // Add state for categories
 
   useEffect(() => {
     const loadData = async () => {
       const accountsData = await loadMockData('accounts');
-      setAccounts(accountsData);
       const transactionsData = await loadMockData('transactions');
+      const categoriesData = await loadMockData('categories'); // Load categories data
+      setAccounts(accountsData);
       setTransactions(transactionsData);
+      setCategories(categoriesData); // Set categories state
     };
 
     loadData();
@@ -83,13 +87,13 @@ const Dev = () => {
   return (
     <div>
       <h1>Development Testing Page</h1>
-      <h2>Accounts</h2>
-      <pre>{JSON.stringify(accounts, null, 2)}</pre>
+      {/* Displaying accounts and transactions in a preformatted block is optional now
+          since we will display transactions using the TransactionCard component */}
       <h2>Transactions</h2>
-      <pre>{JSON.stringify(transactions, null, 2)}</pre>
+      {/* Render the TransactionCard component with transactions and categories props */}
+      <TransactionCard transactions={transactions} categories={categories} />
     </div>
   );
 };
 
 export default Dev;
-

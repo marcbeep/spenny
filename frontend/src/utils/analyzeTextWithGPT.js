@@ -8,17 +8,17 @@ const openai = new OpenAI({
 
 /**
  * Analyzes text using GPT and returns the response as JSON.
- * 
+ *
  * @param {string} text - The text to analyze.
  * @returns {Promise<string>} The analyzed text response from GPT.
  */
 export const analyzeTextWithGPT = async (text) => {
   try {
     const completionResponse = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: 'gpt-3.5-turbo',
       messages: [
-        { role: "system", content: "You are a helpful assistant designed to output JSON." },
-        { role: "user", content: text },
+        { role: 'system', content: 'You are a helpful assistant designed to output JSON.' },
+        { role: 'user', content: text },
       ],
     });
 
@@ -33,11 +33,14 @@ export const analyzeTextWithGPT = async (text) => {
       const responseText = firstChoice.message?.content || firstChoice.text;
       return responseText.toLowerCase();
     } else {
-      console.error('No completion choices found or unexpected response structure:', completionResponse);
-      throw new Error("No completion choices found or unexpected response structure.");
+      console.error(
+        'No completion choices found or unexpected response structure:',
+        completionResponse,
+      );
+      throw new Error('No completion choices found or unexpected response structure.');
     }
   } catch (error) {
-    console.error("Error in analyzeTextWithGPT:", error);
+    console.error('Error in analyzeTextWithGPT:', error);
     throw error; // Rethrow the error to be handled by the caller
   }
 };
