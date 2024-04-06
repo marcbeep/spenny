@@ -177,6 +177,7 @@ exports.updateSingleTransaction = async (req, res) => {
       id,
       {
         title,
+        type,
         amount,
         category: newCategoryId,
         account: newAccountId,
