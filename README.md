@@ -127,11 +127,11 @@ These functions represent the endpoints and logic for managing accounts, budgets
 
 **account.js:**
 
-- `POST` /accounts
-- `GET` /accounts
-- `DELETE` /accounts/:id
-- `PATCH` /accounts/:id
-- `GET` /accounts/totalBalance
+- `POST` /account
+- `GET` /account
+- `DELETE` /account/:id
+- `PATCH` /account/:id
+- `GET` /account/totalBalance
 
 **budget.js:**
 
@@ -144,24 +144,24 @@ These functions represent the endpoints and logic for managing accounts, budgets
 
 **category.js:**
 
-- `POST` /categories
-- `GET` /categories
-- `GET` /categories/:id
-- `PATCH` /categories/:id
-- `DELETE` /categories/:id
+- `POST` /category
+- `GET` /category
+- `GET` /category/:id
+- `PATCH` /category/:id
+- `DELETE` /category/:id
 
 **transaction.js:**
 
-- `GET` /transactions
-- `GET` /transactions/:id
-- `POST` /transactions
-- `DELETE` /transactions/:id
-- `PATCH` /transactions/:id
+- `GET` /transaction
+- `GET` /transaction/:id
+- `POST` /transaction
+- `DELETE` /transaction/:id
+- `PATCH` /transaction/:id
 
 **user.js:**
 
-- `POST` /users/login
-- `POST` /users/signup
+- `POST` /user/login
+- `POST` /user/signup
 
 ### HTTP Status codes
 

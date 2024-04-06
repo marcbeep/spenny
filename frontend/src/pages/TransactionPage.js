@@ -28,7 +28,7 @@ const TransactionPage = () => {
       if (!user) return;
 
       try {
-        const endpoints = ['transactions', 'categories', 'accounts'];
+        const endpoints = ['transaction', 'category', 'account'];
         const dataFetchers = endpoints.map(async (endpoint) => {
           const response = await fetch(`${backendURL}/${endpoint}`, {
             headers: { Authorization: `Bearer ${user.token}` },
