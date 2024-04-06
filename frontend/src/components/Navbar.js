@@ -88,6 +88,11 @@ const Navbar = () => {
               Dev
             </Link>
           </li>
+          <li>
+            <Link to='/transactionpage' className={`p-2 ${isActive('/transactionpage')}`} onClick={closeDrawer}>
+              Transaction Page
+            </Link>
+          </li>
         </ul>
       </div>
     </div>
