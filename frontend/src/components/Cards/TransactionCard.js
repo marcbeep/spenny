@@ -20,6 +20,7 @@ const TransactionCard = ({ transactions, categories }) => {
 
   const handleRowSelect = (id) => {
     setSelectedTransactionId(id);
+    console.log('Selected Transaction ID:', id);
   };
 
   return (
@@ -27,9 +28,7 @@ const TransactionCard = ({ transactions, categories }) => {
       <div className='card-body grow-0'>
         <div className='flex justify-between gap-2'>
           <h2 className='card-title grow'>
-            <a href='#' className='link-hover'>
               Recent Transactions
-            </a>
           </h2>
           <div className='dropdown dropdown-end'>
             <div tabIndex={0} role='button' className='btn btn-sm'>
