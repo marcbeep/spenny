@@ -1,0 +1,57 @@
+[
+  {
+    "_id": "66111ffd72af4f739ac9daf9",
+    "user": "66111ffd72af4f739ac9daf7",
+    "title": "Groceries",
+    "assignedAmount": 0,
+    "available": 0,
+    "activity": 0,
+    "createdAt": "2024-04-06T10:12:13.782Z",
+    "updatedAt": "2024-04-06T10:12:13.782Z",
+    "__v": 0
+  },
+  {
+    "_id": "66111ffd72af4f739ac9dafa",
+    "user": "66111ffd72af4f739ac9daf7",
+    "title": "Rent",
+    "assignedAmount": 0,
+    "available": 0,
+    "activity": 0,
+    "createdAt": "2024-04-06T10:12:13.782Z",
+    "updatedAt": "2024-04-06T10:12:13.782Z",
+    "__v": 0
+  },
+  {
+    "_id": "66111ffd72af4f739ac9dafb",
+    "user": "66111ffd72af4f739ac9daf7",
+    "title": "Eating Out",
+    "assignedAmount": 0,
+    "available": 0,
+    "activity": 0,
+    "createdAt": "2024-04-06T10:12:13.782Z",
+    "updatedAt": "2024-04-06T10:12:13.782Z",
+    "__v": 0
+  },
+  {
+    "_id": "66111ffd72af4f739ac9dafc",
+    "user": "66111ffd72af4f739ac9daf7",
+    "title": "Fun Money",
+    "assignedAmount": 0,
+    "available": 0,
+    "activity": 0,
+    "createdAt": "2024-04-06T10:12:13.782Z",
+    "updatedAt": "2024-04-06T10:12:13.782Z",
+    "__v": 0
+  },
+  {
+    "_id": "66111ffd72af4f739ac9dafd",
+    "user": "66111ffd72af4f739ac9daf7",
+    "title": "Savings",
+    "assignedAmount": 0,
+    "available": 0,
+    "activity": 0,
+    "createdAt": "2024-04-06T10:12:13.782Z",
+    "updatedAt": "2024-04-06T10:12:13.782Z",
+    "__v": 0
+  }
+]
