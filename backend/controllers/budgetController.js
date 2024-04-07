@@ -104,20 +104,19 @@ exports.removeMoneyFromCategory = async (req, res) => {
     // Fetch the updated budget for the response
     const updatedBudget = await Budget.findOne({ user: req.user._id });
     res.status(200).json({
-        message: `£${numericAmount.toFixed(2)} successfully removed from ${category.categoryTitle}`,
-        category: {
-            _id: category._id,
-            title: category.categoryTitle,
-            available: category.categoryAvailable,
-        },
-        readyToAssign: updatedBudget.budgetReadyToAssign,
+      message: `£${numericAmount.toFixed(2)} successfully removed from ${category.categoryTitle}`,
+      category: {
+        _id: category._id,
+        title: category.categoryTitle,
+        available: category.categoryAvailable,
+      },
+      readyToAssign: updatedBudget.budgetReadyToAssign,
     });
   } catch (err) {
     console.error(err); // Log the actual error
     res.status(400).json({ error: 'Failed to remove money from category' });
   }
 };
-
 
 exports.readyToAssign = async (req, res) => {
   try {

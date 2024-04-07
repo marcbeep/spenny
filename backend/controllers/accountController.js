@@ -80,12 +80,19 @@ exports.updateAccount = async (req, res) => {
     const accountToUpdate = await Account.findById(id);
     if (!accountToUpdate) return handleAccountNotFound(res);
 
-    const balanceDifference = accountBalance !== undefined ? Number(formatAmount(accountBalance)) - Number(accountToUpdate.accountBalance) : 0;
+    const balanceDifference =
+      accountBalance !== undefined
+        ? Number(formatAmount(accountBalance)) - Number(accountToUpdate.accountBalance)
+        : 0;
 
-    const updatedAccount = await Account.findByIdAndUpdate(id, {
-      ...(accountTitle && { accountTitle: accountTitle.toLowerCase() }),
-      ...(accountBalance !== undefined && { accountBalance: formatAmount(accountBalance) }),
-    }, { new: true });
+    const updatedAccount = await Account.findByIdAndUpdate(
+      id,
+      {
+        ...(accountTitle && { accountTitle: accountTitle.toLowerCase() }),
+        ...(accountBalance !== undefined && { accountBalance: formatAmount(accountBalance) }),
+      },
+      { new: true },
+    );
 
     if (accountToUpdate.accountType === 'spending' && balanceDifference !== 0) {
       await updateUserBudget(req.user._id, balanceDifference);
@@ -125,4 +132,3 @@ exports.moveMoneyBetweenAccounts = async (req, res) => {
     res.status(400).json({ error: 'Failed to move money between accounts' });
   }
 };
-
