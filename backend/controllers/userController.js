@@ -4,13 +4,13 @@ const Budget = require('../models/budgetModel');
 const jwt = require('jsonwebtoken');
 
 // Utility to create JWT token
-const createToken = _id => jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
+const createToken = (_id) => jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
 
 // Utility to initialize essential user data
-const initializeUserData = async userId => {
+const initializeUserData = async (userId) => {
   const genericCategories = ['Groceries', 'Rent', 'Eating Out', 'Fun Money', 'Savings'];
-  const categories = genericCategories.map(title => ({ title, user: userId }));
-  
+  const categories = genericCategories.map((title) => ({ title, user: userId }));
+
   try {
     await Category.create(categories);
     await Budget.create({ user: userId, totalAvailable: 0, totalAssigned: 0, readyToAssign: 0 });
@@ -26,7 +26,7 @@ exports.loginUser = async (req, res) => {
   try {
     const user = await User.login(email, password);
     const token = createToken(user._id);
-    res.status(200).json({ email: user.userEmail, token }); 
+    res.status(200).json({ email: user.userEmail, token });
   } catch (err) {
     res.status(401).json({ error: err.message || 'Authentication failed' });
   }
@@ -35,7 +35,9 @@ exports.loginUser = async (req, res) => {
 exports.signupUser = async (req, res) => {
   const { email, password } = req.body;
   // Generate profile picture URL for the user
-  const profilePictureUrl = `https://api.randomuser.me/portraits/lego/${Math.floor(Math.random() * 10) + 1}.jpg`;
+  const profilePictureUrl = `https://api.randomuser.me/portraits/lego/${
+    Math.floor(Math.random() * 10) + 1
+  }.jpg`;
 
   try {
     const user = await User.signup(email, password, profilePictureUrl);
@@ -45,8 +47,10 @@ exports.signupUser = async (req, res) => {
 
     res.status(201).json({ email: user.userEmail, token, profilePicture: user.userProfilePicture });
   } catch (err) {
-    const errorMessage = err.code === 11000 ? 'Email already exists. Please try another one.' : err.message || 'Signup failed due to an unexpected error.';
+    const errorMessage =
+      err.code === 11000
+        ? 'Email already exists. Please try another one.'
+        : err.message || 'Signup failed due to an unexpected error.';
     res.status(400).json({ error: errorMessage });
   }
 };
-

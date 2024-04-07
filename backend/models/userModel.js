@@ -7,35 +7,40 @@ const Schema = mongoose.Schema;
 // Custom validators
 const emailValidator = [validator.isEmail, 'Invalid email'];
 const passwordValidator = {
-  validator: password => validator.isStrongPassword(password, {
-    minLength: 8,
-    minLowercase: 1,
-    minUppercase: 1,
-    minNumbers: 1,
-    minSymbols: 1,
-  }),
-  message: 'Password must be at least 8 characters long and contain at least 1 lowercase, 1 uppercase, 1 number, and 1 symbol',
+  validator: (password) =>
+    validator.isStrongPassword(password, {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    }),
+  message:
+    'Password must be at least 8 characters long and contain at least 1 lowercase, 1 uppercase, 1 number, and 1 symbol',
 };
 
 // Schema definition
-const userSchema = new Schema({
-  userEmail: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true, // Ensure email is stored in lowercase
-    validate: emailValidator,
+const userSchema = new Schema(
+  {
+    userEmail: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true, // Ensure email is stored in lowercase
+      validate: emailValidator,
+    },
+    userPassword: {
+      type: String,
+      required: true,
+      validate: passwordValidator,
+    },
+    userProfilePicture: {
+      type: String,
+      required: false, // Adjust as needed
+    },
   },
-  userPassword: {
-    type: String,
-    required: true,
-    validate: passwordValidator,
-  },
-  userProfilePicture: {
-    type: String,
-    required: false, // Adjust as needed
-  },
-}, { timestamps: true }); // MongoDB handles created and updated timestamps
+  { timestamps: true },
+); // MongoDB handles created and updated timestamps
 
 // Helper function to hash passwords
 async function hashPassword(password) {

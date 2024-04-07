@@ -7,39 +7,42 @@ function formatNumber(value) {
   return parseFloat(parseFloat(value).toFixed(2));
 }
 
-const transactionSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+const transactionSchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    transactionCategory: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+    },
+    transactionAccount: {
+      type: Schema.Types.ObjectId,
+      ref: 'Account',
+      required: true,
+    },
+    transactionType: {
+      type: String,
+      required: true,
+      lowercase: true,
+      enum: ['debit', 'credit'], // Restricts the value to either 'debit' or 'credit'
+    },
+    transactionTitle: {
+      type: String,
+      required: true,
+      lowercase: true,
+    },
+    transactionAmount: {
+      type: Number,
+      required: true,
+      set: formatNumber,
+    },
   },
-  transactionCategory: {
-    type: Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true,
-  },
-  transactionAccount: {
-    type: Schema.Types.ObjectId,
-    ref: 'Account',
-    required: true,
-  },
-  transactionType: {
-    type: String,
-    required: true,
-    lowercase: true, 
-    enum: ['debit', 'credit'], // Restricts the value to either 'debit' or 'credit'
-  },
-  transactionTitle: {
-    type: String,
-    required: true,
-    lowercase: true,
-  },
-  transactionAmount: {
-    type: Number,
-    required: true,
-    set: formatNumber,
-  },
-}, { timestamps: true });
+  { timestamps: true },
+);
 
 // Pre-save hook to format the amount field for new documents
 transactionSchema.pre('save', function (next) {

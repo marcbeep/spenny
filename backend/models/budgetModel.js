@@ -7,28 +7,31 @@ function formatNumber(value) {
   return parseFloat(parseFloat(value).toFixed(2));
 }
 
-const budgetSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+const budgetSchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    budgetTotalAvailable: {
+      type: Number,
+      required: true,
+      set: formatNumber,
+    },
+    budgetTotalAssigned: {
+      type: Number,
+      required: true,
+      set: formatNumber,
+    },
+    budgetReadyToAssign: {
+      type: Number,
+      required: true,
+      set: formatNumber,
+    },
   },
-  budgetTotalAvailable: {
-    type: Number,
-    required: true,
-    set: formatNumber, 
-  },
-  budgetTotalAssigned: {
-    type: Number,
-    required: true,
-    set: formatNumber, 
-  },
-  budgetReadyToAssign: {
-    type: Number,
-    required: true,
-    set: formatNumber, 
-  },
-}, { timestamps: true });
+  { timestamps: true },
+);
 
 // Pre-save hook to format number fields for new documents
 budgetSchema.pre('save', function (next) {
@@ -41,7 +44,7 @@ budgetSchema.pre('save', function (next) {
 // Pre-update hooks to ensure number fields are formatted on updates
 budgetSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
   const update = this.getUpdate();
-  
+
   if (update.budgetTotalAvailable !== undefined) {
     update.budgetTotalAvailable = formatNumber(update.budgetTotalAvailable);
   }

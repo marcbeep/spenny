@@ -7,40 +7,43 @@ function formatNumber(value) {
   return parseFloat(parseFloat(value).toFixed(2));
 }
 
-const categorySchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+const categorySchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    categoryTitle: {
+      type: String,
+      required: true,
+      lowercase: true,
+    },
+    categoryAssigned: {
+      type: Number,
+      default: 0,
+      required: true,
+      set: formatNumber,
+    },
+    categoryAvailable: {
+      type: Number,
+      default: 0,
+      required: true,
+      set: formatNumber,
+    },
+    categoryActivity: {
+      type: Number,
+      default: 0,
+      set: formatNumber,
+    },
+    categoryGoal: {
+      type: Schema.Types.ObjectId,
+      ref: 'Goal',
+      default: null, // It can be null if the category has no goal
+    },
   },
-  categoryTitle: {
-    type: String,
-    required: true,
-    lowercase: true,
-  },
-  categoryAssigned: {
-    type: Number,
-    default: 0,
-    required: true,
-    set: formatNumber,
-  },
-  categoryAvailable: {
-    type: Number,
-    default: 0,
-    required: true,
-    set: formatNumber,
-  },
-  categoryActivity: {
-    type: Number,
-    default: 0,
-    set: formatNumber,
-  },
-  categoryGoal: {
-    type: Schema.Types.ObjectId,
-    ref: 'Goal',
-    default: null, // It can be null if the category has no goal
-  },
-}, { timestamps: true });
+  { timestamps: true },
+);
 
 // Pre-save hook to format numeric fields for new documents
 categorySchema.pre('save', function (next) {
@@ -67,4 +70,3 @@ categorySchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (ne
 });
 
 module.exports = mongoose.model('Category', categorySchema);
-

@@ -2,7 +2,8 @@ const Budget = require('../models/budgetModel');
 const Category = require('../models/categoryModel');
 
 // Utility function to handle not found errors more efficiently
-const handleNotFound = (res, entity = 'Resource') => res.status(404).json({ error: `${entity} not found` });
+const handleNotFound = (res, entity = 'Resource') =>
+  res.status(404).json({ error: `${entity} not found` });
 
 // Updates the budget based on category actions
 async function updateUserBudgetForCategoryActions(userId, amountChange, actionType) {
@@ -77,7 +78,9 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
     await Promise.all([fromCategory.save(), toCategory.save()]);
 
     res.status(200).json({
-      message: `£${numericAmount.toFixed(2)} successfully moved from ${fromCategory.categoryTitle} to ${toCategory.categoryTitle}`,
+      message: `£${numericAmount.toFixed(2)} successfully moved from ${
+        fromCategory.categoryTitle
+      } to ${toCategory.categoryTitle}`,
     });
   } catch (err) {
     res.status(400).json({ error: 'Failed to move money between categories' });
@@ -98,7 +101,11 @@ exports.removeMoneyFromCategory = async (req, res) => {
 
     res.status(200).json({
       message: `£${numericAmount.toFixed(2)} successfully removed from ${category.categoryTitle}`,
-      category: { _id: category._id, title: category.categoryTitle, available: category.categoryAvailable },
+      category: {
+        _id: category._id,
+        title: category.categoryTitle,
+        available: category.categoryAvailable,
+      },
     });
   } catch (err) {
     res.status(400).json({ error: 'Failed to remove money from category' });
@@ -136,11 +143,12 @@ exports.moveMoneyToReadyToAssign = async (req, res) => {
     await Promise.all([category.save(), budget.save()]);
 
     res.status(200).json({
-      message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${category.categoryTitle}.`,
+      message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${
+        category.categoryTitle
+      }.`,
       readyToAssign: budget.budgetReadyToAssign,
     });
   } catch (err) {
     res.status(400).json({ error: 'Failed to move money to Ready to Assign' });
   }
 };
-

@@ -3,10 +3,16 @@ const Category = require('../models/categoryModel');
 const Account = require('../models/accountModel');
 
 // Shared error handler
-const handleNoTransactionFound = res => res.status(404).json({ error: 'Transaction not found' });
+const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
 
 // Utility function to update category and account balances
-const updateBalances = async ({ categoryId, accountId, amount, transactionType, revert = false }) => {
+const updateBalances = async ({
+  categoryId,
+  accountId,
+  amount,
+  transactionType,
+  revert = false,
+}) => {
   const multiplier = revert ? -1 : 1;
   const amountChange = transactionType === 'debit' ? -amount : amount;
 
@@ -46,7 +52,13 @@ exports.getSingleTransaction = async (req, res) => {
 };
 
 exports.createTransaction = async (req, res) => {
-  const { transactionTitle, transactionType, transactionAmount, transactionCategory, transactionAccount } = req.body;
+  const {
+    transactionTitle,
+    transactionType,
+    transactionAmount,
+    transactionCategory,
+    transactionAccount,
+  } = req.body;
 
   try {
     const newTransaction = await Transaction.create({
@@ -96,7 +108,13 @@ exports.deleteSingleTransaction = async (req, res) => {
 
 exports.updateSingleTransaction = async (req, res) => {
   const { id } = req.params;
-  const { transactionTitle, transactionType, transactionAmount, transactionCategory, transactionAccount } = req.body;
+  const {
+    transactionTitle,
+    transactionType,
+    transactionAmount,
+    transactionCategory,
+    transactionAccount,
+  } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) return handleNoTransactionFound(res);
 

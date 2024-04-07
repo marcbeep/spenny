@@ -3,7 +3,7 @@ const Transaction = require('../models/transactionModel');
 const mongoose = require('mongoose');
 
 // Shared error handling for simplicity and DRY principles
-const handleNoCategoryFound = res => res.status(404).json({ error: 'Category not found' });
+const handleNoCategoryFound = (res) => res.status(404).json({ error: 'Category not found' });
 
 exports.addCategory = async (req, res) => {
   const { title } = req.body; // Accepting title from request body
@@ -61,7 +61,10 @@ exports.deleteCategory = async (req, res) => {
       return res.status(404).json({ error: 'New category not found' });
     }
 
-    await Transaction.updateMany({ transactionCategory: id }, { transactionCategory: newCategoryId });
+    await Transaction.updateMany(
+      { transactionCategory: id },
+      { transactionCategory: newCategoryId },
+    );
 
     const result = await Category.findByIdAndDelete(id);
     if (!result) return handleNoCategoryFound(res);
@@ -81,11 +84,14 @@ exports.updateCategory = async (req, res) => {
   }
 
   try {
-    const updatedCategory = await Category.findByIdAndUpdate(id, { categoryTitle: title.toLowerCase() }, { new: true });
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      { categoryTitle: title.toLowerCase() },
+      { new: true },
+    );
     if (!updatedCategory) return handleNoCategoryFound(res);
     res.status(200).json(updatedCategory);
   } catch (err) {
     res.status(400).json({ error: 'Failed to update category' });
   }
 };
-

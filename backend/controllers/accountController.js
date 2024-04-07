@@ -19,7 +19,7 @@ async function updateUserBudget(userId, balanceChange) {
 }
 
 // Shared function to handle account not found errors
-const handleAccountNotFound = res => res.status(404).json({ error: 'Account not found' });
+const handleAccountNotFound = (res) => res.status(404).json({ error: 'Account not found' });
 
 exports.addAccount = async (req, res) => {
   const { accountTitle, accountType, accountBalance } = req.body;
@@ -27,8 +27,8 @@ exports.addAccount = async (req, res) => {
   try {
     const account = await Account.create({
       user: req.user._id,
-      accountTitle: accountTitle.toLowerCase(), 
-      accountType: accountType.toLowerCase(), 
+      accountTitle: accountTitle.toLowerCase(),
+      accountType: accountType.toLowerCase(),
       accountBalance: Number(accountBalance), // Ensure numeric conversion
     });
 
