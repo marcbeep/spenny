@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Account = require('../models/accountModel');
 const Category = require('../models/categoryModel');
 const Budget = require('../models/budgetModel');
 const jwt = require('jsonwebtoken');
@@ -8,15 +9,43 @@ const createToken = (_id) => jwt.sign({ _id }, process.env.JWT_SECRET, { expires
 
 // Utility to initialize essential user data
 const initializeUserData = async (userId) => {
-  const genericCategories = ['Groceries', 'Rent', 'Eating Out', 'Fun Money', 'Savings'];
-  const categories = genericCategories.map((title) => ({ title, user: userId }));
-
   try {
-    await Category.create(categories);
-    await Budget.create({ user: userId, totalAvailable: 0, totalAssigned: 0, readyToAssign: 0 });
-    // TODO: create a generic spending account or other initial setups here
+    // Define some generic categories for a new user
+    const genericCategories = ['groceries', 'rent', 'eating out', 'fun money', 'savings'];
+
+    // Create a generic spending account for the new user
+    const genericAccountTitle = 'example spending account';
+    const genericAccount = await Account.create({
+      user: userId,
+      accountTitle: genericAccountTitle,
+      accountType: 'spending',
+      accountBalance: 0.0,
+    });
+
+    // Create the categories for the new user
+    await Promise.all(
+      genericCategories.map((categoryTitle) =>
+        Category.create({
+          user: userId,
+          categoryTitle,
+          categoryAssigned: 0.0,
+          categoryAvailable: 0.0,
+          categoryActivity: 0.0,
+        }),
+      ),
+    );
+
+    // Initialize the budget for the new user
+    await Budget.create({
+      user: userId,
+      budgetTotalAvailable: 0.0,
+      budgetTotalAssigned: 0.0,
+      budgetReadyToAssign: 0.0,
+    });
+    return { success: true };
   } catch (err) {
     console.error('Error initializing data for user:', err);
+    return { error: err.message || 'Failed to initialize user data' };
   }
 };
 
@@ -34,7 +63,6 @@ exports.loginUser = async (req, res) => {
 
 exports.signupUser = async (req, res) => {
   const { email, password } = req.body;
-  // Generate profile picture URL for the user
   const profilePictureUrl = `https://api.randomuser.me/portraits/lego/${
     Math.floor(Math.random() * 10) + 1
   }.jpg`;
@@ -43,14 +71,20 @@ exports.signupUser = async (req, res) => {
     const user = await User.signup(email, password, profilePictureUrl);
     const token = createToken(user._id);
 
-    await initializeUserData(user._id); // Generic categories and initial budget setup
+    // Attempt to initialize user data
+    const initDataResult = await initializeUserData(user._id);
+    if (initDataResult.error) {
+      throw new Error(initDataResult.error); // Propagate initialization error if exists
+    }
 
     res.status(201).json({ email: user.userEmail, token, profilePicture: user.userProfilePicture });
   } catch (err) {
-    const errorMessage =
-      err.code === 11000
-        ? 'Email already exists. Please try another one.'
-        : err.message || 'Signup failed due to an unexpected error.';
+    let errorMessage = 'Signup failed due to an unexpected error.';
+    if (err.code === 11000) {
+      errorMessage = 'Email already exists. Please try another one.';
+    } else if (err.message) {
+      errorMessage = err.message; // Use the specific error message if available
+    }
     res.status(400).json({ error: errorMessage });
   }
 };
