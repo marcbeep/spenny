@@ -1,9 +1,9 @@
 const express = require('express');
 const requireAuth = require('../middleware/requireAuth');
 const {
-    createOrUpdateGoalForCategory,
-    getGoal,
-    deleteGoal,
+  createOrUpdateGoalForCategory,
+  getGoal,
+  deleteGoal,
 } = require('../controllers/goalController');
 
 const router = express.Router();

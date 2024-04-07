@@ -4,7 +4,7 @@ const {
   deleteAccount,
   updateAccount,
   getAccounts,
-  moveMoneyBetweenAccounts
+  moveMoneyBetweenAccounts,
 } = require('../controllers/accountController');
 const requireAuth = require('../middleware/requireAuth');
 

@@ -11,6 +11,21 @@ const formatAmount = (amount) => {
   return Number(parseFloat(amount).toFixed(2));
 };
 
+// Adjust budget and category balances based on transaction
+const updateUserBudgetForTransaction = async (userId, amount, addToReadyToAssign) => {
+  const budget = await Budget.findOne({ user: userId });
+  if (!budget) return;
+
+  if (addToReadyToAssign) {
+    // For transactions directly affecting "Ready to Assign"
+    budget.budgetReadyToAssign += amount;
+  } else {
+    // For transactions within categories, adjust total assigned but not "Ready to Assign"
+    budget.budgetTotalAssigned += amount;
+  }
+  await budget.save();
+};
+
 const updateBalances = async ({
   categoryId,
   accountId,
@@ -65,10 +80,11 @@ exports.createTransaction = async (req, res) => {
     transactionTitle,
     transactionType,
     transactionAmount,
-    transactionCategory,
+    transactionCategory = null, 
     transactionAccount,
   } = req.body;
   const formattedAmount = formatAmount(transactionAmount);
+  const amountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
 
   try {
     const newTransaction = await Transaction.create({
@@ -80,12 +96,12 @@ exports.createTransaction = async (req, res) => {
       transactionAccount,
     });
 
-    await updateBalances({
-      categoryId: transactionCategory,
-      accountId: transactionAccount,
-      amount: formattedAmount,
-      transactionType,
-    });
+    if (transactionCategory) {
+      // Update the category if specified
+      await updateCategoryBalance(transactionCategory, amountChange);
+    }
+    // Adjust "Ready to Assign" for transactions without a category
+    await updateUserBudgetForTransaction(req.user._id, amountChange, !transactionCategory);
 
     res.status(201).json(newTransaction);
   } catch (err) {
@@ -93,22 +109,20 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
+
 exports.deleteSingleTransaction = async (req, res) => {
   const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) return handleNoTransactionFound(res);
 
   try {
     const transactionToDelete = await Transaction.findByIdAndDelete(id);
     if (!transactionToDelete) return handleNoTransactionFound(res);
 
-    await updateBalances({
-      categoryId: transactionToDelete.transactionCategory,
-      accountId: transactionToDelete.transactionAccount,
-      amount: transactionToDelete.transactionAmount,
-      transactionType: transactionToDelete.transactionType,
-      revert: true,
-    });
+    const amountChange = transactionToDelete.transactionType === 'debit' ? transactionToDelete.transactionAmount : -transactionToDelete.transactionAmount;
+    if (transactionToDelete.transactionCategory) {
+      await updateCategoryBalance(transactionToDelete.transactionCategory, amountChange);
+    } else {
+      await updateUserBudgetForTransaction(req.user._id, amountChange, !transactionToDelete.transactionCategory);
+    }
 
     res.status(200).json({ message: 'Transaction successfully deleted' });
   } catch (err) {
@@ -116,16 +130,16 @@ exports.deleteSingleTransaction = async (req, res) => {
   }
 };
 
+
 exports.updateSingleTransaction = async (req, res) => {
   const { id } = req.params;
   const {
     transactionTitle,
     transactionType,
     transactionAmount,
-    transactionCategory,
+    transactionCategory = null, 
     transactionAccount,
   } = req.body;
-  const formattedAmount = formatAmount(transactionAmount);
 
   if (!mongoose.Types.ObjectId.isValid(id)) return handleNoTransactionFound(res);
 
@@ -133,33 +147,50 @@ exports.updateSingleTransaction = async (req, res) => {
     const transactionToUpdate = await Transaction.findById(id);
     if (!transactionToUpdate) return handleNoTransactionFound(res);
 
-    // Reverse original transaction's effects using the original amount stored in the transaction
-    await updateBalances({
-      categoryId: transactionToUpdate.transactionCategory,
-      accountId: transactionToUpdate.transactionAccount,
-      amount: transactionToUpdate.transactionAmount,
-      transactionType: transactionToUpdate.transactionType,
-      revert: true,
-    });
+    const formattedAmount = formatAmount(transactionAmount);
+    const originalFormattedAmount = formatAmount(transactionToUpdate.transactionAmount);
+    const amountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
+    const originalAmountChange = transactionToUpdate.transactionType === 'debit' ? -originalFormattedAmount : originalFormattedAmount;
 
-    // Apply new transaction's effects using the formatted amount
-    await updateBalances({
-      categoryId: transactionCategory,
-      accountId: transactionAccount,
-      amount: formattedAmount,
-      transactionType,
-    });
+    // If the transaction originally had a category, reverse its effects
+    if (transactionToUpdate.transactionCategory) {
+      await updateBalances({
+        categoryId: transactionToUpdate.transactionCategory,
+        accountId: transactionToUpdate.transactionAccount,
+        amount: originalAmountChange,
+        transactionType: transactionToUpdate.transactionType,
+        revert: true,
+      });
+    } else {
+      // If it didn't have a category, adjust "Ready to Assign" by reversing the original addition/subtraction
+      await updateUserBudgetForTransaction(req.user._id, -originalAmountChange, true);
+    }
 
-    // Update the transaction with the new details, including the formatted amount
+    // Apply new transaction's effects
+    if (transactionCategory) {
+      // If now has a category, update balances accordingly
+      await updateBalances({
+        categoryId: transactionCategory,
+        accountId: transactionAccount,
+        amount: amountChange,
+        transactionType,
+      });
+    } else {
+      // If still no category, adjust "Ready to Assign" by the new amount
+      await updateUserBudgetForTransaction(req.user._id, amountChange, true);
+    }
+
+    // Update the transaction with the new details
     transactionToUpdate.transactionTitle = transactionTitle;
     transactionToUpdate.transactionType = transactionType;
     transactionToUpdate.transactionAmount = formattedAmount;
-    transactionToUpdate.transactionCategory = transactionCategory;
+    transactionToUpdate.transactionCategory = transactionCategory || undefined; // Ensure undefined if no category
     transactionToUpdate.transactionAccount = transactionAccount;
     await transactionToUpdate.save();
 
     res.status(200).json(transactionToUpdate);
   } catch (err) {
-    handleNoTransactionFound(res);
+    console.error(err); // Better error handling
+    res.status(400).json({ error: 'Failed to update transaction' });
   }
 };
