@@ -1,47 +1,57 @@
 const mongoose = require('mongoose');
 
-const transactionSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    type: {
-      type: String,
-      required: false,
-    },
-    amount: {
-      type: Number,
-      required: true,
-    },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',
-      required: true,
-    },
-    account: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Account',
-      required: true,
-    },
-  },
-  { timestamps: true },
-);
+const Schema = mongoose.Schema;
 
+// Helper function to format numbers to two decimal places
+function formatNumber(value) {
+  return parseFloat(parseFloat(value).toFixed(2));
+}
+
+const transactionSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  transactionCategory: {
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
+    required: true,
+  },
+  transactionAccount: {
+    type: Schema.Types.ObjectId,
+    ref: 'Account',
+    required: true,
+  },
+  transactionType: {
+    type: String,
+    required: true,
+    lowercase: true, 
+    enum: ['debit', 'credit'], // Restricts the value to either 'debit' or 'credit'
+  },
+  transactionTitle: {
+    type: String,
+    required: true,
+    lowercase: true,
+  },
+  transactionAmount: {
+    type: Number,
+    required: true,
+    set: formatNumber,
+  },
+}, { timestamps: true });
+
+// Pre-save hook to format the amount field for new documents
 transactionSchema.pre('save', function (next) {
-  this.amount = parseFloat(this.amount.toFixed(2));
+  this.transactionAmount = formatNumber(this.transactionAmount);
   next();
 });
 
-transactionSchema.pre(['update', 'findOneAndUpdate'], function (next) {
+// Pre-update hooks to ensure amount is formatted on updates
+transactionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
   const update = this.getUpdate();
-  if (update.amount !== undefined) {
-    update.amount = parseFloat(update.amount.toFixed(2));
+  if (update.transactionAmount !== undefined) {
+    update.transactionAmount = formatNumber(update.transactionAmount);
   }
   this.setUpdate(update);
   next();
