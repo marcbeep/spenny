@@ -92,25 +92,32 @@ exports.removeMoneyFromCategory = async (req, res) => {
   const numericAmount = parseFloat(amount);
 
   try {
-    await updateUserBudgetForCategoryActions(req.user._id, numericAmount, 'remove');
     const category = await Category.findById(categoryId);
     if (!category) return handleNotFound(res, 'Category');
-
+    if (category.categoryAvailable < numericAmount) {
+      return res.status(400).json({ error: 'Insufficient funds in the category.' });
+    }
     category.categoryAvailable -= numericAmount;
     await category.save();
+    await updateUserBudgetForCategoryActions(req.user._id, numericAmount, 'remove');
 
+    // Fetch the updated budget for the response
+    const updatedBudget = await Budget.findOne({ user: req.user._id });
     res.status(200).json({
-      message: `£${numericAmount.toFixed(2)} successfully removed from ${category.categoryTitle}`,
-      category: {
-        _id: category._id,
-        title: category.categoryTitle,
-        available: category.categoryAvailable,
-      },
+        message: `£${numericAmount.toFixed(2)} successfully removed from ${category.categoryTitle}`,
+        category: {
+            _id: category._id,
+            title: category.categoryTitle,
+            available: category.categoryAvailable,
+        },
+        readyToAssign: updatedBudget.budgetReadyToAssign,
     });
   } catch (err) {
+    console.error(err); // Log the actual error
     res.status(400).json({ error: 'Failed to remove money from category' });
   }
 };
+
 
 exports.readyToAssign = async (req, res) => {
   try {
@@ -120,35 +127,5 @@ exports.readyToAssign = async (req, res) => {
     res.status(200).json({ readyToAssign: budget.budgetReadyToAssign });
   } catch (err) {
     res.status(400).json({ error: 'Failed to retrieve Ready to Assign amount' });
-  }
-};
-
-exports.moveMoneyToReadyToAssign = async (req, res) => {
-  const { fromCategoryId, amount } = req.body;
-  const numericAmount = parseFloat(amount);
-
-  try {
-    const category = await Category.findById(fromCategoryId);
-    if (!category) return handleNotFound(res, 'Category');
-
-    const budget = await Budget.findOne({ user: req.user._id });
-    if (!budget) return handleNotFound(res, 'Budget');
-
-    if (category.categoryAvailable < numericAmount) {
-      return res.status(400).json({ error: 'Insufficient funds in the category.' });
-    }
-
-    category.categoryAvailable -= numericAmount;
-    budget.budgetReadyToAssign += numericAmount;
-    await Promise.all([category.save(), budget.save()]);
-
-    res.status(200).json({
-      message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${
-        category.categoryTitle
-      }.`,
-      readyToAssign: budget.budgetReadyToAssign,
-    });
-  } catch (err) {
-    res.status(400).json({ error: 'Failed to move money to Ready to Assign' });
   }
 };
