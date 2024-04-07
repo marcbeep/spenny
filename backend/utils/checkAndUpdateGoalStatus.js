@@ -45,4 +45,3 @@ const checkAndUpdateGoalStatus = async (goalId = null) => {
 };
 
 module.exports = checkAndUpdateGoalStatus;
-

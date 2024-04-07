@@ -69,8 +69,13 @@ exports.deleteCategory = async (req, res) => {
     );
 
     await Goal.findOneAndDelete({ goalCategory: id });
-    const result = await Category.findByIdAndDelete(id);
-    if (!result) return handleNoCategoryFound(res);
+    await Category.findByIdAndDelete(id);
+
+    // Call to check and update goal status for the new category's goal, if it exists
+    const newCategoryGoal = await Goal.findOne({ goalCategory: newCategoryId });
+    if (newCategoryGoal) {
+      await checkAndUpdateGoalStatus(newCategoryGoal._id);
+    }
 
     res.sendStatus(204); // No content to send back for a delete operation
   } catch (err) {
@@ -87,13 +92,20 @@ exports.updateCategory = async (req, res) => {
   }
 
   try {
-    await checkAndUpdateGoalStatus(updatedCategory._id);
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
       { categoryTitle: title.toLowerCase() },
       { new: true },
     );
+
     if (!updatedCategory) return handleNoCategoryFound(res);
+
+    // After updating the category, check and update goal status related to this category
+    const relatedGoal = await Goal.findOne({ goalCategory: updatedCategory._id });
+    if (relatedGoal) {
+      await checkAndUpdateGoalStatus(relatedGoal._id);
+    }
+
     res.status(200).json(updatedCategory);
   } catch (err) {
     res.status(400).json({ error: 'Failed to update category' });
