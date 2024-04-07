@@ -1,15 +1,15 @@
 const Goal = require('../models/goalModel');
 const Category = require('../models/categoryModel');
-const moment = require('moment'); 
+const moment = require('moment');
 
 const checkAndUpdateGoalStatus = async (goalId = null) => {
   let query = goalId ? Goal.find({ _id: goalId }) : Goal.find();
   query = query.populate('goalCategory');
-  
+
   const goals = await query;
 
   for (const goal of goals) {
-    const isFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable; 
+    const isFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable;
     goal.goalStatus = isFunded ? 'funded' : 'underfunded';
 
     const currentDate = new Date();
@@ -24,4 +24,3 @@ const checkAndUpdateGoalStatus = async (goalId = null) => {
 };
 
 module.exports = checkAndUpdateGoalStatus;
-

@@ -48,7 +48,7 @@ exports.createGoal = async (req, res) => {
     await checkAndUpdateGoalStatus(goal._id);
     res.status(201).json(goal);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(400).json({ error: 'Failed to create goal' });
   }
 };

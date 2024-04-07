@@ -23,27 +23,22 @@ const goalSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
-      enum: ['saving', 'spending'], // Restricts the value to 'saving' or 'spending'
+      enum: ['spending', 'saving', 'minimum'], // Updated to include all three goal types
     },
     goalTarget: {
       type: Number,
-      required: true,
-      set: formatNumber,
-    },
-    goalCurrent: {
-      type: Number,
-      required: false,
+      required: false, // Not required for 'minimum' goal type
       set: formatNumber,
     },
     goalDeadline: {
       type: Date,
-      required: true,
+      required: false, // Only required for 'spending' goal type
     },
     goalStatus: {
       type: String,
       required: true,
       lowercase: true,
-      enum: ['underfunded', 'funded'], // Restricts the value to 'underfunded' or 'funded'
+      enum: ['underfunded', 'funded'],
     },
   },
   { timestamps: true },

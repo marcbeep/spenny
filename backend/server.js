@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('./jobs/goalEvaluation');  // Initialize the scheduled task
+require('./jobs/goalEvaluation'); // Initialize the scheduled task
 
 // Routes
 const accountRoutes = require('./routes/account');
