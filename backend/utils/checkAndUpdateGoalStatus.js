@@ -1,23 +1,27 @@
 const Goal = require('../models/goalModel');
 const Category = require('../models/categoryModel');
+const moment = require('moment'); 
 
-const checkAndUpdateGoalStatus = async () => {
-  const goals = await Goal.find().populate('goalCategory');
+const checkAndUpdateGoalStatus = async (goalId = null) => {
+  let query = goalId ? Goal.find({ _id: goalId }) : Goal.find();
+  query = query.populate('goalCategory');
   
-  for (const goal of goals) {
-    let isFunded = false;
+  const goals = await query;
 
-    // Assuming goalTarget and categoryAssigned are numbers
-    if (goal.goalTarget <= goal.goalCategory.categoryAssigned) {
-      isFunded = true;
-    }
-    
-    // Adjusting the logic based on different types of goals (if there are different types like 'saving', etc.)
-    // If there's a deadline, we might need additional checks here.
-    
+  for (const goal of goals) {
+    const isFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable; 
     goal.goalStatus = isFunded ? 'funded' : 'underfunded';
+
+    const currentDate = new Date();
+    if (goal.goalDeadline && currentDate > new Date(goal.goalDeadline)) {
+      // For weekly goals, add 7 days to the deadline
+      goal.goalDeadline = moment(goal.goalDeadline).add(1, 'week').toDate();
+      goal.goalStatus = 'underfunded'; // Reset status for the new week
+    }
+
     await goal.save();
   }
 };
-  
+
 module.exports = checkAndUpdateGoalStatus;
+

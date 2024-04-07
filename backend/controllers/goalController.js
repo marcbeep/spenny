@@ -45,6 +45,7 @@ exports.createGoal = async (req, res) => {
     });
 
     await goal.save();
+    await checkAndUpdateGoalStatus(goal._id);
     res.status(201).json(goal);
   } catch (err) {
     res.status(400).json({ error: 'Failed to create goal' });
@@ -87,6 +88,7 @@ exports.updateGoal = async (req, res) => {
     goal.goalStatus = isFunded ? 'funded' : 'underfunded';
 
     await goal.save();
+    await checkAndUpdateGoalStatus(goal._id);
     res.status(200).json({ message: 'Goal updated successfully', goal });
   } catch (err) {
     console.error('Error updating goal:', err);
