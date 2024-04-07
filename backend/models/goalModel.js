@@ -32,7 +32,7 @@ const goalSchema = new Schema(
     },
     goalCurrent: {
       type: Number,
-      required: true,
+      required: false,
       set: formatNumber,
     },
     goalDeadline: {
