@@ -1,5 +1,6 @@
 const Goal = require('../models/goalModel');
 const Category = require('../models/categoryModel');
+const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 
 // Utility function to handle not found errors more efficiently
 const handleNotFound = (res, entity = 'Resource') =>
