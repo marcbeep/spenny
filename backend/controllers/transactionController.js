@@ -142,9 +142,10 @@ exports.updateSingleTransaction = async (req, res) => {
     transactionTitle,
     transactionType,
     transactionAmount,
-    transactionCategory = null, 
+    transactionCategory,
     transactionAccount,
   } = req.body;
+  const formattedAmount = formatAmount(transactionAmount);
 
   if (!mongoose.Types.ObjectId.isValid(id)) return handleNoTransactionFound(res);
 
@@ -152,13 +153,18 @@ exports.updateSingleTransaction = async (req, res) => {
     const transactionToUpdate = await Transaction.findById(id);
     if (!transactionToUpdate) return handleNoTransactionFound(res);
 
-    const formattedAmount = formatAmount(transactionAmount);
-    const originalFormattedAmount = formatAmount(transactionToUpdate.transactionAmount);
-    const amountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
-    const originalAmountChange = transactionToUpdate.transactionType === 'debit' ? -originalFormattedAmount : originalFormattedAmount;
+    // Determine if the transaction was originally affecting "Ready to Assign"
+    const wasAffectingReadyToAssign = !transactionToUpdate.transactionCategory;
 
-    // If the transaction originally had a category, reverse its effects
-    if (transactionToUpdate.transactionCategory) {
+    // Calculate the original and new amount changes
+    const originalAmountChange = transactionToUpdate.transactionType === 'debit' ? -transactionToUpdate.transactionAmount : transactionToUpdate.transactionAmount;
+    const newAmountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
+
+    // If the original transaction did not have a category, reverse its effect on "Ready to Assign"
+    if (wasAffectingReadyToAssign) {
+      await updateUserBudgetForTransaction(req.user._id, -originalAmountChange, true);
+    } else if (transactionToUpdate.transactionCategory) {
+      // If it had a category, reverse its category effect
       await updateBalances({
         categoryId: transactionToUpdate.transactionCategory,
         accountId: transactionToUpdate.transactionAccount,
@@ -166,36 +172,34 @@ exports.updateSingleTransaction = async (req, res) => {
         transactionType: transactionToUpdate.transactionType,
         revert: true,
       });
-    } else {
-      // If it didn't have a category, adjust "Ready to Assign" by reversing the original addition/subtraction
-      await updateUserBudgetForTransaction(req.user._id, -originalAmountChange, true);
     }
 
-    // Apply new transaction's effects
-    if (transactionCategory) {
-      // If now has a category, update balances accordingly
+    // Apply new transaction's effects based on the updated category
+    const effectiveTransactionCategory = transactionCategory === "" ? null : transactionCategory;
+    if (effectiveTransactionCategory) {
+      // Update balances if it now has a category
       await updateBalances({
-        categoryId: transactionCategory,
+        categoryId: effectiveTransactionCategory,
         accountId: transactionAccount,
-        amount: amountChange,
+        amount: newAmountChange,
         transactionType,
       });
     } else {
-      // If still no category, adjust "Ready to Assign" by the new amount
-      await updateUserBudgetForTransaction(req.user._id, amountChange, true);
+      // If still no category, directly adjust "Ready to Assign"
+      await updateUserBudgetForTransaction(req.user._id, newAmountChange, true);
     }
 
-    // Update the transaction with the new details
+    // Update the transaction with new details, consistently using null for no category
     transactionToUpdate.transactionTitle = transactionTitle;
     transactionToUpdate.transactionType = transactionType;
     transactionToUpdate.transactionAmount = formattedAmount;
-    transactionToUpdate.transactionCategory = transactionCategory || undefined; // Ensure undefined if no category
+    transactionToUpdate.transactionCategory = effectiveTransactionCategory;
     transactionToUpdate.transactionAccount = transactionAccount;
     await transactionToUpdate.save();
 
     res.status(200).json(transactionToUpdate);
   } catch (err) {
-    console.error(err); // Better error handling
+    console.error(err); // Detailed error logging
     res.status(400).json({ error: 'Failed to update transaction' });
   }
 };
