@@ -9,6 +9,7 @@ const budgetRoutes = require('./routes/budget');
 const categoryRoutes = require('./routes/category');
 const transactionRoutes = require('./routes/transaction');
 const userRoutes = require('./routes/user');
+const goalRoutes = require('./routes/goal');
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use('/budget', budgetRoutes);
 app.use('/category', categoryRoutes);
 app.use('/transaction', transactionRoutes);
 app.use('/user', userRoutes);
+app.use('/goal', goalRoutes);
 
 // Connect to MongoDB & listen for requests
 async function startServer() {
