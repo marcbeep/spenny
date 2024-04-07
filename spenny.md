@@ -88,6 +88,7 @@ Note:
 - `categoryAssigned`: (Number) - Total amount assigned to the category.
 - `categoryAvailable`: (Number) - Amount currently available in the category for spending.
 - `categoryActivity`: (Number) - Total amount of transactions associated with the category.
+- `categoryGoal`: (ObjectId) - Reference to the associated goal.
 
 **goalModel:**
 
