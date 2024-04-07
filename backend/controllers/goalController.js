@@ -28,10 +28,9 @@ exports.getSingleGoal = async (req, res) => {
 };
 
 exports.createGoal = async (req, res) => {
-  const { categoryId, goalType, goalTarget, goalDeadline } = req.body;
+  const { categoryId, goalType, goalTarget, goalDeadline, goalResetDay } = req.body;
 
   try {
-    // Ensure the category belongs to the user
     const category = await Category.findOne({ _id: categoryId, user: req.user._id });
     if (!category) return handleNotFound(res, 'Category');
 
@@ -40,56 +39,41 @@ exports.createGoal = async (req, res) => {
       goalCategory: categoryId,
       goalType: goalType.toLowerCase(),
       goalTarget,
-      goalDeadline,
+      goalDeadline: goalType.toLowerCase() === 'spending' ? undefined : new Date(goalDeadline),
       goalStatus: 'underfunded',
+      goalResetDay: goalType.toLowerCase() === 'spending' ? goalResetDay : undefined,
     });
 
     await goal.save();
+
+    // If the goal is related to a category, associate it
+    category.categoryGoal = goal._id;
+    await category.save();
+
     await checkAndUpdateGoalStatus(goal._id);
     res.status(201).json(goal);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(400).json({ error: 'Failed to create goal' });
   }
 };
 
 exports.updateGoal = async (req, res) => {
   const { id } = req.params;
-  const { goalType, goalTarget, goalDeadline } = req.body;
+  const { goalType, goalTarget, goalDeadline, goalResetDay } = req.body;
 
   try {
-    const goal = await Goal.findById(id).populate('goalCategory');
+    const goal = await Goal.findById(id);
     if (!goal) return handleNotFound(res, 'Goal');
 
-    // Update goal properties
     goal.goalType = goalType.toLowerCase();
     goal.goalTarget = goalTarget;
-    goal.goalDeadline = goalDeadline ? new Date(goalDeadline) : undefined;
-
-    // Re-evaluate the goal's status
-    let isFunded = false;
-    const currentAssigned = goal.goalCategory.categoryAssigned;
-
-    switch (goal.goalType) {
-      case 'deadline':
-        if (goal.goalDeadline && new Date(goal.goalDeadline) >= new Date()) {
-          isFunded = currentAssigned >= goal.goalTarget;
-        }
-        break;
-      case 'target':
-        isFunded = currentAssigned >= goal.goalTarget;
-        break;
-      case 'minimum':
-        isFunded = currentAssigned >= goal.goalTarget;
-        break;
-      default:
-        console.warn('Unknown goal type:', goal.goalType);
-    }
-
-    goal.goalStatus = isFunded ? 'funded' : 'underfunded';
+    goal.goalDeadline = goalType.toLowerCase() === 'spending' ? undefined : new Date(goalDeadline);
+    goal.goalResetDay = goalType.toLowerCase() === 'spending' ? goalResetDay : undefined;
 
     await goal.save();
-    await checkAndUpdateGoalStatus(goal._id);
+    await checkAndUpdateGoalStatus(id);
+
     res.status(200).json({ message: 'Goal updated successfully', goal });
   } catch (err) {
     console.error('Error updating goal:', err);
@@ -104,8 +88,8 @@ exports.deleteGoal = async (req, res) => {
     const goal = await Goal.findById(id);
     if (!goal) return handleNotFound(res, 'Goal');
 
-    // Optionally clear the association from the category
-    await Category.findByIdAndUpdate(goal.goalCategory, { $unset: { categoryGoal: "" } });
+    // Before removing the goal, unset the categoryGoal field in the associated category
+    await Category.findByIdAndUpdate(goal.goalCategory, { $unset: { categoryGoal: '' } });
 
     await goal.remove();
     res.status(204).send();
@@ -114,4 +98,3 @@ exports.deleteGoal = async (req, res) => {
     res.status(400).json({ error: 'Failed to delete goal' });
   }
 };
-

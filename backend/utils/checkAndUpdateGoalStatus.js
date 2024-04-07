@@ -19,7 +19,9 @@ const checkAndUpdateGoalStatus = async (goalId = null) => {
         break;
       case 'spendingGoal':
         // For 'spendingGoal', check if today matches the goal reset day. If it does, reset the goal.
-        const resetDayPassed = goal.goalResetDay && moment().isoWeekday() === moment().isoWeekday(goal.goalResetDay).isoWeekday();
+        const resetDayPassed =
+          goal.goalResetDay &&
+          moment().isoWeekday() === moment().isoWeekday(goal.goalResetDay).isoWeekday();
         isFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable && !resetDayPassed;
         break;
       default:
@@ -40,7 +42,8 @@ const checkAndUpdateGoalStatus = async (goalId = null) => {
     for (let goal of goals) {
       await processGoal(goal);
     }
-  } else if (goals) { // In case a single goal is found
+  } else if (goals) {
+    // In case a single goal is found
     await processGoal(goals);
   }
 };

@@ -23,7 +23,7 @@ const goalSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
-      enum: ['spendingGoal', 'savingGoal', 'minimumBalanceGoal'], 
+      enum: ['spending', 'saving', 'minimumbalance'],
     },
     goalTarget: {
       type: Number,
@@ -44,7 +44,7 @@ const goalSchema = new Schema(
       type: String,
       enum: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
       default: null,
-    }
+    },
   },
   { timestamps: true },
 );
