@@ -1,5 +1,7 @@
 const Category = require('../models/categoryModel');
 const Transaction = require('../models/transactionModel');
+const Goal = require('../models/goalModel');
+const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 const mongoose = require('mongoose');
 
 // Shared error handling for simplicity and DRY principles
@@ -66,6 +68,7 @@ exports.deleteCategory = async (req, res) => {
       { transactionCategory: newCategoryId },
     );
 
+    await Goal.findOneAndDelete({ goalCategory: id });
     const result = await Category.findByIdAndDelete(id);
     if (!result) return handleNoCategoryFound(res);
 
@@ -84,6 +87,7 @@ exports.updateCategory = async (req, res) => {
   }
 
   try {
+    await checkAndUpdateGoalStatus(updatedCategory._id);
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
       { categoryTitle: title.toLowerCase() },
