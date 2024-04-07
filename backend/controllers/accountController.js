@@ -1,38 +1,46 @@
 const Account = require('../models/accountModel');
 const Budget = require('../models/budgetModel');
 
-// Utility function to update the user's budget based on account balance changes
-async function updateUserBudget(userId, balanceChange) {
-  try {
-    const budget = await Budget.findOne({ user: userId });
-    if (!budget) {
-      console.error('Budget not found for user:', userId);
-      return;
-    }
+const formatAmount = (amount) => parseFloat(amount).toFixed(2);
 
-    budget.budgetTotalAvailable += balanceChange;
-    budget.budgetReadyToAssign += balanceChange;
+const updateUserBudget = async (userId, balanceChange) => {
+  const budget = await Budget.findOne({ user: userId });
+  if (budget) {
+    budget.budgetTotalAvailable = formatAmount(Number(budget.budgetTotalAvailable) + balanceChange);
+    budget.budgetReadyToAssign = formatAmount(Number(budget.budgetReadyToAssign) + balanceChange);
     await budget.save();
-  } catch (err) {
-    console.error('Error updating user budget:', err);
   }
-}
+};
 
-// Shared function to handle account not found errors
+const calculateBudgetImpact = (fromAccount, toAccount, amount) => {
+  let impact = 0;
+  if (fromAccount.accountType === 'spending') impact -= amount;
+  if (toAccount.accountType === 'spending') impact += amount;
+  return impact;
+};
+
+const updateAccountBalance = async (account, change) => {
+  account.accountBalance = formatAmount(Number(account.accountBalance) + change);
+  await account.save();
+};
+
 const handleAccountNotFound = (res) => res.status(404).json({ error: 'Account not found' });
 
 exports.addAccount = async (req, res) => {
   const { accountTitle, accountType, accountBalance } = req.body;
+  const formattedBalance = formatAmount(accountBalance);
 
   try {
     const account = await Account.create({
       user: req.user._id,
       accountTitle: accountTitle.toLowerCase(),
       accountType: accountType.toLowerCase(),
-      accountBalance: Number(accountBalance), // Ensure numeric conversion
+      accountBalance: formattedBalance,
     });
 
-    await updateUserBudget(req.user._id, account.accountBalance);
+    if (account.accountType === 'spending') {
+      await updateUserBudget(req.user._id, Number(formattedBalance));
+    }
     res.status(201).json(account);
   } catch (err) {
     res.status(400).json({ error: 'Failed to create account' });
@@ -55,8 +63,10 @@ exports.deleteAccount = async (req, res) => {
     const accountToDelete = await Account.findByIdAndDelete(id);
     if (!accountToDelete) return handleAccountNotFound(res);
 
-    await updateUserBudget(req.user._id, -accountToDelete.accountBalance);
-    res.sendStatus(204); // No content to send back
+    if (accountToDelete.accountType === 'spending') {
+      await updateUserBudget(req.user._id, -Number(accountToDelete.accountBalance));
+    }
+    res.sendStatus(204);
   } catch (err) {
     res.status(400).json({ error: 'Failed to delete account' });
   }
@@ -64,28 +74,55 @@ exports.deleteAccount = async (req, res) => {
 
 exports.updateAccount = async (req, res) => {
   const { id } = req.params;
-  const { accountBalance } = req.body;
+  const { accountTitle, accountBalance } = req.body;
 
   try {
     const accountToUpdate = await Account.findById(id);
     if (!accountToUpdate) return handleAccountNotFound(res);
 
-    const balanceDifference = accountBalance - accountToUpdate.accountBalance;
-    const updatedAccount = await Account.findByIdAndUpdate(id, { accountBalance }, { new: true });
+    const balanceDifference = accountBalance !== undefined ? Number(formatAmount(accountBalance)) - Number(accountToUpdate.accountBalance) : 0;
 
-    await updateUserBudget(req.user._id, balanceDifference);
+    const updatedAccount = await Account.findByIdAndUpdate(id, {
+      ...(accountTitle && { accountTitle: accountTitle.toLowerCase() }),
+      ...(accountBalance !== undefined && { accountBalance: formatAmount(accountBalance) }),
+    }, { new: true });
+
+    if (accountToUpdate.accountType === 'spending' && balanceDifference !== 0) {
+      await updateUserBudget(req.user._id, balanceDifference);
+    }
+
     res.status(200).json(updatedAccount);
   } catch (err) {
     res.status(400).json({ error: 'Failed to update account' });
   }
 };
 
-exports.getTotalBalance = async (req, res) => {
+exports.moveMoneyBetweenAccounts = async (req, res) => {
+  const { fromAccountId, toAccountId, amount } = req.body;
+  const formattedAmount = Number(formatAmount(amount));
+
   try {
-    const accounts = await Account.find({ user: req.user._id });
-    const totalBalance = accounts.reduce((acc, account) => acc + account.accountBalance, 0);
-    res.status(200).json({ totalBalance });
+    const [fromAccount, toAccount] = await Promise.all([
+      Account.findById(fromAccountId),
+      Account.findById(toAccountId),
+    ]);
+
+    if (!fromAccount || !toAccount) return handleAccountNotFound(res);
+
+    const budgetImpact = calculateBudgetImpact(fromAccount, toAccount, formattedAmount);
+
+    await Promise.all([
+      updateAccountBalance(fromAccount, -formattedAmount),
+      updateAccountBalance(toAccount, formattedAmount),
+    ]);
+
+    if (budgetImpact !== 0) {
+      await updateUserBudget(req.user._id, budgetImpact);
+    }
+
+    res.status(200).json({ message: 'Money moved successfully.' });
   } catch (err) {
-    res.status(400).json({ error: 'Failed to calculate total balance' });
+    res.status(400).json({ error: 'Failed to move money between accounts' });
   }
 };
+
