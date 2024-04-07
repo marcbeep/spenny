@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Transaction = require('../models/transactionModel');
 const Category = require('../models/categoryModel');
 const Account = require('../models/accountModel');
+const Budget = require('../models/budgetModel');
 
 // Shared error handler
 const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
@@ -80,9 +81,12 @@ exports.createTransaction = async (req, res) => {
     transactionTitle,
     transactionType,
     transactionAmount,
-    transactionCategory = null, 
+    transactionCategory, 
     transactionAccount,
   } = req.body;
+  // Convert empty string to null for transactionCategory
+  const effectiveTransactionCategory = transactionCategory === "" ? null : transactionCategory;
+
   const formattedAmount = formatAmount(transactionAmount);
   const amountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
 
@@ -92,19 +96,20 @@ exports.createTransaction = async (req, res) => {
       transactionTitle,
       transactionType,
       transactionAmount: formattedAmount,
-      transactionCategory,
+      transactionCategory: effectiveTransactionCategory,
       transactionAccount,
     });
 
-    if (transactionCategory) {
+    if (effectiveTransactionCategory) {
       // Update the category if specified
-      await updateCategoryBalance(transactionCategory, amountChange);
+      await updateCategoryBalance(effectiveTransactionCategory, amountChange);
     }
     // Adjust "Ready to Assign" for transactions without a category
     await updateUserBudgetForTransaction(req.user._id, amountChange, !transactionCategory);
 
     res.status(201).json(newTransaction);
   } catch (err) {
+    console.error(err);
     res.status(400).json({ error: 'Failed to create transaction' });
   }
 };
