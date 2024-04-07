@@ -7,6 +7,7 @@
 - Home dashboard with charts.
 - Goals (must be time sensitive).
 - Initial onboarding to add accounts.
+- Real-time balance updates ensure accurate tracking of available funds.
 
 ### Minor features
 

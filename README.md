@@ -9,7 +9,6 @@ Spenny is a web application designed to help users manage their finances effecti
 1. **Bank Account Management:**
 
    - Users can seamlessly add and manage their bank account balances within Spenny.
-   - `PLANNED`: Real-time balance updates ensure accurate tracking of available funds.
 
 2. **Customizable Budget Categories:**
 
