@@ -101,10 +101,17 @@ exports.deleteGoal = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const goal = await Goal.findByIdAndDelete(id);
+    const goal = await Goal.findById(id);
     if (!goal) return handleNotFound(res, 'Goal');
+
+    // Optionally clear the association from the category
+    await Category.findByIdAndUpdate(goal.goalCategory, { $unset: { categoryGoal: "" } });
+
+    await goal.remove();
     res.status(204).send();
   } catch (err) {
+    console.error('Error deleting goal:', err);
     res.status(400).json({ error: 'Failed to delete goal' });
   }
 };
+
