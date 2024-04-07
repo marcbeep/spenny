@@ -120,8 +120,6 @@ Spenny is a web application designed to help users manage their finances effecti
 1. `loginUser`: Handles user login requests.
 2. `signupUser`: Handles user signup requests.
 
-These functions represent the endpoints and logic for managing accounts, budgets, categories, transactions, and user authentication within your application.
-
 ### Routes
 
 **account.js:**

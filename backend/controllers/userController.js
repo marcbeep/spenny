@@ -3,94 +3,50 @@ const Category = require('../models/categoryModel');
 const Budget = require('../models/budgetModel');
 const jwt = require('jsonwebtoken');
 
-/**
- * Creates a JWT token for a user.
- * @param {string} _id - The user's database ID.
- * @returns {string} A JWT token.
- */
-const createToken = (_id) => {
-  return jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
-};
+// Utility to create JWT token
+const createToken = _id => jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
 
-/**
- * Creates an initial budget for a new user.
- * @param {string} userId - The user's database ID.
- */
-const createInitialBudgetForUser = async (userId) => {
+// Utility to initialize essential user data
+const initializeUserData = async userId => {
+  const genericCategories = ['Groceries', 'Rent', 'Eating Out', 'Fun Money', 'Savings'];
+  const categories = genericCategories.map(title => ({ title, user: userId }));
+  
   try {
-    await Budget.create({
-      user: userId,
-      totalAvailable: 0, // Initial setup, adjust as necessary
-      totalAssigned: 0,
-      readyToAssign: 0,
-    });
+    await Category.create(categories);
+    await Budget.create({ user: userId, totalAvailable: 0, totalAssigned: 0, readyToAssign: 0 });
+    // TODO: create a generic spending account or other initial setups here
   } catch (err) {
-    console.error('Error creating initial budget for user:', err);
+    console.error('Error initializing data for user:', err);
   }
 };
 
-/**
- * Creates a set of generic categories for a new user.
- * @param {string} userId - The user's database ID.
- */
-const createGenericCategoriesForUser = async (userId) => {
-  const genericCategories = [
-    { title: 'Groceries', user: userId },
-    { title: 'Rent', user: userId },
-    { title: 'Eating Out', user: userId },
-    { title: 'Fun Money', user: userId },
-    { title: 'Savings', user: userId },
-  ];
-
-  try {
-    await Promise.all(genericCategories.map((category) => Category.create(category)));
-  } catch (err) {
-    console.error('Error creating generic categories for user:', err);
-  }
-};
-
-/**
- * Handles user login requests.
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- */
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const user = await User.login(email, password);
     const token = createToken(user._id);
-    res.status(200).json({ email: user.email, token });
+    res.status(200).json({ email: user.userEmail, token }); 
   } catch (err) {
-    // Use the model's error message
     res.status(401).json({ error: err.message || 'Authentication failed' });
   }
 };
 
-/**
- * Handles user signup requests.
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- */
 exports.signupUser = async (req, res) => {
   const { email, password } = req.body;
+  // Generate profile picture URL for the user
+  const profilePictureUrl = `https://api.randomuser.me/portraits/lego/${Math.floor(Math.random() * 10) + 1}.jpg`;
 
   try {
-    const user = await User.signup(email, password);
+    const user = await User.signup(email, password, profilePictureUrl);
     const token = createToken(user._id);
 
-    // Create generic categories and initial budget for the new user
-    await createGenericCategoriesForUser(user._id);
-    await createInitialBudgetForUser(user._id);
+    await initializeUserData(user._id); // Generic categories and initial budget setup
 
-    res.status(201).json({ email: user.email, token });
+    res.status(201).json({ email: user.userEmail, token, profilePicture: user.userProfilePicture });
   } catch (err) {
-    const errorMessage = err.message || 'Signup failed due to an unexpected error.';
-
-    if (err.code === 11000) {
-      res.status(400).json({ error: 'Email already exists. Please try another one.' });
-    } else {
-      res.status(400).json({ error: errorMessage });
-    }
+    const errorMessage = err.code === 11000 ? 'Email already exists. Please try another one.' : err.message || 'Signup failed due to an unexpected error.';
+    res.status(400).json({ error: errorMessage });
   }
 };
+

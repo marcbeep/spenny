@@ -122,3 +122,7 @@ Note:
 - `analyticsType`: (String) - Type of analytic (e.g. either `networth` or `spending`).
 - `analyticsData`: (Array) - Contains the `date` (Date) and `value` (Number) for each entry.
 - `analyticsLastCalculated`: (Date) - Contains the date for when the last calculated value was stored.
+
+---
+
+## Controllers
