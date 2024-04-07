@@ -81,11 +81,11 @@ exports.createTransaction = async (req, res) => {
     transactionTitle,
     transactionType,
     transactionAmount,
-    transactionCategory, 
+    transactionCategory,
     transactionAccount,
   } = req.body;
   // Convert empty string to null for transactionCategory
-  const effectiveTransactionCategory = transactionCategory === "" ? null : transactionCategory;
+  const effectiveTransactionCategory = transactionCategory === '' ? null : transactionCategory;
 
   const formattedAmount = formatAmount(transactionAmount);
   const amountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
@@ -114,7 +114,6 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
-
 exports.deleteSingleTransaction = async (req, res) => {
   const { id } = req.params;
 
@@ -122,11 +121,18 @@ exports.deleteSingleTransaction = async (req, res) => {
     const transactionToDelete = await Transaction.findByIdAndDelete(id);
     if (!transactionToDelete) return handleNoTransactionFound(res);
 
-    const amountChange = transactionToDelete.transactionType === 'debit' ? transactionToDelete.transactionAmount : -transactionToDelete.transactionAmount;
+    const amountChange =
+      transactionToDelete.transactionType === 'debit'
+        ? transactionToDelete.transactionAmount
+        : -transactionToDelete.transactionAmount;
     if (transactionToDelete.transactionCategory) {
       await updateCategoryBalance(transactionToDelete.transactionCategory, amountChange);
     } else {
-      await updateUserBudgetForTransaction(req.user._id, amountChange, !transactionToDelete.transactionCategory);
+      await updateUserBudgetForTransaction(
+        req.user._id,
+        amountChange,
+        !transactionToDelete.transactionCategory,
+      );
     }
 
     res.status(200).json({ message: 'Transaction successfully deleted' });
@@ -134,7 +140,6 @@ exports.deleteSingleTransaction = async (req, res) => {
     handleNoTransactionFound(res);
   }
 };
-
 
 exports.updateSingleTransaction = async (req, res) => {
   const { id } = req.params;
@@ -157,7 +162,10 @@ exports.updateSingleTransaction = async (req, res) => {
     const wasAffectingReadyToAssign = !transactionToUpdate.transactionCategory;
 
     // Calculate the original and new amount changes
-    const originalAmountChange = transactionToUpdate.transactionType === 'debit' ? -transactionToUpdate.transactionAmount : transactionToUpdate.transactionAmount;
+    const originalAmountChange =
+      transactionToUpdate.transactionType === 'debit'
+        ? -transactionToUpdate.transactionAmount
+        : transactionToUpdate.transactionAmount;
     const newAmountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
 
     // If the original transaction did not have a category, reverse its effect on "Ready to Assign"
@@ -175,7 +183,7 @@ exports.updateSingleTransaction = async (req, res) => {
     }
 
     // Apply new transaction's effects based on the updated category
-    const effectiveTransactionCategory = transactionCategory === "" ? null : transactionCategory;
+    const effectiveTransactionCategory = transactionCategory === '' ? null : transactionCategory;
     if (effectiveTransactionCategory) {
       // Update balances if it now has a category
       await updateBalances({
