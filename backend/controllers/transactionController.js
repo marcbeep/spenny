@@ -3,6 +3,7 @@ const Transaction = require('../models/transactionModel');
 const Category = require('../models/categoryModel');
 const Account = require('../models/accountModel');
 const Budget = require('../models/budgetModel');
+const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 
 // Shared error handler
 const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
