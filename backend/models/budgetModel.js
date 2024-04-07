@@ -1,51 +1,58 @@
 const mongoose = require('mongoose');
 
-const budgetSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    totalAvailable: {
-      type: Number,
-      required: true,
-    },
-    totalAssigned: {
-      type: Number,
-      required: true,
-    },
-    readyToAssign: {
-      type: Number,
-      required: true,
-    },
+const Schema = mongoose.Schema;
+
+// Helper function to ensure numbers are formatted to two decimal places
+function formatNumber(value) {
+  return parseFloat(parseFloat(value).toFixed(2));
+}
+
+const budgetSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
-  { timestamps: true },
-);
+  budgetTotalAvailable: {
+    type: Number,
+    required: true,
+    set: formatNumber, 
+  },
+  budgetTotalAssigned: {
+    type: Number,
+    required: true,
+    set: formatNumber, 
+  },
+  budgetReadyToAssign: {
+    type: Number,
+    required: true,
+    set: formatNumber, 
+  },
+}, { timestamps: true });
 
+// Pre-save hook to format number fields for new documents
 budgetSchema.pre('save', function (next) {
-  this.totalAvailable = parseFloat(this.totalAvailable.toFixed(2));
-  this.totalAssigned = parseFloat(this.totalAssigned.toFixed(2));
-  this.readyToAssign = parseFloat(this.readyToAssign.toFixed(2));
-
+  this.budgetTotalAvailable = formatNumber(this.budgetTotalAvailable);
+  this.budgetTotalAssigned = formatNumber(this.budgetTotalAssigned);
+  this.budgetReadyToAssign = formatNumber(this.budgetReadyToAssign);
   next();
 });
 
-budgetSchema.pre(['update', 'findOneAndUpdate'], function (next) {
+// Pre-update hooks to ensure number fields are formatted on updates
+budgetSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
   const update = this.getUpdate();
-
-  if (update.totalAvailable !== undefined) {
-    update.totalAvailable = parseFloat(update.totalAvailable.toFixed(2));
+  
+  if (update.budgetTotalAvailable !== undefined) {
+    update.budgetTotalAvailable = formatNumber(update.budgetTotalAvailable);
   }
-  if (update.totalAssigned !== undefined) {
-    update.totalAssigned = parseFloat(update.totalAssigned.toFixed(2));
+  if (update.budgetTotalAssigned !== undefined) {
+    update.budgetTotalAssigned = formatNumber(update.budgetTotalAssigned);
   }
-  if (update.readyToAssign !== undefined) {
-    update.readyToAssign = parseFloat(update.readyToAssign.toFixed(2));
+  if (update.budgetReadyToAssign !== undefined) {
+    update.budgetReadyToAssign = formatNumber(update.budgetReadyToAssign);
   }
 
   this.setUpdate(update);
-
   next();
 });
 
