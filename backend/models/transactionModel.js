@@ -17,7 +17,7 @@ const transactionSchema = new Schema(
     transactionCategory: {
       type: Schema.Types.ObjectId,
       ref: 'Category',
-      required: true,
+      required: false, // If no category, then ready to assign
     },
     transactionAccount: {
       type: Schema.Types.ObjectId,
