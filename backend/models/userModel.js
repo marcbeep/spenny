@@ -33,7 +33,7 @@ const userSchema = new Schema({
   },
   userProfilePicture: {
     type: String,
-    required: true, // Assuming you want this field to be required; adjust as needed
+    required: false, // Adjust as needed
   },
 }, { timestamps: true }); // MongoDB handles created and updated timestamps
 
