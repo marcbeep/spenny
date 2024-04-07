@@ -1,54 +1,70 @@
 const mongoose = require('mongoose');
 
-const categorySchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    assignedAmount: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
-    available: {
-      type: Number,
-      default: 0,
-      required: true,
-    },
-    activity: {
-      type: Number,
-      default: 0,
-    },
-  },
-  { timestamps: true },
-);
+const Schema = mongoose.Schema;
 
+// Helper function to format numbers to two decimal places
+function formatNumber(value) {
+  return parseFloat(parseFloat(value).toFixed(2));
+}
+
+const categorySchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  categoryTitle: {
+    type: String,
+    required: true,
+    lowercase: true,
+  },
+  categoryAssigned: {
+    type: Number,
+    default: 0,
+    required: true,
+    set: formatNumber,
+  },
+  categoryAvailable: {
+    type: Number,
+    default: 0,
+    required: true,
+    set: formatNumber,
+  },
+  categoryActivity: {
+    type: Number,
+    default: 0,
+    set: formatNumber,
+  },
+  categoryGoal: {
+    type: Schema.Types.ObjectId,
+    ref: 'Goal',
+    default: null, // It can be null if the category has no goal
+  },
+}, { timestamps: true });
+
+// Pre-save hook to format numeric fields for new documents
 categorySchema.pre('save', function (next) {
-  this.assignedAmount = parseFloat(this.assignedAmount.toFixed(2));
-  this.available = parseFloat(this.available.toFixed(2));
-  this.activity = parseFloat(this.activity.toFixed(2));
+  this.categoryAssigned = formatNumber(this.categoryAssigned);
+  this.categoryAvailable = formatNumber(this.categoryAvailable);
+  this.categoryActivity = formatNumber(this.categoryActivity);
   next();
 });
 
-categorySchema.pre(['update', 'findOneAndUpdate'], function (next) {
+// Pre-update hooks to ensure numeric fields are formatted on updates
+categorySchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
   const update = this.getUpdate();
-  if (update.assignedAmount !== undefined) {
-    update.assignedAmount = parseFloat(update.assignedAmount.toFixed(2));
+  if (update.categoryAssigned !== undefined) {
+    update.categoryAssigned = formatNumber(update.categoryAssigned);
   }
-  if (update.available !== undefined) {
-    update.available = parseFloat(update.available.toFixed(2));
+  if (update.categoryAvailable !== undefined) {
+    update.categoryAvailable = formatNumber(update.categoryAvailable);
   }
-  if (update.activity !== undefined) {
-    update.activity = parseFloat(update.activity.toFixed(2));
+  if (update.categoryActivity !== undefined) {
+    update.categoryActivity = formatNumber(update.categoryActivity);
   }
   this.setUpdate(update);
   next();
 });
 
 module.exports = mongoose.model('Category', categorySchema);
+
