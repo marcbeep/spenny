@@ -2,29 +2,40 @@ const Goal = require('../models/goalModel');
 const Category = require('../models/categoryModel');
 
 // Utility function to handle not found errors more efficiently
-const handleNotFound = (res, entity = 'Goal') => res.status(404).json({ error: `${entity} not found` });
+const handleNotFound = (res, entity = 'Goal') =>
+  res.status(404).json({ error: `${entity} not found` });
 
-exports.createGoal = async (req, res) => {
-  const { goalCategory, goalType, goalTarget, goalDeadline } = req.body;
+exports.createOrUpdateGoalForCategory = async (req, res) => {
+  const { category: categoryId, goalType, goalTarget, goalDeadline } = req.body;
 
   try {
-    // Ensure the category exists for the user
-    const categoryExists = await Category.exists({ _id: goalCategory, user: req.user._id });
+    const categoryExists = await Category.exists({ _id: categoryId, user: req.user._id });
     if (!categoryExists) return handleNotFound(res, 'Category');
 
-    const goal = await Goal.create({
-      user: req.user._id,
-      goalCategory,
-      goalType: goalType.toLowerCase(),
-      goalTarget,
-      goalCurrent: 0, // Initialized to 0 upon creation
-      goalDeadline,
-      goalStatus: 'underfunded', // Default status on creation
-    });
+    // Check if the category already has a goal
+    let goal = await Goal.findOne({ goalCategory: categoryId });
+    if (goal) {
+      // Update the existing goal
+      goal.goalType = goalType.toLowerCase();
+      goal.goalTarget = goalTarget;
+      goal.goalDeadline = goalDeadline;
+      goal.goalStatus = 'underfunded'; // Reset status on goal update
+    } else {
+      // Create a new goal
+      goal = new Goal({
+        user: req.user._id,
+        goalCategory: categoryId,
+        goalType: goalType.toLowerCase(),
+        goalTarget,
+        goalDeadline,
+        goalStatus: 'underfunded', // Default status for new goals
+      });
+    }
 
+    await goal.save();
     res.status(201).json(goal);
   } catch (err) {
-    res.status(400).json({ error: 'Failed to create goal' });
+    res.status(400).json({ error: 'Failed to create or update goal' });
   }
 };
 
@@ -34,20 +45,6 @@ exports.getGoals = async (req, res) => {
     res.status(200).json(goals);
   } catch (err) {
     res.status(400).json({ error: 'Failed to fetch goals' });
-  }
-};
-
-exports.updateGoal = async (req, res) => {
-  const { id } = req.params;
-  const updates = req.body;
-
-  try {
-    const goal = await Goal.findByIdAndUpdate(id, { $set: updates }, { new: true, runValidators: true });
-    if (!goal) return handleNotFound(res);
-
-    res.status(200).json(goal);
-  } catch (err) {
-    res.status(400).json({ error: 'Failed to update goal' });
   }
 };
 
