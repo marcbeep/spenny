@@ -81,6 +81,11 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
     toCategory.categoryAvailable += numericAmount;
     await Promise.all([fromCategory.save(), toCategory.save()]);
 
+    await Promise.all([
+      checkAndUpdateGoalStatus(null, fromCategoryId),
+      checkAndUpdateGoalStatus(null, toCategoryId)
+    ]);
+
     res.status(200).json({
       message: `£${numericAmount.toFixed(2)} successfully moved from ${
         fromCategory.categoryTitle
@@ -104,6 +109,8 @@ exports.removeMoneyFromCategory = async (req, res) => {
     category.categoryAvailable -= numericAmount;
     await category.save();
     await updateUserBudgetForCategoryActions(req.user._id, numericAmount, 'remove');
+
+    await checkAndUpdateGoalStatus(null, categoryId);
 
     // Fetch the updated budget for the response
     const updatedBudget = await Budget.findOne({ user: req.user._id });
