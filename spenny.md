@@ -29,14 +29,15 @@ Spenny is a zero-based budget tool for desktop & mobile inspired by the popular 
 
 - Categories can be added, deleted and "Assigned values" updated.
 - When a category is deleted, all the Assigned transactions must be firstly reassigned to another category.
-- Categories can have can have goals (only one goal per category) that require money to be assigned to them.
+- Categories can have can have goals (only one goal per category) that require money to be assigned to them (we check this via the available funds).
 - Each category must have only one goalType. These can be:
-  - `spending`: A user will have a specified "target" to assign by a required day of the week (needed). For example, a user might want to assign £50 to "Groceries" by Sunday every week.
-    - If a category is not funded by the day or the target is not met, it is known as "underfunded".
-    - If a category is funded ahead of the day and the target is met, it is known as "funded".
-    - This status will reset every week.
-  - `saving`: A user might have a specified "target" to achieve. For example, a user might want to save up for a pair of shoes that cost £100.
-  - `minimumbalance`: A user might not have a specified "target" to achieve, but might not want the money assigned to a category to fall below a certain amount. For example, the "Emergency Fund" category must always have £1000 assigned.
+  - `spending`: A user will have a specified "target" (goalTarget) to assign by a required day of the week (goalResetDay). For example, a user might want to assign £50 to "Groceries" by Sunday every week.
+    - If a category is not funded by the day OR the goalTarget is not met, it is known as "underfunded".
+    - If a category is funded ahead of the day and the goalTarget is met, it is known as "funded".
+    - This status will reset every week on the specified day.
+  - `saving`: A user might have a specified goalTarget to achieve, but no goalResetDay. For example, a user might want to save up for a pair of shoes that cost £100.
+    - If a category is below the goalTarget, it is "underfunded".
+    - If a category is at or above the goalTarget, it is "funded".
 
 ### Transactions
 
