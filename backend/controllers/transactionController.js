@@ -7,6 +7,8 @@ const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 const OpenAI = require('openai');
 const openai = new OpenAI();
 
+// Helper Functions
+
 const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
 
 const formatAmount = (amount) => {
@@ -53,6 +55,48 @@ const updateBalances = async ({
     await account.save();
   }
 };
+
+async function verifyCategoryId(userId, categoryId) {
+  const category = await Category.findOne({ _id: categoryId, user: userId });
+  return !!category; // Returns true if the category exists and belongs to the user, false otherwise
+}
+
+async function verifyAccountId(userId, accountId) {
+  const account = await Account.findOne({ _id: accountId, user: userId });
+  return !!account; // Returns true if the account exists and belongs to the user, false otherwise
+}
+
+async function createNewTransaction(details) {
+  const { 
+    userId, 
+    transactionTitle, 
+    transactionAmount, 
+    transactionCategory, 
+    transactionType, 
+    transactionAccount 
+  } = details;
+  
+  // Match the object keys with your schema field names
+  const newTransaction = new Transaction({
+    user: userId,
+    transactionTitle: transactionTitle.toLowerCase(), // Assuming lowercase as per your schema requirements
+    transactionAmount: formatAmount(transactionAmount), // Use your formatNumber function
+    transactionCategory: transactionCategory, // This can be null/undefined if not provided
+    transactionType: transactionType.toLowerCase(), // Assuming lowercase as per your schema requirements
+    transactionAccount: transactionAccount,
+  });
+
+  try {
+    await newTransaction.save();
+    return newTransaction; // Returns the created transaction object if successful
+  } catch (error) {
+    console.error("Error creating transaction:", error);
+    throw error; // Rethrow the error for handling in the calling function
+  }
+}
+
+
+// Exports
 
 exports.getAllTransactions = async (req, res) => {
   try {
@@ -243,28 +287,99 @@ exports.updateSingleTransaction = async (req, res) => {
 };
 
 exports.ai = async (req, res) => {
-  // The req body is a JSON object with a single key "text" containing the raw OCR text
-  const { text } = req.body;
-  // Create a string prompt that uses the text for GPT-3.5 analysis
-  const prompt = `
-  Given the following OCR text extracted from a receipt, give your best guess to fill out the following fields in JSON only: 
-  success (either true or false), transactionTitle, transactionAmount, transactionAccount, transactionCategory, transactionType (credit or debit). 
-  If you can guess, return success: true followed by the rest of fields. 
-  If you cannot make an intelligent guess, return success:false in JSON only. 
-  You can generalise for the transaction_title. For example, "Paul's Italiano" might mean "Italian Food". 
-  The transaction amount must be numbers only in the format 0.00.
-  The transaction account must be a valid account ID.
-  The transaction category must be a valid category ID.
-  The transaction type must be either "credit" or "debit".
-  Here is the text: ${text}`;
-  
-  const completion = await openai.chat.completions.create({
-    messages: [
-      { role: 'system', content: 'You are a helpful assistant that only outputs data in JSON format.' }, 
-      { role: 'user', content: prompt }],
-    model: "gpt-3.5-turbo",
-  });
+  try {
+    const userId = req.user._id; 
+    
+    // Fetch Categories specific to the user and Transform into Dictionary
+    const categories = await Category.find({ user: userId });
+    // console.log("Categories for User: ", categories);
 
-  console.log(completion.choices[0]);
-  res.status(200).json(completion.choices[0]);
+    const categoryDictionary = categories.reduce((acc, category) => {
+      acc[category._id.toString()] = category.categoryTitle;
+      return acc;
+    }, {});
+
+    // Prepare the category dictionary for inclusion in the prompt
+    const categoryDictionaryString = JSON.stringify(categoryDictionary, null, 2);
+    // console.log("Category Dictionary for User:", categoryDictionaryString);
+
+    // Find the account with the highest balance for this user
+    const accounts = await Account.find({ user: userId });
+    const accountWithHighestBalance = accounts.reduce((max, account) => max.balance > account.balance ? max : account, accounts[0]);
+    const accountToUse = accountWithHighestBalance._id.toString(); // Convert the ID to string
+    
+    // Adjust the Prompt to Include Category Dictionary and Refine for Clarity
+    const { text } = req.body;
+    const prompt = `
+Given the following OCR text extracted from a receipt, analyze and fill out the transaction details in JSON format with the following fields (as an example):
+{"success": true, "transactionTitle": "Paul's Italiano", "transactionAmount": 20.00, "transactionCategory": "5f4e7b3e4f2e8b2c4c7f5e6d", "transactionType": "debit", "transactionAccount": "${accountToUse}"}
+- success: Either true or false. If unable to analyze, return success: false.
+- transactionTitle: Generalize the title, e.g., "Paul's Italiano" might mean "Italian Food".
+- transactionAmount: The amount in a numeric format, e.g., 20.00.
+- transactionCategory: Use one of the provided category IDs based on the category dictionary.
+- transactionType: Either "credit" or "debit".
+- transactionAccount: The account ID with the highest balance for this analysis is "${accountToUse}".
+
+Category Dictionary (Ensure that the transactionCategory is the categoryID from the provided Category Dictionary.):
+${categoryDictionaryString}
+
+OCR Text:
+${text}
+`;
+
+    const completion = await openai.chat.completions.create({
+      messages: [
+        { role: 'system', content: 'You are a helpful assistant that only outputs data in JSON format.' },
+        { role: 'user', content: prompt }
+      ],
+      model: "gpt-3.5-turbo",
+    });
+
+    let response = completion.choices[0].message.content;
+    // Find the index of the first opening brace `{`
+    const indexOfJsonStart = response.indexOf('{');
+    // If found, slice the string from this index; if not, keep the content as is
+    response = indexOfJsonStart !== -1 ? response.slice(indexOfJsonStart) : response;
+    const transactionDetails = JSON.parse(response);
+
+    console.log("Transaction Details: ", transactionDetails);
+
+    if (!transactionDetails.success) {
+      return res.status(400).json({ success: false, message: "AI could not analyze the receipt successfully." });
+    }
+
+    // After parsing the AI response...
+if (transactionDetails.success) {
+  const isCategoryValid = await verifyCategoryId(userId, transactionDetails.transactionCategory);
+  const isAccountValid = await verifyAccountId(userId, transactionDetails.transactionAccount);
+
+  if (!isCategoryValid || !isAccountValid) {
+    return res.status(400).json({ success: false, message: "Invalid category or account ID provided." });
+  }
+
+  // IDs are verified; now, create a new transaction
+  const newTransactionDetails = {
+    userId,
+    transactionTitle: transactionDetails.transactionTitle,
+    transactionAmount: transactionDetails.transactionAmount,
+    transactionCategory: transactionDetails.transactionCategory,
+    transactionType: transactionDetails.transactionType,
+    transactionAccount: transactionDetails.transactionAccount,
+  };
+
+  const newTransaction = await createNewTransaction(newTransactionDetails);
+
+  return res.status(201).json({
+    success: true,
+    message: "Transaction created successfully.",
+    transaction: newTransaction,
+  });
 }
+
+    res.status(200).json(completion.choices[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: 'Failed to process AI request' });
+  }
+};
+
