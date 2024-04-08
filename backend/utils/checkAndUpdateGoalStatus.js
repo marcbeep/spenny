@@ -13,27 +13,31 @@ const checkAndUpdateGoalStatus = async (goalId = null) => {
 
     switch (goal.goalType) {
       case 'saving':
+        // For 'saving', compare against category's available funds
+        isFunded = goal.goalTarget && goal.goalTarget <= goal.goalCategory.categoryAvailable;
+        break;
       case 'minimumbalance':
-        // For 'saving' and 'minimumbalance', compare against category's available funds
-        isFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable;
+        // For 'minimumbalance', no target is required, always consider it funded as long as there's some amount
+        isFunded = goal.goalCategory.categoryAvailable > 0;
         break;
       case 'spending':
-        // Convert 'goalResetDay' from string to moment's weekday number
-        const goalResetDayNumber = moment().day(goal.goalResetDay).isoWeekday();
-        const resetDayPassed = moment().isoWeekday() === goalResetDayNumber;
-        isFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable && !resetDayPassed;
+        // For 'spending', check if today matches the reset day. If it does, consider the possibility of resetting.
+        const today = moment();
+        const resetDay = moment().isoWeekday(goal.goalResetDay); // Convert 'goalResetDay' to the correct moment weekday
+        const resetDayPassed = today.isoWeekday() >= resetDay.isoWeekday();
+
+        isFunded = goal.goalTarget && goal.goalTarget <= goal.goalCategory.categoryAvailable && !resetDayPassed;
+        
+        // Reset goal status if today is the reset day and goal was funded
+        if (resetDayPassed && today.isoWeekday() === resetDay.isoWeekday()) {
+          goal.goalStatus = 'underfunded'; // Consider updating the logic for reset if necessary
+        }
         break;
       default:
         console.error(`Unknown goal type: ${goal.goalType}`);
     }
 
     goal.goalStatus = isFunded ? 'funded' : 'underfunded';
-
-    // If the goal has a reset day and today is that day, reset goal for the next period
-    if (goal.goalType === 'spending' && goal.goalResetDay && resetDayPassed) {
-      goal.goalStatus = 'underfunded'; // Reset status for the new period
-    }
-
     await goal.save();
   };
 
