@@ -7,6 +7,7 @@ const {
   getSingleTransaction,
   deleteSingleTransaction,
   updateSingleTransaction,
+  ai,
 } = require('../controllers/transactionController');
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get('/:id', getSingleTransaction);
 router.post('/', createTransaction);
 router.delete('/:id', deleteSingleTransaction);
 router.patch('/:id', updateSingleTransaction);
+router.post('/ai', ai);
 
 module.exports = router;

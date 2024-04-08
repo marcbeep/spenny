@@ -4,6 +4,8 @@ const Category = require('../models/categoryModel');
 const Account = require('../models/accountModel');
 const Budget = require('../models/budgetModel');
 const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
+const OpenAI = require('openai');
+const openai = new OpenAI();
 
 const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
 
@@ -239,3 +241,30 @@ exports.updateSingleTransaction = async (req, res) => {
     res.status(400).json({ error: 'Failed to update transaction' });
   }
 };
+
+exports.ai = async (req, res) => {
+  // The req body is a JSON object with a single key "text" containing the raw OCR text
+  const { text } = req.body;
+  // Create a string prompt that uses the text for GPT-3.5 analysis
+  const prompt = `
+  Given the following OCR text extracted from a receipt, give your best guess to fill out the following fields in JSON only: 
+  success (either true or false), transactionTitle, transactionAmount, transactionAccount, transactionCategory, transactionType (credit or debit). 
+  If you can guess, return success: true followed by the rest of fields. 
+  If you cannot make an intelligent guess, return success:false in JSON only. 
+  You can generalise for the transaction_title. For example, "Paul's Italiano" might mean "Italian Food". 
+  The transaction amount must be numbers only in the format 0.00.
+  The transaction account must be a valid account ID.
+  The transaction category must be a valid category ID.
+  The transaction type must be either "credit" or "debit".
+  Here is the text: ${text}`;
+  
+  const completion = await openai.chat.completions.create({
+    messages: [
+      { role: 'system', content: 'You are a helpful assistant that only outputs data in JSON format.' }, 
+      { role: 'user', content: prompt }],
+    model: "gpt-3.5-turbo",
+  });
+
+  console.log(completion.choices[0]);
+  res.status(200).json(completion.choices[0]);
+}
