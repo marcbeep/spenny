@@ -49,5 +49,3 @@ const checkAndUpdateGoalStatus = async (goalId = null, categoryId = null) => {
 };
 
 module.exports = checkAndUpdateGoalStatus;
-
-

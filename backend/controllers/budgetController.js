@@ -1,6 +1,6 @@
 const Budget = require('../models/budgetModel');
 const Category = require('../models/categoryModel');
-const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus'); 
+const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 
 // Utility function to handle not found errors more efficiently
 const handleNotFound = (res, entity = 'Resource') =>
@@ -47,7 +47,7 @@ exports.assignMoneyToCategory = async (req, res) => {
     await category.save();
 
     // After updating the category, check and update the associated goal's status
-    await checkAndUpdateGoalStatus(null, categoryId); 
+    await checkAndUpdateGoalStatus(null, categoryId);
 
     res.status(200).json({
       message: `£${numericAmount.toFixed(2)} successfully assigned to ${category.categoryTitle}`,
@@ -83,7 +83,7 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
 
     await Promise.all([
       checkAndUpdateGoalStatus(null, fromCategoryId),
-      checkAndUpdateGoalStatus(null, toCategoryId)
+      checkAndUpdateGoalStatus(null, toCategoryId),
     ]);
 
     res.status(200).json({

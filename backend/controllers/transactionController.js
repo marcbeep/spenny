@@ -67,15 +67,15 @@ async function verifyAccountId(userId, accountId) {
 }
 
 async function createNewTransaction(details) {
-  const { 
-    userId, 
-    transactionTitle, 
-    transactionAmount, 
-    transactionCategory, 
-    transactionType, 
-    transactionAccount 
+  const {
+    userId,
+    transactionTitle,
+    transactionAmount,
+    transactionCategory,
+    transactionType,
+    transactionAccount,
   } = details;
-  
+
   // Match the object keys with your schema field names
   const newTransaction = new Transaction({
     user: userId,
@@ -90,11 +90,10 @@ async function createNewTransaction(details) {
     await newTransaction.save();
     return newTransaction; // Returns the created transaction object if successful
   } catch (error) {
-    console.error("Error creating transaction:", error);
+    console.error('Error creating transaction:', error);
     throw error; // Rethrow the error for handling in the calling function
   }
 }
-
 
 // Exports
 
@@ -177,9 +176,10 @@ exports.deleteSingleTransaction = async (req, res) => {
     if (!transactionToDelete) return handleNoTransactionFound(res);
 
     // Determine the effect of the transaction deletion on category and account balances
-    const amountChange = transactionToDelete.transactionType === 'debit' 
-                          ? transactionToDelete.transactionAmount 
-                          : -transactionToDelete.transactionAmount;
+    const amountChange =
+      transactionToDelete.transactionType === 'debit'
+        ? transactionToDelete.transactionAmount
+        : -transactionToDelete.transactionAmount;
 
     if (transactionToDelete.transactionCategory) {
       // Reverse the transaction's effect on the category and account
@@ -226,14 +226,19 @@ exports.updateSingleTransaction = async (req, res) => {
     if (!transactionToUpdate) return handleNoTransactionFound(res);
 
     // Check for changes in transaction category
-    const originalCategory = transactionToUpdate.transactionCategory ? transactionToUpdate.transactionCategory.toString() : null;
+    const originalCategory = transactionToUpdate.transactionCategory
+      ? transactionToUpdate.transactionCategory.toString()
+      : null;
     const newCategory = transactionCategory === '' ? null : transactionCategory;
 
     // Determine if the transaction was originally affecting "Ready to Assign"
     const wasAffectingReadyToAssign = !originalCategory;
 
     // Calculate the original and new amount changes
-    const originalAmountChange = transactionToUpdate.transactionType === 'debit' ? -transactionToUpdate.transactionAmount : transactionToUpdate.transactionAmount;
+    const originalAmountChange =
+      transactionToUpdate.transactionType === 'debit'
+        ? -transactionToUpdate.transactionAmount
+        : transactionToUpdate.transactionAmount;
     const newAmountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
 
     // If the original transaction did not have a category, reverse its effect on "Ready to Assign"
@@ -288,8 +293,8 @@ exports.updateSingleTransaction = async (req, res) => {
 
 exports.ai = async (req, res) => {
   try {
-    const userId = req.user._id; 
-    
+    const userId = req.user._id;
+
     // Fetch Categories specific to the user and Transform into Dictionary
     const categories = await Category.find({ user: userId });
     // console.log("Categories for User: ", categories);
@@ -305,9 +310,12 @@ exports.ai = async (req, res) => {
 
     // Find the account with the highest balance for this user
     const accounts = await Account.find({ user: userId });
-    const accountWithHighestBalance = accounts.reduce((max, account) => max.balance > account.balance ? max : account, accounts[0]);
+    const accountWithHighestBalance = accounts.reduce(
+      (max, account) => (max.balance > account.balance ? max : account),
+      accounts[0],
+    );
     const accountToUse = accountWithHighestBalance._id.toString(); // Convert the ID to string
-    
+
     // Adjust the Prompt to Include Category Dictionary and Refine for Clarity
     const { text } = req.body;
     const prompt = `
@@ -329,10 +337,13 @@ ${text}
 
     const completion = await openai.chat.completions.create({
       messages: [
-        { role: 'system', content: 'You are a helpful assistant that only outputs data in JSON format.' },
-        { role: 'user', content: prompt }
+        {
+          role: 'system',
+          content: 'You are a helpful assistant that only outputs data in JSON format.',
+        },
+        { role: 'user', content: prompt },
       ],
-      model: "gpt-3.5-turbo",
+      model: 'gpt-3.5-turbo',
     });
 
     let response = completion.choices[0].message.content;
@@ -342,39 +353,46 @@ ${text}
     response = indexOfJsonStart !== -1 ? response.slice(indexOfJsonStart) : response;
     const transactionDetails = JSON.parse(response);
 
-    console.log("Transaction Details: ", transactionDetails);
+    console.log('Transaction Details: ', transactionDetails);
 
     if (!transactionDetails.success) {
-      return res.status(400).json({ success: false, message: "AI could not analyze the receipt successfully." });
+      return res
+        .status(400)
+        .json({ success: false, message: 'AI could not analyze the receipt successfully.' });
     }
 
     // After parsing the AI response...
-if (transactionDetails.success) {
-  const isCategoryValid = await verifyCategoryId(userId, transactionDetails.transactionCategory);
-  const isAccountValid = await verifyAccountId(userId, transactionDetails.transactionAccount);
+    if (transactionDetails.success) {
+      const isCategoryValid = await verifyCategoryId(
+        userId,
+        transactionDetails.transactionCategory,
+      );
+      const isAccountValid = await verifyAccountId(userId, transactionDetails.transactionAccount);
 
-  if (!isCategoryValid || !isAccountValid) {
-    return res.status(400).json({ success: false, message: "Invalid category or account ID provided." });
-  }
+      if (!isCategoryValid || !isAccountValid) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'Invalid category or account ID provided.' });
+      }
 
-  // IDs are verified; now, create a new transaction
-  const newTransactionDetails = {
-    userId,
-    transactionTitle: transactionDetails.transactionTitle,
-    transactionAmount: transactionDetails.transactionAmount,
-    transactionCategory: transactionDetails.transactionCategory,
-    transactionType: transactionDetails.transactionType,
-    transactionAccount: transactionDetails.transactionAccount,
-  };
+      // IDs are verified; now, create a new transaction
+      const newTransactionDetails = {
+        userId,
+        transactionTitle: transactionDetails.transactionTitle,
+        transactionAmount: transactionDetails.transactionAmount,
+        transactionCategory: transactionDetails.transactionCategory,
+        transactionType: transactionDetails.transactionType,
+        transactionAccount: transactionDetails.transactionAccount,
+      };
 
-  const newTransaction = await createNewTransaction(newTransactionDetails);
+      const newTransaction = await createNewTransaction(newTransactionDetails);
 
-  return res.status(201).json({
-    success: true,
-    message: "Transaction created successfully.",
-    transaction: newTransaction,
-  });
-}
+      return res.status(201).json({
+        success: true,
+        message: 'Transaction created successfully.',
+        transaction: newTransaction,
+      });
+    }
 
     res.status(200).json(completion.choices[0]);
   } catch (err) {
@@ -382,4 +400,3 @@ if (transactionDetails.success) {
     res.status(400).json({ error: 'Failed to process AI request' });
   }
 };
-
