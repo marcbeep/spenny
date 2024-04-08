@@ -28,25 +28,32 @@ exports.getSingleGoal = async (req, res) => {
 };
 
 exports.createGoal = async (req, res) => {
-  const { categoryId, goalType, goalTarget, goalDeadline, goalResetDay } = req.body;
+  const { categoryId, goalType, goalTarget, goalResetDay } = req.body; 
 
   try {
     const category = await Category.findOne({ _id: categoryId, user: req.user._id });
     if (!category) return handleNotFound(res, 'Category');
 
-    const goal = new Goal({
+    const newGoal = {
       user: req.user._id,
       goalCategory: categoryId,
       goalType: goalType.toLowerCase(),
-      goalTarget,
-      goalDeadline: goalType.toLowerCase() === 'spending' ? undefined : new Date(goalDeadline),
       goalStatus: 'underfunded',
-      goalResetDay: goalType.toLowerCase() === 'spending' ? goalResetDay : undefined,
-    });
+    };
 
+    // Set goalTarget only for saving and spending goals
+    if (['saving', 'spending'].includes(goalType.toLowerCase())) {
+      newGoal.goalTarget = goalTarget;
+    }
+
+    // Set goalResetDay only for spending goals
+    if (goalType.toLowerCase() === 'spending') {
+      newGoal.goalResetDay = goalResetDay;
+    }
+
+    const goal = new Goal(newGoal);
     await goal.save();
-
-    // If the goal is related to a category, associate it
+    // Link the goal to the category
     category.categoryGoal = goal._id;
     await category.save();
 
@@ -57,6 +64,7 @@ exports.createGoal = async (req, res) => {
     res.status(400).json({ error: 'Failed to create goal' });
   }
 };
+
 
 exports.updateGoal = async (req, res) => {
   const { id } = req.params;
