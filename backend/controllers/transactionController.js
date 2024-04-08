@@ -5,10 +5,8 @@ const Account = require('../models/accountModel');
 const Budget = require('../models/budgetModel');
 const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 
-// Shared error handler
 const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
 
-// Utility function to format and round amounts to "0.00"
 const formatAmount = (amount) => {
   return Number(parseFloat(amount).toFixed(2));
 };
