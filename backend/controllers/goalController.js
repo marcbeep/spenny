@@ -68,16 +68,24 @@ exports.createGoal = async (req, res) => {
 
 exports.updateGoal = async (req, res) => {
   const { id } = req.params;
-  const { goalType, goalTarget, goalDeadline, goalResetDay } = req.body;
+  const { goalType, goalTarget, goalResetDay } = req.body; // Removed goalDeadline
 
   try {
     const goal = await Goal.findById(id);
     if (!goal) return handleNotFound(res, 'Goal');
 
     goal.goalType = goalType.toLowerCase();
-    goal.goalTarget = goalTarget;
-    goal.goalDeadline = goalType.toLowerCase() === 'spending' ? undefined : new Date(goalDeadline);
-    goal.goalResetDay = goalType.toLowerCase() === 'spending' ? goalResetDay : undefined;
+    // Update only if goalType is saving or spending
+    if (['saving', 'spending'].includes(goalType.toLowerCase())) {
+      goal.goalTarget = goalTarget;
+    }
+
+    // Update goalResetDay for spending goals
+    if (goalType.toLowerCase() === 'spending') {
+      goal.goalResetDay = goalResetDay;
+    } else {
+      goal.goalResetDay = undefined; // Clear if not a spending goal
+    }
 
     await goal.save();
     await checkAndUpdateGoalStatus(id);
@@ -88,6 +96,7 @@ exports.updateGoal = async (req, res) => {
     res.status(400).json({ error: 'Failed to update goal' });
   }
 };
+
 
 exports.deleteGoal = async (req, res) => {
   const { id } = req.params;
