@@ -28,7 +28,7 @@ exports.getSingleGoal = async (req, res) => {
 };
 
 exports.createGoal = async (req, res) => {
-  const { categoryId, goalType, goalTarget, goalResetDay } = req.body; 
+  const { categoryId, goalType, goalTarget, goalResetDay } = req.body;
 
   try {
     const category = await Category.findOne({ _id: categoryId, user: req.user._id });
@@ -38,24 +38,18 @@ exports.createGoal = async (req, res) => {
       user: req.user._id,
       goalCategory: categoryId,
       goalType: goalType.toLowerCase(),
+      goalTarget: goalTarget, 
       goalStatus: 'underfunded',
     };
 
-    // Set goalTarget only for saving and spending goals
-    if (['saving', 'spending'].includes(goalType.toLowerCase())) {
-      newGoal.goalTarget = goalTarget;
-    }
-
-    // Set goalResetDay only for spending goals
+    // Conditionally set goalResetDay for 'spending' goals
     if (goalType.toLowerCase() === 'spending') {
       newGoal.goalResetDay = goalResetDay;
     }
 
     const goal = new Goal(newGoal);
     await goal.save();
-    // Link the goal to the category
-    category.categoryGoal = goal._id;
-    await category.save();
+    // Optionally, link the goal to the category here if needed
 
     await checkAndUpdateGoalStatus(goal._id);
     res.status(201).json(goal);
@@ -66,25 +60,24 @@ exports.createGoal = async (req, res) => {
 };
 
 
+
 exports.updateGoal = async (req, res) => {
   const { id } = req.params;
-  const { goalType, goalTarget, goalResetDay } = req.body; // Removed goalDeadline
+  const { goalType, goalTarget, goalResetDay } = req.body;
 
   try {
     const goal = await Goal.findById(id);
     if (!goal) return handleNotFound(res, 'Goal');
 
+    // Always update goalType and goalTarget as they're required for both goal types
     goal.goalType = goalType.toLowerCase();
-    // Update only if goalType is saving or spending
-    if (['saving', 'spending'].includes(goalType.toLowerCase())) {
-      goal.goalTarget = goalTarget;
-    }
+    goal.goalTarget = goalTarget;
 
-    // Update goalResetDay for spending goals
+    // Conditionally update goalResetDay for 'spending' goals
     if (goalType.toLowerCase() === 'spending') {
       goal.goalResetDay = goalResetDay;
     } else {
-      goal.goalResetDay = undefined; // Clear if not a spending goal
+      goal.goalResetDay = null; // Ensure it's cleared if not a 'spending' goal
     }
 
     await goal.save();
@@ -96,6 +89,7 @@ exports.updateGoal = async (req, res) => {
     res.status(400).json({ error: 'Failed to update goal' });
   }
 };
+
 
 
 exports.deleteGoal = async (req, res) => {
