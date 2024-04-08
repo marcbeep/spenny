@@ -2,32 +2,36 @@ const Goal = require('../models/goalModel');
 const Category = require('../models/categoryModel');
 const moment = require('moment');
 
-const checkAndUpdateGoalStatus = async (goalId = null) => {
-  let query = goalId ? Goal.findOne({ _id: goalId }) : Goal.find();
-  query = query.populate('goalCategory');
+const checkAndUpdateGoalStatus = async (goalId = null, categoryId = null) => {
+  let goals;
 
-  const goals = await query;
+  // If a goalId is provided, find the specific goal
+  if (goalId) {
+    goals = await Goal.find({ _id: goalId }).populate('goalCategory');
+  } else if (categoryId) {
+    // If a categoryId is provided, find all goals associated with that category
+    goals = await Goal.find({ goalCategory: categoryId }).populate('goalCategory');
+  } else {
+    // If neither is provided, fetch all goals
+    goals = await Goal.find().populate('goalCategory');
+  }
 
   const processGoal = async (goal) => {
     let isFunded = false;
 
     switch (goal.goalType) {
       case 'saving':
-        // For 'saving', compare against category's available funds
-        isFunded = goal.goalTarget && goal.goalTarget <= goal.goalCategory.categoryAvailable;
+        isFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable;
         break;
       case 'spending':
-        // For 'spending', check if the current date is past the goal's reset day
         const today = moment();
-        const resetDay = moment().isoWeekday(goal.goalResetDay); // Convert 'goalResetDay' to the correct moment weekday
-        const resetDayPassed = today.isAfter(resetDay, 'day');
+        const resetDay = moment().isoWeekday(goal.goalResetDay);
+        const resetDayPassed = today.isSameOrAfter(resetDay, 'day');
 
         if (resetDayPassed) {
-          // If the reset day has passed, check if it's time to reset the goal status
-          isFunded = false; // Assume underfunded if the reset day has passed
+          isFunded = false;
         } else {
-          // Otherwise, check if the goal is currently funded
-          isFunded = goal.goalTarget && goal.goalTarget <= goal.goalCategory.categoryAvailable;
+          isFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable;
         }
         break;
       default:
@@ -38,15 +42,12 @@ const checkAndUpdateGoalStatus = async (goalId = null) => {
     await goal.save();
   };
 
-  if (Array.isArray(goals)) {
-    for (let goal of goals) {
-      await processGoal(goal);
-    }
-  } else if (goals) {
-    // In case a single goal is found
-    await processGoal(goals);
+  // Process each goal found
+  for (let goal of goals) {
+    await processGoal(goal);
   }
 };
 
 module.exports = checkAndUpdateGoalStatus;
+
 

@@ -38,7 +38,7 @@ exports.createGoal = async (req, res) => {
       user: req.user._id,
       goalCategory: categoryId,
       goalType: goalType.toLowerCase(),
-      goalTarget: goalTarget, 
+      goalTarget: goalTarget,
       goalStatus: 'underfunded',
     };
 
@@ -47,19 +47,21 @@ exports.createGoal = async (req, res) => {
       newGoal.goalResetDay = goalResetDay;
     }
 
-    const goal = new Goal(newGoal);
-    await goal.save();
-    // Optionally, link the goal to the category here if needed
+    const goal = await new Goal(newGoal).save();
 
+    // Here is the key part: Update the category with the new goal's ID
+    category.categoryGoal = goal._id;
+    await category.save();
+
+    // Optionally, you may want to return the updated category in the response
+    // to verify that the categoryGoal has been updated correctly.
     await checkAndUpdateGoalStatus(goal._id);
-    res.status(201).json(goal);
+    res.status(201).json({ goal, category }); // Include the category in the response for verification
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: 'Failed to create goal' });
   }
 };
-
-
 
 exports.updateGoal = async (req, res) => {
   const { id } = req.params;
