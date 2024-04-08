@@ -21,22 +21,18 @@ const goalSchema = new Schema({
     type: String,
     required: true,
     lowercase: true,
-    enum: ['spending', 'saving', 'minimumbalance'], // Define allowed goal types
+    enum: ['spending', 'saving'], 
   },
   goalTarget: {
     type: Number,
-    required: function() {
-      // Required only for 'spending' and 'saving' goal types
-      return this.goalType === 'spending' || this.goalType === 'saving';
-    },
+    required: true, 
     set: formatNumber,
   },
-  // Removed goalDeadline as it's not used in the new specs
   goalStatus: {
     type: String,
     required: true,
     lowercase: true,
-    enum: ['underfunded', 'funded'], // Status of the goal
+    enum: ['underfunded', 'funded'], 
   },
   goalResetDay: {
     type: String,
@@ -45,7 +41,7 @@ const goalSchema = new Schema({
       // Required only for 'spending' goal type
       return this.goalType === 'spending';
     },
-    default: null, // Specifies the day the 'spending' goal resets
+    default: null, // Specifies the day the 'spending' goal resets. This stays unchanged.
   },
 }, { timestamps: true });
 
