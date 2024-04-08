@@ -108,8 +108,9 @@ exports.createTransaction = async (req, res) => {
     // Adjust "Ready to Assign" for transactions without a category
     await updateUserBudgetForTransaction(req.user._id, amountChange, !transactionCategory);
 
-    // Updates goals
-    await checkAndUpdateGoalStatus();
+    if (effectiveTransactionCategory) {
+      await checkAndUpdateGoalStatus(null, effectiveTransactionCategory); // Update goal status for this category
+    }
 
     res.status(201).json(newTransaction);
   } catch (err) {
@@ -139,8 +140,9 @@ exports.deleteSingleTransaction = async (req, res) => {
       );
     }
 
-    // Update goals
-    await checkAndUpdateGoalStatus();
+    if (transactionToDelete.transactionCategory) {
+      await checkAndUpdateGoalStatus(null, transactionToDelete.transactionCategory); // Update goal status for this category
+    }
 
     res.status(200).json({ message: 'Transaction successfully deleted' });
   } catch (err) {
@@ -212,8 +214,12 @@ exports.updateSingleTransaction = async (req, res) => {
     transactionToUpdate.transactionAccount = transactionAccount;
     await transactionToUpdate.save();
 
-    // Update goals
-    await checkAndUpdateGoalStatus();
+    if (transactionToUpdate.transactionCategory) {
+      await checkAndUpdateGoalStatus(null, transactionToUpdate.transactionCategory); // Update for original category
+    }
+    if (effectiveTransactionCategory && effectiveTransactionCategory !== transactionToUpdate.transactionCategory) {
+      await checkAndUpdateGoalStatus(null, effectiveTransactionCategory); // Update for new category if different
+    }    
 
     res.status(200).json(transactionToUpdate);
   } catch (err) {
