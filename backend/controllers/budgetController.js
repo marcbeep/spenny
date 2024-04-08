@@ -1,5 +1,6 @@
 const Budget = require('../models/budgetModel');
 const Category = require('../models/categoryModel');
+const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus'); 
 
 // Utility function to handle not found errors more efficiently
 const handleNotFound = (res, entity = 'Resource') =>
@@ -44,6 +45,9 @@ exports.assignMoneyToCategory = async (req, res) => {
     category.categoryAssigned += numericAmount;
     category.categoryAvailable += numericAmount;
     await category.save();
+
+    // After updating the category, check and update the associated goal's status
+    await checkAndUpdateGoalStatus(null, categoryId); 
 
     res.status(200).json({
       message: `£${numericAmount.toFixed(2)} successfully assigned to ${category.categoryTitle}`,
