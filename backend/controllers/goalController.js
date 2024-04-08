@@ -102,7 +102,7 @@ exports.deleteGoal = async (req, res) => {
     // Before removing the goal, unset the categoryGoal field in the associated category
     await Category.findByIdAndUpdate(goal.goalCategory, { $unset: { categoryGoal: '' } });
 
-    await goal.remove();
+    await Goal.deleteOne({ _id: id });
     res.status(204).send();
   } catch (err) {
     console.error('Error deleting goal:', err);
