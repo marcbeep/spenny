@@ -16,21 +16,18 @@ const checkAndUpdateGoalStatus = async (goalId = null) => {
         // For 'saving', compare against category's available funds
         isFunded = goal.goalTarget && goal.goalTarget <= goal.goalCategory.categoryAvailable;
         break;
-      case 'minimumbalance':
-        // For 'minimumbalance', no target is required, always consider it funded as long as there's some amount
-        isFunded = goal.goalCategory.categoryAvailable > 0;
-        break;
       case 'spending':
-        // For 'spending', check if today matches the reset day. If it does, consider the possibility of resetting.
+        // For 'spending', check if the current date is past the goal's reset day
         const today = moment();
         const resetDay = moment().isoWeekday(goal.goalResetDay); // Convert 'goalResetDay' to the correct moment weekday
-        const resetDayPassed = today.isoWeekday() >= resetDay.isoWeekday();
+        const resetDayPassed = today.isAfter(resetDay, 'day');
 
-        isFunded = goal.goalTarget && goal.goalTarget <= goal.goalCategory.categoryAvailable && !resetDayPassed;
-        
-        // Reset goal status if today is the reset day and goal was funded
-        if (resetDayPassed && today.isoWeekday() === resetDay.isoWeekday()) {
-          goal.goalStatus = 'underfunded'; // Consider updating the logic for reset if necessary
+        if (resetDayPassed) {
+          // If the reset day has passed, check if it's time to reset the goal status
+          isFunded = false; // Assume underfunded if the reset day has passed
+        } else {
+          // Otherwise, check if the goal is currently funded
+          isFunded = goal.goalTarget && goal.goalTarget <= goal.goalCategory.categoryAvailable;
         }
         break;
       default:
@@ -52,3 +49,4 @@ const checkAndUpdateGoalStatus = async (goalId = null) => {
 };
 
 module.exports = checkAndUpdateGoalStatus;
+
