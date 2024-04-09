@@ -87,10 +87,13 @@ async function calculateSpendingByCategoryForUserId(userId) {
 
   let analyticsData;
   if (transactions.length > 0) {
-    const transactionsMap = transactions.reduce((acc, { _id, totalAmount }) => ({
-      ...acc,
-      [_id.toString()]: totalAmount,
-    }), {});
+    const transactionsMap = transactions.reduce(
+      (acc, { _id, totalAmount }) => ({
+        ...acc,
+        [_id.toString()]: totalAmount,
+      }),
+      {},
+    );
 
     // Map categories to include totalAmount from transactions or default to 0
     analyticsData = categories.map(({ _id, categoryTitle }) => ({
@@ -120,7 +123,7 @@ async function calculateSpendingByCategoryForUserId(userId) {
         analyticsLastCalculated: new Date(),
       },
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
+    { upsert: true, new: true, setDefaultsOnInsert: true },
   );
 
   return analyticsData;

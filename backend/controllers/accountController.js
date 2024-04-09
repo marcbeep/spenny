@@ -1,6 +1,7 @@
 const Account = require('../models/accountModel');
 const Budget = require('../models/budgetModel');
 const Transaction = require('../models/transactionModel');
+const { checkOwnership } = require('../utils/utils');
 
 const formatAmount = (amount) => parseFloat(amount).toFixed(2);
 
@@ -84,6 +85,11 @@ exports.getAccount = async (req, res) => {
     const account = await Account.findById(id);
     if (!account) return handleAccountNotFound(res);
 
+    // Check ownership
+    if (!checkOwnership(account, req.user._id)) {
+      return res.status(403).json({ error: 'User does not have permission to view this account' });
+    }
+
     res.status(200).json(account);
   } catch (err) {
     res.status(400).json({ error: 'Failed to fetch account' });
@@ -96,6 +102,11 @@ exports.deleteAccount = async (req, res) => {
   try {
     const accountToDelete = await Account.findByIdAndDelete(id);
     if (!accountToDelete) return handleAccountNotFound(res);
+
+    // Check ownership
+    if (!checkOwnership(account, req.user._id)) {
+      return res.status(403).json({ error: 'User does not have permission to view this account' });
+    }
 
     if (accountToDelete.accountType === 'spending') {
       await updateUserBudget(req.user._id, -Number(accountToDelete.accountBalance));
@@ -114,13 +125,21 @@ exports.updateAccount = async (req, res) => {
     const accountToUpdate = await Account.findById(id);
     if (!accountToUpdate) return handleAccountNotFound(res);
 
+    // Check ownership
+    if (!checkOwnership(account, req.user._id)) {
+      return res.status(403).json({ error: 'User does not have permission to view this account' });
+    }
+
     const currentBalance = Number(accountToUpdate.accountBalance);
     const intendedBalance = Number(formatAmount(accountBalance));
     const balanceDifference = intendedBalance - currentBalance;
 
     if (balanceDifference !== 0 && accountToUpdate.accountType === 'spending') {
       const transactionType = balanceDifference > 0 ? 'credit' : 'debit';
-      const reconciliationTitle = balanceDifference > 0 ? 'Balance increase reconciliation' : 'Balance decrease reconciliation';
+      const reconciliationTitle =
+        balanceDifference > 0
+          ? 'Balance increase reconciliation'
+          : 'Balance decrease reconciliation';
 
       // Create the reconciliation transaction
       await Transaction.create({
@@ -150,7 +169,6 @@ exports.updateAccount = async (req, res) => {
     res.status(400).json({ error: 'Failed to update account' });
   }
 };
-
 
 exports.moveMoneyBetweenAccounts = async (req, res) => {
   const { fromAccountId, toAccountId, amount } = req.body;

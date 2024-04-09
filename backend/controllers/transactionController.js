@@ -110,7 +110,9 @@ exports.getSingleTransaction = async (req, res) => {
 
     // Check if the transaction was created by the user making the request
     if (transaction.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'User does not have permission to view this transaction' });
+      return res
+        .status(403)
+        .json({ error: 'User does not have permission to view this transaction' });
     }
 
     res.status(200).json(transaction);
@@ -171,7 +173,9 @@ exports.deleteSingleTransaction = async (req, res) => {
 
     // Check if the transaction was created by the user making the request
     if (transactionToDelete.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'User does not have permission to delete this transaction' });
+      return res
+        .status(403)
+        .json({ error: 'User does not have permission to delete this transaction' });
     }
 
     const amountChange =
@@ -220,7 +224,9 @@ exports.updateSingleTransaction = async (req, res) => {
 
     // Check if the transaction was created by the user making the request
     if (transactionToUpdate.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'User does not have permission to edit this transaction' });
+      return res
+        .status(403)
+        .json({ error: 'User does not have permission to edit this transaction' });
     }
 
     const originalCategory = transactionToUpdate.transactionCategory
