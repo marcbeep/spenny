@@ -7,21 +7,18 @@ function formatNumber(value) {
   return parseFloat(parseFloat(value).toFixed(2));
 }
 
-// Subdocument schema for analytics data entries
-const analyticsEntrySchema = new Schema(
-  {
-    date: {
-      type: Date,
-      required: true,
-    },
-    value: {
-      type: Number,
-      required: true,
-      set: formatNumber,
-    },
-  },
-  { _id: false },
-); // Disable _id for subdocument
+// Adjusted to support a mixed type for various analytics data structures
+const analyticsDataSchema = {
+  type: Schema.Types.Mixed,
+  required: true,
+  // For numerical data, apply the formatNumber setter
+  set: function(data) {
+    if (typeof data === 'number') {
+      return formatNumber(data);
+    }
+    return data;
+  }
+};
 
 const analyticsSchema = new Schema(
   {
@@ -34,9 +31,23 @@ const analyticsSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
-      enum: ['networth', 'spending'], // Restricts the value to 'networth' or 'spending'
+      enum: ['totalSpend', 'spendingByCategory', 'netWorth', 'incomeVsExpenses', 'savingsRate'], // Expanded to include all analytics types
     },
-    analyticsData: [analyticsEntrySchema], // Use the subdocument schema for entries
+    period: {
+      type: String,
+      required: true,
+      lowercase: true,
+      enum: ['weekly', 'monthly'], 
+    },
+    periodStart: {
+      type: Date,
+      required: true,
+    },
+    periodEnd: {
+      type: Date,
+      required: true,
+    },
+    analyticsData: analyticsDataSchema, // Adjusted for flexible data structure
     analyticsLastCalculated: {
       type: Date,
       required: true,
