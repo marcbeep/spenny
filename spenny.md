@@ -49,16 +49,92 @@ Spenny is a zero-based budget tool for desktop & mobile inspired by the popular 
 
 ### Analytics
 
-- Networth: The total amount across a users spending and tracking accounts.
-  - Networth are automatically calculated based on account totals.
-  - Networth is tracked on a daily basis (at midnight every day).
-  - Users will be able to see a statistic that shows the percentage change of their networth from the previous week.
-  - Users will be able to see a line chart that tracks their "All time" networth (this will be dynamic based on how long the account has existed).
-- Spending: The total amount "spent" across all categories.
-  - Spending totals are automatically calculated based on transactions and categories.
-  - Spending is tracked on a daily basis (at midnight every day).
-  - Users will be able to see a statistic that shows the percentage change in the total spending from the previous week.
-  - Users will be able to see a pie chart that tracks their spending by category for the last week.
+1. Total Spend for the Week
+
+- **Description**: Calculate the total amount spent over the current week and compare it with the previous week to show trends.
+- **Representation**: A card display showing total spend and percentage change from the previous week with up/down arrows to indicate direction.
+- **Frequency**: Calculate weekly at 0:00 every Monday.
+- **MongoDB Storage**:
+
+```json
+{
+  "weekOfYear": 15,
+  "year": 2024,
+  "totalSpend": 450.75,
+  "previousWeekSpend": 425.5,
+  "percentageChange": 5.93
+}
+```
+
+2. Spending by Category
+
+- **Description**: Show how much money has been spent in each category for the last week.
+- **Representation**: Pie chart or bar graph to display the proportion of spending by category.
+- **Frequency**: Calculate weekly at 0:00 every Monday.
+- **MongoDB Storage**:
+
+```json
+{
+  "weekOfYear": 15,
+  "year": 2024,
+  "categories": [
+    { "name": "Groceries", "amount": 150.25 },
+    { "name": "Utilities", "amount": 75.0 },
+    { "name": "Entertainment", "amount": 50.5 }
+  ]
+}
+```
+
+3. Net Worth Tracking
+
+- **Description**: Track the total net worth over time, showing increases or decreases.
+- **Representation**: Line chart to display net worth over weeks/months/years.
+- **Frequency**: Calculate weekly at 0:00 every Monday.
+- **MongoDB Storage**:
+
+```json
+{
+  "date": "2024-04-07",
+  "netWorth": 15000,
+  "previousNetWorth": 14750,
+  "change": 250
+}
+```
+
+4. Income vs. Expenses (Monthly)
+
+- **Description**: Compare total income to total expenses for a given time period, such as monthly, to help users understand their financial health.
+- **Representation**: Bar chart with two bars for each period, one for income and one for expenses, color-coded for clarity.
+- **Frequency**: Calculate monthly.
+- **MongoDB Storage**:
+
+```json
+{
+  "month": 4,
+  "year": 2024,
+  "income": 3000,
+  "expenses": 2500
+}
+```
+
+5. Savings Rate (Monthly)
+
+- **Description**: The percentage of income saved during a specific time frame. This is calculated as the percentage of income left after expenses.
+- **Representation**: A gauge chart or progress bar to show the savings rate against a goal or average.
+- **Frequency**: Calculate monthly.
+- **MongoDB Storage**:
+
+```json
+{
+  "month": 4,
+  "year": 2024,
+  "income": 3000,
+  "expenses": 2500,
+  "savingsRate": 16.67
+}
+```
+
+This approach ensures that users have timely, actionable information on a weekly basis for most stats, while still providing a monthly overview of their income vs. expenses and savings rate. Such a schema offers a comprehensive yet clear snapshot of financial health and habits, suitable for tracking and improvement over time.
 
 ---
 
@@ -124,7 +200,3 @@ Note:
 - `analyticsType`: (String) - Type of analytic (e.g. either `networth` or `spending`).
 - `analyticsData`: (Array) - Contains the `date` (Date) and `value` (Number) for each entry.
 - `analyticsLastCalculated`: (Date) - Contains the date for when the last calculated value was stored.
-
----
-
-## Controllers
