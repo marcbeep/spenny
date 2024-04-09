@@ -145,11 +145,9 @@ exports.calculateSpendingByCategory = async (req, res) => {
       .json({ message: 'Spending by category analytics updated successfully.', analyticsData });
   } catch (error) {
     console.error('Error calculating spending by category:', error);
-    res
-      .status(500)
-      .json({
-        error: 'Failed to calculate spending by category. Check server logs for more details.',
-      });
+    res.status(500).json({
+      error: 'Failed to calculate spending by category. Check server logs for more details.',
+    });
   }
 };
 
@@ -260,11 +258,9 @@ exports.calculateIncomeVsExpenses = async (req, res) => {
       .json({ message: 'Income vs. expenses calculated successfully.', income, expenses });
   } catch (error) {
     console.error('Error calculating income vs. expenses:', error);
-    res
-      .status(500)
-      .json({
-        error: 'Failed to calculate income vs. expenses. Check server logs for more details.',
-      });
+    res.status(500).json({
+      error: 'Failed to calculate income vs. expenses. Check server logs for more details.',
+    });
   }
 };
 
@@ -404,10 +400,8 @@ exports.calculateAllTimeAnalytics = async (req, res) => {
     });
   } catch (error) {
     console.error('Error calculating all-time analytics:', error);
-    res
-      .status(500)
-      .json({
-        error: 'Failed to calculate all-time analytics. Check server logs for more details.',
-      });
+    res.status(500).json({
+      error: 'Failed to calculate all-time analytics. Check server logs for more details.',
+    });
   }
 };

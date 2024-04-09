@@ -4,11 +4,17 @@ const Budget = require('../models/budgetModel');
 const formatAmount = (amount) => parseFloat(amount).toFixed(2);
 
 const updateUserBudget = async (userId, balanceChange) => {
-  const budget = await Budget.findOne({ user: userId });
-  if (budget) {
-    budget.budgetTotalAvailable = formatAmount(Number(budget.budgetTotalAvailable) + balanceChange);
-    budget.budgetReadyToAssign = formatAmount(Number(budget.budgetReadyToAssign) + balanceChange);
-    await budget.save();
+  try {
+    const budget = await Budget.findOne({ user: userId });
+    if (budget) {
+      budget.budgetTotalAvailable = formatAmount(
+        Number(budget.budgetTotalAvailable) + balanceChange,
+      );
+      budget.budgetReadyToAssign = formatAmount(Number(budget.budgetReadyToAssign) + balanceChange);
+      await budget.save();
+    }
+  } catch (err) {
+    throw new Error('Failed to update user budget');
   }
 };
 
@@ -20,8 +26,12 @@ const calculateBudgetImpact = (fromAccount, toAccount, amount) => {
 };
 
 const updateAccountBalance = async (account, change) => {
-  account.accountBalance = formatAmount(Number(account.accountBalance) + change);
-  await account.save();
+  try {
+    account.accountBalance = formatAmount(Number(account.accountBalance) + change);
+    await account.save();
+  } catch (err) {
+    throw new Error('Failed to update account balance');
+  }
 };
 
 const handleAccountNotFound = (res) => res.status(404).json({ error: 'Account not found' });
@@ -67,7 +77,7 @@ exports.getAccount = async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: 'Failed to fetch account' });
   }
-}
+};
 
 exports.deleteAccount = async (req, res) => {
   const { id } = req.params;

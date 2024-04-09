@@ -57,4 +57,3 @@ transactionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function 
 });
 
 module.exports = mongoose.model('Transaction', transactionSchema);
-

@@ -47,4 +47,3 @@ const goalSchema = new Schema(
 );
 
 module.exports = mongoose.model('Goal', goalSchema);
-

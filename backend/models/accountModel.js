@@ -43,4 +43,3 @@ accountSchema.pre('findOneAndUpdate', function (next) {
 });
 
 module.exports = mongoose.model('Account', accountSchema);
-

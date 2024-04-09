@@ -57,4 +57,3 @@ budgetSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next
 });
 
 module.exports = mongoose.model('Budget', budgetSchema);
-

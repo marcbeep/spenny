@@ -8,4 +8,3 @@ cron.schedule('0 0 * * *', async () => {
     console.error('An error occurred during the goal evaluation task:', error);
   }
 });
-

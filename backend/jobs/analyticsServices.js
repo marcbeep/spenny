@@ -9,4 +9,3 @@ cron.schedule('0 0 * * 1', async () => {
     console.error('Error during weekly analytics update job:', error);
   }
 });
-
