@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-// Helper function to ensure numbers are formatted to two decimal places
 function formatNumber(value) {
   return parseFloat(parseFloat(value).toFixed(2));
 }
@@ -33,7 +32,6 @@ const budgetSchema = new Schema(
   { timestamps: true },
 );
 
-// Pre-save hook to format number fields for new documents
 budgetSchema.pre('save', function (next) {
   this.budgetTotalAvailable = formatNumber(this.budgetTotalAvailable);
   this.budgetTotalAssigned = formatNumber(this.budgetTotalAssigned);
@@ -41,7 +39,6 @@ budgetSchema.pre('save', function (next) {
   next();
 });
 
-// Pre-update hooks to ensure number fields are formatted on updates
 budgetSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
   const update = this.getUpdate();
 
@@ -60,3 +57,4 @@ budgetSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next
 });
 
 module.exports = mongoose.model('Budget', budgetSchema);
+

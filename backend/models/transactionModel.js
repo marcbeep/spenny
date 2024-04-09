@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
-// Helper function to format numbers to two decimal places
 function formatNumber(value) {
   return parseFloat(parseFloat(value).toFixed(2));
 }
@@ -17,7 +15,7 @@ const transactionSchema = new Schema(
     transactionCategory: {
       type: Schema.Types.ObjectId,
       ref: 'Category',
-      required: false, // If no category, then ready to assign
+      required: false,
     },
     transactionAccount: {
       type: Schema.Types.ObjectId,
@@ -28,7 +26,7 @@ const transactionSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
-      enum: ['debit', 'credit'], // Restricts the value to either 'debit' or 'credit'
+      enum: ['debit', 'credit'],
     },
     transactionTitle: {
       type: String,
@@ -44,13 +42,11 @@ const transactionSchema = new Schema(
   { timestamps: true },
 );
 
-// Pre-save hook to format the amount field for new documents
 transactionSchema.pre('save', function (next) {
   this.transactionAmount = formatNumber(this.transactionAmount);
   next();
 });
 
-// Pre-update hooks to ensure amount is formatted on updates
 transactionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
   const update = this.getUpdate();
   if (update.transactionAmount !== undefined) {
@@ -61,3 +57,4 @@ transactionSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function 
 });
 
 module.exports = mongoose.model('Transaction', transactionSchema);
+

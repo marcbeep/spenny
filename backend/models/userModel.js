@@ -4,7 +4,6 @@ const validator = require('validator');
 
 const Schema = mongoose.Schema;
 
-// Custom validators
 const emailValidator = [validator.isEmail, 'Invalid email'];
 const passwordValidator = {
   validator: (password) =>
@@ -19,14 +18,13 @@ const passwordValidator = {
     'Password must be at least 8 characters long and contain at least 1 lowercase, 1 uppercase, 1 number, and 1 symbol',
 };
 
-// Schema definition
 const userSchema = new Schema(
   {
     userEmail: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true, // Ensure email is stored in lowercase
+      lowercase: true,
       validate: emailValidator,
     },
     userPassword: {
@@ -36,19 +34,17 @@ const userSchema = new Schema(
     },
     userProfilePicture: {
       type: String,
-      required: false, // Adjust as needed
+      required: false,
     },
   },
   { timestamps: true },
-); // MongoDB handles created and updated timestamps
+);
 
-// Helper function to hash passwords
 async function hashPassword(password) {
   const salt = await bcrypt.genSalt(10);
   return bcrypt.hash(password, salt);
 }
 
-// Static signup method
 userSchema.statics.signup = async function (userEmail, userPassword, userProfilePicture) {
   if (await this.findOne({ userEmail })) {
     throw new Error('Email already exists');
@@ -60,7 +56,6 @@ userSchema.statics.signup = async function (userEmail, userPassword, userProfile
   return user;
 };
 
-// Static login method
 userSchema.statics.login = async function (userEmail, userPassword) {
   const user = await this.findOne({ userEmail });
 

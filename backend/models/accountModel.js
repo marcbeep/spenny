@@ -34,15 +34,8 @@ const accountSchema = new Schema(
   { timestamps: true },
 );
 
-// Pre-save hook to format balance for new documents
-accountSchema.pre('save', function (next) {
-  this.accountBalance = formatBalance(this.accountBalance);
-  next();
-});
-
-// Pre-update hooks to ensure balance is formatted on updates
-// Note: 'update' is deprecated in favor of 'updateOne' and 'updateMany'
-accountSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
+// Pre-update hook to format balance
+accountSchema.pre('findOneAndUpdate', function (next) {
   if (this._update.accountBalance) {
     this._update.accountBalance = formatBalance(this._update.accountBalance);
   }
@@ -50,3 +43,4 @@ accountSchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (nex
 });
 
 module.exports = mongoose.model('Account', accountSchema);
+

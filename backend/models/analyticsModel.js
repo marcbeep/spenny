@@ -2,16 +2,13 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-// Helper function for formatting numbers to two decimal places
 function formatNumber(value) {
   return parseFloat(parseFloat(value).toFixed(2));
 }
 
-// Adjusted to support a mixed type for various analytics data structures
 const analyticsDataSchema = {
   type: Schema.Types.Mixed,
   required: true,
-  // For numerical data, apply the formatNumber setter
   set: function (data) {
     if (typeof data === 'number') {
       return formatNumber(data);
@@ -31,7 +28,7 @@ const analyticsSchema = new Schema(
       type: String,
       required: true,
       lowercase: false,
-      enum: ['totalSpend', 'spendingByCategory', 'netWorth', 'incomeVsExpenses', 'savingsRate'], // Expanded to include all analytics types
+      enum: ['totalSpend', 'spendingByCategory', 'netWorth', 'incomeVsExpenses', 'savingsRate'],
     },
     period: {
       type: String,
@@ -47,7 +44,7 @@ const analyticsSchema = new Schema(
       type: Date,
       required: true,
     },
-    analyticsData: analyticsDataSchema, // Adjusted for flexible data structure
+    analyticsData: analyticsDataSchema,
     analyticsLastCalculated: {
       type: Date,
       required: true,

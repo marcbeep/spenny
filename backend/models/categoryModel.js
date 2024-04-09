@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-// Helper function to format numbers to two decimal places
 function formatNumber(value) {
   return parseFloat(parseFloat(value).toFixed(2));
 }
@@ -39,13 +38,12 @@ const categorySchema = new Schema(
     categoryGoal: {
       type: Schema.Types.ObjectId,
       ref: 'Goal',
-      default: null, // It can be null if the category has no goal
+      default: null,
     },
   },
   { timestamps: true },
 );
 
-// Pre-save hook to format numeric fields for new documents
 categorySchema.pre('save', function (next) {
   this.categoryAssigned = formatNumber(this.categoryAssigned);
   this.categoryAvailable = formatNumber(this.categoryAvailable);
@@ -53,7 +51,6 @@ categorySchema.pre('save', function (next) {
   next();
 });
 
-// Pre-update hooks to ensure numeric fields are formatted on updates
 categorySchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
   const update = this.getUpdate();
   if (update.categoryAssigned !== undefined) {
