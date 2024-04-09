@@ -12,10 +12,10 @@ const router = express.Router();
 
 router.use(requireAuth);
 
-router.post('/', addCategory);
 router.get('/', getCategories);
 router.get('/:id', getSingleCategory);
 router.patch('/:id', updateCategory);
+router.post('/', addCategory);
 router.delete('/:id', deleteCategory);
 
 module.exports = router;
