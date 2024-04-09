@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Transaction = require('../models/transactionModel');
 const Analytics = require('../models/analyticsModel');
 const Account = require('../models/accountModel');
+const Category = require('../models/categoryModel');
 
 const moment = require('moment');
 
@@ -65,6 +66,7 @@ exports.calculateTotalSpend = async (req, res) => {
 async function calculateSpendingByCategoryForUserId(userId) {
   const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
 
+  // Attempt to aggregate transactions by category within the specified period
   const transactions = await Transaction.aggregate([
     {
       $match: {
@@ -81,39 +83,46 @@ async function calculateSpendingByCategoryForUserId(userId) {
     },
   ]);
 
-  if (transactions.length === 0) {
-    console.log('No transactions found for the specified period.');
-    throw new Error('No spending transactions found for the current period.');
+  const categories = await Category.find({ user: userId });
+
+  let analyticsData;
+  if (transactions.length > 0) {
+    const transactionsMap = transactions.reduce((acc, { _id, totalAmount }) => ({
+      ...acc,
+      [_id.toString()]: totalAmount,
+    }), {});
+
+    // Map categories to include totalAmount from transactions or default to 0
+    analyticsData = categories.map(({ _id, categoryTitle }) => ({
+      categoryId: _id,
+      categoryTitle,
+      totalAmount: transactionsMap[_id.toString()] || 0,
+    }));
+  } else {
+    // If no transactions, all categories have a totalAmount of 0
+    analyticsData = categories.map(({ _id, categoryTitle }) => ({
+      categoryId: _id,
+      categoryTitle,
+      totalAmount: 0,
+    }));
   }
 
-  const analyticsData = transactions.map((transaction) => ({
-    categoryId: transaction._id,
-    totalAmount: transaction.totalAmount,
-  }));
-
-  let analytics = await Analytics.findOne({
-    user: userId,
-    analyticsType: 'spendingByCategory',
-    periodStart: { $gte: startOfWeek },
-    periodEnd: { $lte: endOfWeek },
-  });
-
-  if (analytics) {
-    analytics.analyticsData = analyticsData;
-    analytics.analyticsLastCalculated = new Date();
-  } else {
-    analytics = new Analytics({
+  let analytics = await Analytics.findOneAndUpdate(
+    {
       user: userId,
       analyticsType: 'spendingByCategory',
-      period: 'weekly',
-      periodStart: startOfWeek,
-      periodEnd: endOfWeek,
-      analyticsData: analyticsData,
-      analyticsLastCalculated: new Date(),
-    });
-  }
+      periodStart: { $gte: startOfWeek },
+      periodEnd: { $lte: endOfWeek },
+    },
+    {
+      $set: {
+        analyticsData,
+        analyticsLastCalculated: new Date(),
+      },
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
 
-  await analytics.save();
   return analyticsData;
 }
 
