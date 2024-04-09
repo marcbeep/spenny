@@ -12,12 +12,12 @@ const analyticsDataSchema = {
   type: Schema.Types.Mixed,
   required: true,
   // For numerical data, apply the formatNumber setter
-  set: function(data) {
+  set: function (data) {
     if (typeof data === 'number') {
       return formatNumber(data);
     }
     return data;
-  }
+  },
 };
 
 const analyticsSchema = new Schema(
@@ -37,7 +37,7 @@ const analyticsSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
-      enum: ['weekly', 'monthly'], 
+      enum: ['weekly', 'monthly'],
     },
     periodStart: {
       type: Date,

@@ -2,8 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('./jobs/goalEvaluation'); 
-require('./jobs/analyticsServices'); 
+require('./jobs/goalEvaluation');
+require('./jobs/analyticsServices');
 
 // Routes
 const accountRoutes = require('./routes/account');

@@ -12,12 +12,12 @@ Connect these endpoints to the corresponding functions in the analyticsControlle
 
 const express = require('express');
 const {
-    calculateTotalSpend,
-    calculateSpendingByCategory,
-    calculateNetWorth,
-    calculateIncomeVsExpenses,
-    calculateSavingsRate,
-    calculateAllTimeAnalytics
+  calculateTotalSpend,
+  calculateSpendingByCategory,
+  calculateNetWorth,
+  calculateIncomeVsExpenses,
+  calculateSavingsRate,
+  calculateAllTimeAnalytics,
 } = require('../controllers/analyticsController');
 const requireAuth = require('../middleware/requireAuth');
 
