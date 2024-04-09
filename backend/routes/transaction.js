@@ -1,5 +1,4 @@
 const express = require('express');
-const Transaction = require('../models/transactionModel');
 const requireAuth = require('../middleware/requireAuth');
 const {
   createTransaction,
