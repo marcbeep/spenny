@@ -1,5 +1,5 @@
 const User = require('../models/userModel'); // Assuming you have a User model
-const analyticsServices = require('./analyticsServices'); // Path to your refactored analytics services
+const analyticsServices = require('../jobs/analyticsServices'); // Path to your refactored analytics services
 
 async function updateAllUserAnalytics() {
   const users = await User.find({}); // Fetch all user IDs

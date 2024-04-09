@@ -2,10 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('./jobs/goalEvaluation');
-require('./jobs/analyticsServices');
+require('./jobs/goalEvaluation'); 
+require('./jobs/analyticsServices'); 
 
-// Routes
 const accountRoutes = require('./routes/account');
 const budgetRoutes = require('./routes/budget');
 const categoryRoutes = require('./routes/category');
@@ -16,7 +15,6 @@ const analyticsRoutes = require('./routes/analytics');
 
 const app = express();
 
-// Global CORS Configuration
 const allowedOrigins = [
   'https://spenny.reeflink.org',
   'https://getspenny.com',
@@ -27,7 +25,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
@@ -40,15 +38,12 @@ app.use(
   }),
 );
 
-// Middleware
 app.use(express.json());
 
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
   next();
 });
 
-// Routes
 app.use('/account', accountRoutes);
 app.use('/budget', budgetRoutes);
 app.use('/category', categoryRoutes);
@@ -57,7 +52,6 @@ app.use('/user', userRoutes);
 app.use('/goal', goalRoutes);
 app.use('/analytics', analyticsRoutes);
 
-// Connect to MongoDB & listen for requests
 async function startServer() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -67,7 +61,9 @@ async function startServer() {
     });
   } catch (err) {
     console.error(err);
+    process.exit(1); // Exit with error code
   }
 }
 
 startServer();
+
