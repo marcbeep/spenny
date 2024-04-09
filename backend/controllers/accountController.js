@@ -114,11 +114,28 @@ exports.updateAccount = async (req, res) => {
     const accountToUpdate = await Account.findById(id);
     if (!accountToUpdate) return handleAccountNotFound(res);
 
-    const balanceDifference =
-      accountBalance !== undefined
-        ? Number(formatAmount(accountBalance)) - Number(accountToUpdate.accountBalance)
-        : 0;
+    const currentBalance = Number(accountToUpdate.accountBalance);
+    const intendedBalance = Number(formatAmount(accountBalance));
+    const balanceDifference = intendedBalance - currentBalance;
 
+    if (balanceDifference !== 0 && accountToUpdate.accountType === 'spending') {
+      const transactionType = balanceDifference > 0 ? 'credit' : 'debit';
+      const reconciliationTitle = balanceDifference > 0 ? 'Balance increase reconciliation' : 'Balance decrease reconciliation';
+
+      // Create the reconciliation transaction
+      await Transaction.create({
+        user: req.user._id,
+        transactionAccount: accountToUpdate._id,
+        transactionType: transactionType,
+        transactionTitle: `[${accountToUpdate.accountTitle}] ${reconciliationTitle}`,
+        transactionAmount: Math.abs(balanceDifference).toFixed(2),
+      });
+
+      // Update the user's budget for 'spending' accounts
+      await updateUserBudget(req.user._id, balanceDifference);
+    }
+
+    // Proceed to update the account balance and title as before
     const updatedAccount = await Account.findByIdAndUpdate(
       id,
       {
@@ -128,15 +145,12 @@ exports.updateAccount = async (req, res) => {
       { new: true },
     );
 
-    if (accountToUpdate.accountType === 'spending' && balanceDifference !== 0) {
-      await updateUserBudget(req.user._id, balanceDifference);
-    }
-
     res.status(200).json(updatedAccount);
   } catch (err) {
     res.status(400).json({ error: 'Failed to update account' });
   }
 };
+
 
 exports.moveMoneyBetweenAccounts = async (req, res) => {
   const { fromAccountId, toAccountId, amount } = req.body;
