@@ -306,6 +306,7 @@ This controller file interacts with the `User`, `Account`, `Category`, `Budget`,
 - POST /budget/assignToCategory
 - POST /budget/moveBetweenCategories
 - POST /budget/removeFromCategories
+- POST /budet/moveToReadyToAssign
 
 ### Category
 
