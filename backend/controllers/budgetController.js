@@ -1,5 +1,6 @@
 const Budget = require('../models/budgetModel');
 const Category = require('../models/categoryModel');
+const { checkOwnership } = require('../utils/utils');
 const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 
 const handleNotFound = (res, entity = 'Resource') =>
@@ -44,6 +45,10 @@ exports.assignMoneyToCategory = async (req, res) => {
       return res.status(404).json({ error: 'Category not found' });
     }
 
+    if (!checkOwnership(category, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to modify this category' });
+    }
+
     category.categoryAssigned += numericAmount;
     category.categoryAvailable += numericAmount;
     await category.save();
@@ -77,6 +82,10 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
     if (!fromCategory || !toCategory) {
       console.error('One or both categories not found');
       return res.status(404).json({ error: 'One or both categories not found' });
+    }
+
+    if (!checkOwnership(fromCategory, req.user._id) || !checkOwnership(toCategory, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to modify one or both categories' });
     }
 
     if (fromCategory.categoryAvailable < numericAmount) {
@@ -113,6 +122,11 @@ exports.removeMoneyFromCategory = async (req, res) => {
       console.error('Category not found');
       return res.status(404).json({ error: 'Category not found' });
     }
+
+    if (!checkOwnership(category, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to modify this category' });
+    }
+
     if (category.categoryAvailable < numericAmount) {
       return res.status(400).json({ error: 'Insufficient funds in the category.' });
     }
