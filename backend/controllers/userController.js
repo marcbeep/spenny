@@ -4,11 +4,15 @@ const Category = require('../models/categoryModel');
 const Budget = require('../models/budgetModel');
 const Analytics = require('../models/analyticsModel'); 
 const jwt = require('jsonwebtoken');
+const moment = require('moment');
 
 // Utility to create JWT token
 const createToken = (_id) => jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
 
 const initializeAnalyticsData = async (userId) => {
+  const weekStart = moment().startOf('isoWeek').toDate();
+  const weekEnd = moment().endOf('isoWeek').toDate();
+
   const analyticsTypes = [
     'totalSpend',
     'spendingByCategory',
@@ -17,16 +21,16 @@ const initializeAnalyticsData = async (userId) => {
     'savingsRate',
   ];
 
-  // For simplicity, we're not setting initial data for these analytics
-  // since they depend on user transactions and account balances.
-  // They will be calculated as the user starts using the app.
+  // For simplicity, initialize analyticsData with a default state
   const promises = analyticsTypes.map((type) =>
     Analytics.create({
       user: userId,
       analyticsType: type,
-      period: 'weekly', // Assuming all are set to 'weekly' initially
-      // For other fields like periodStart, periodEnd, and analyticsData,
-      // set defaults or leave them to be populated based on actual data.
+      period: 'weekly',
+      periodStart: weekStart,
+      periodEnd: weekEnd,
+      analyticsData: 0, // Assuming a numerical default; adjust based on your data structure needs
+      analyticsLastCalculated: new Date(), // Initialize with the current date/time
     }),
   );
 

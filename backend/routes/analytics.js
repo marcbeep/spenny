@@ -12,7 +12,9 @@ Connect these endpoints to the corresponding functions in the analyticsControlle
 
 const express = require('express');
 const {
-    calculateTotalSpend
+    calculateTotalSpend,
+    calculateSpendingByCategory,
+    calculateNetWorth,
 } = require('../controllers/analyticsController');
 const requireAuth = require('../middleware/requireAuth');
 
@@ -20,5 +22,7 @@ const router = express.Router();
 router.use(requireAuth);
 
 router.get('/total-spend', calculateTotalSpend);
+router.get('/spending-by-category', calculateSpendingByCategory);
+router.get('/net-worth', calculateNetWorth);
 
 module.exports = router;

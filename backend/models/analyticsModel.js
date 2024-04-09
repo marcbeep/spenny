@@ -30,7 +30,7 @@ const analyticsSchema = new Schema(
     analyticsType: {
       type: String,
       required: true,
-      lowercase: true,
+      lowercase: false,
       enum: ['totalSpend', 'spendingByCategory', 'netWorth', 'incomeVsExpenses', 'savingsRate'], // Expanded to include all analytics types
     },
     period: {
