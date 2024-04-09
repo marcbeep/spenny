@@ -14,8 +14,8 @@ router.use(requireAuth);
 
 router.get('/', getAllGoals);
 router.get('/:id', getSingleGoal);
-router.post('/', createGoal);
 router.patch('/:id', updateGoal);
+router.post('/', createGoal);
 router.delete('/:id', deleteGoal);
 
 module.exports = router;

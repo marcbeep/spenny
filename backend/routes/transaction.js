@@ -16,8 +16,8 @@ router.use(requireAuth);
 router.get('/', getAllTransactions);
 router.get('/:id', getSingleTransaction);
 router.post('/', createTransaction);
-router.delete('/:id', deleteSingleTransaction);
-router.patch('/:id', updateSingleTransaction);
 router.post('/ai', ai);
+router.patch('/:id', updateSingleTransaction);
+router.delete('/:id', deleteSingleTransaction);
 
 module.exports = router;
