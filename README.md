@@ -14,7 +14,8 @@ Spenny is a zero-based budget tool for desktop & mobile inspired by the popular 
 
 ### Accounts
 
-- Accounts can be added, deleted and balances updated.
+- Accounts can be added and balances updated.
+- Accounts cannot be deleted. Instead they can only be archived to maintain data integrity.
 - Accounts can be either a spending account (e.g. Barclays or Lloyds) or tracking (e.g. Vanguard Index Fund Portfolio).
 - Both spending accounts and tracking accounts contribute to a user's networth.
 - A user can only assign transactions to spending accounts.
@@ -41,7 +42,7 @@ Spenny is a zero-based budget tool for desktop & mobile inspired by the popular 
 
 ### Transactions
 
-- Transactions can be added, deleted and updated.
+- Transactions can be added, deleted and updated (except for archived accounts for which none of these actions can be performed).
 - Transactions can be either a debit or credit
 - When a user adds a transaction (debit), it will decrease the amount of money from the account it is spent from and decrease the assigned amount of money from the category it was spent from.
 - When a user adds a transaction (credit), it will increase the amount of money from the account it was credited to, and increase the "Ready to Assign" amount (i.e. a user will have to assign it to a category later).
@@ -156,6 +157,7 @@ Note:
 - `accountTitle`: (String) - Title of the account.
 - `accountType`: (String) - Type of the account (either `spending` or `tracking`).
 - `accountBalance`: (Number) - Current balance of the account.
+- `accountStatus`: (String) - Status of the account (either `active` or `archived`).
 
 **categoryModel:**
 
@@ -211,7 +213,7 @@ Note:
 1. `addAccount`: Creates a new account for the logged-in user. If the account type is spending, updates the user's budget accordingly.
 2. `getAccounts`: Retrieves all accounts associated with the logged-in user.
 3. `getAccount`: Retrieves an account by its ID.
-4. `deleteAccount`: Deletes an account by its ID and updates the budget accordingly if the deleted account is of spending type.
+4. `archiveAccount`: Archives an account by its ID and updates the budget accordingly.
 5. `updateAccount`: Updates an account by its ID. If the account type is spending and the balance changes, adjusts the budget accordingly.
 6. `moveMoneyBetweenAccounts`: Moves money between two accounts. Updates account balances and adjusts the user's budget if necessary.
 
@@ -286,7 +288,7 @@ This controller file interacts with the `User`, `Account`, `Category`, `Budget`,
 - PATCH /accounts/:id
 - POST /accounts
 - POST /accounts/moveMoney
-- DELETE /accounts/:id
+- POST /accounts/archive/:id
 
 ### Analytics
 

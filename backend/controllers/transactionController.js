@@ -129,6 +129,11 @@ exports.createTransaction = async (req, res) => {
     transactionAccount,
   } = req.body;
 
+  const account = await Account.findById(transactionAccount);
+  if (account.accountStatus === 'archived') {
+    return res.status(403).json({ error: 'Transactions cannot be added to an archived account.' });
+  }
+
   const effectiveTransactionCategory = transactionCategory === '' ? null : transactionCategory;
   const formattedAmount = formatAmount(transactionAmount);
   const amountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
@@ -173,6 +178,12 @@ exports.deleteSingleTransaction = async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized to delete this transaction' });
     }
 
+    if (transactionToDelete.transactionAccount.accountStatus === 'archived') {
+      return res
+        .status(403)
+        .json({ error: 'Transactions linked to archived accounts cannot be deleted.' });
+    }
+
     const amountChange =
       transactionToDelete.transactionType === 'debit'
         ? -transactionToDelete.transactionAmount
@@ -209,6 +220,16 @@ exports.updateSingleTransaction = async (req, res) => {
     transactionCategory,
     transactionAccount,
   } = req.body;
+
+  const account = await Account.findById(transactionAccount);
+  if (account.accountStatus === 'archived') {
+    return res
+      .status(403)
+      .json({
+        error: 'Transaction cannot be edited as it is associated with an archived account.',
+      });
+  }
+
   const formattedAmount = formatAmount(transactionAmount);
 
   if (!mongoose.Types.ObjectId.isValid(id)) return handleNoTransactionFound(res);

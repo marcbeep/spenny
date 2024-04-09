@@ -30,6 +30,11 @@ const accountSchema = new Schema(
       required: true,
       set: formatBalance, // Use setter to format balance
     },
+    accountStatus: {
+      type: String,
+      enum: ['active', 'archived'],
+      default: 'active',
+    },
   },
   { timestamps: true },
 );
