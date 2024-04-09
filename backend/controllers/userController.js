@@ -2,10 +2,36 @@ const User = require('../models/userModel');
 const Account = require('../models/accountModel');
 const Category = require('../models/categoryModel');
 const Budget = require('../models/budgetModel');
+const Analytics = require('../models/analyticsModel'); 
 const jwt = require('jsonwebtoken');
 
 // Utility to create JWT token
 const createToken = (_id) => jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
+
+const initializeAnalyticsData = async (userId) => {
+  const analyticsTypes = [
+    'totalSpend',
+    'spendingByCategory',
+    'netWorth',
+    'incomeVsExpenses',
+    'savingsRate',
+  ];
+
+  // For simplicity, we're not setting initial data for these analytics
+  // since they depend on user transactions and account balances.
+  // They will be calculated as the user starts using the app.
+  const promises = analyticsTypes.map((type) =>
+    Analytics.create({
+      user: userId,
+      analyticsType: type,
+      period: 'weekly', // Assuming all are set to 'weekly' initially
+      // For other fields like periodStart, periodEnd, and analyticsData,
+      // set defaults or leave them to be populated based on actual data.
+    }),
+  );
+
+  await Promise.all(promises);
+};
 
 // Utility to initialize essential user data
 const initializeUserData = async (userId) => {
@@ -42,6 +68,10 @@ const initializeUserData = async (userId) => {
       budgetTotalAssigned: 0.0,
       budgetReadyToAssign: 0.0,
     });
+
+    // Initialize analytics data for the new user
+    await initializeAnalyticsData(userId);
+    
     return { success: true };
   } catch (err) {
     console.error('Error initializing data for user:', err);

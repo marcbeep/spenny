@@ -9,3 +9,16 @@ GET /analytics/savings-rate
 
 Connect these endpoints to the corresponding functions in the analyticsController.
  */
+
+const express = require('express');
+const {
+    calculateTotalSpend
+} = require('../controllers/analyticsController');
+const requireAuth = require('../middleware/requireAuth');
+
+const router = express.Router();
+router.use(requireAuth);
+
+router.get('/total-spend', calculateTotalSpend);
+
+module.exports = router;
