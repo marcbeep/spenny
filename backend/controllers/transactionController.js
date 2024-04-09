@@ -6,6 +6,7 @@ const Budget = require('../models/budgetModel');
 const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 const OpenAI = require('openai');
 const openai = new OpenAI();
+const { checkOwnership } = require('../utils/utils');
 
 const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
 
@@ -108,11 +109,8 @@ exports.getSingleTransaction = async (req, res) => {
     const transaction = await Transaction.findById(id);
     if (!transaction) return handleNoTransactionFound(res);
 
-    // Check if the transaction was created by the user making the request
-    if (transaction.user.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ error: 'User does not have permission to view this transaction' });
+    if (!checkOwnership(transaction, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to access this transaction' });
     }
 
     res.status(200).json(transaction);
@@ -171,11 +169,8 @@ exports.deleteSingleTransaction = async (req, res) => {
     const transactionToDelete = await Transaction.findById(id);
     if (!transactionToDelete) return handleNoTransactionFound(res);
 
-    // Check if the transaction was created by the user making the request
-    if (transactionToDelete.user.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ error: 'User does not have permission to delete this transaction' });
+    if (!checkOwnership(transaction, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to delete this transaction' });
     }
 
     const amountChange =
@@ -222,11 +217,8 @@ exports.updateSingleTransaction = async (req, res) => {
     const transactionToUpdate = await Transaction.findById(id);
     if (!transactionToUpdate) return handleNoTransactionFound(res);
 
-    // Check if the transaction was created by the user making the request
-    if (transactionToUpdate.user.toString() !== req.user._id.toString()) {
-      return res
-        .status(403)
-        .json({ error: 'User does not have permission to edit this transaction' });
+    if (!checkOwnership(transaction, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to modify this transaction' });
     }
 
     const originalCategory = transactionToUpdate.transactionCategory
