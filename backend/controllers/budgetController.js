@@ -2,11 +2,9 @@ const Budget = require('../models/budgetModel');
 const Category = require('../models/categoryModel');
 const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 
-// Utility function to handle not found errors more efficiently
 const handleNotFound = (res, entity = 'Resource') =>
   res.status(404).json({ error: `${entity} not found` });
 
-// Updates the budget based on category actions
 async function updateUserBudgetForCategoryActions(userId, amountChange, actionType) {
   try {
     const budget = await Budget.findOne({ user: userId });
@@ -28,8 +26,9 @@ async function updateUserBudgetForCategoryActions(userId, amountChange, actionTy
         break;
     }
     await budget.save();
-  } catch (err) {
-    console.error(`Error updating user budget for ${actionType} action:`, err);
+  } catch (error) {
+    console.error(`Error updating user budget for ${actionType} action:`, error);
+    throw error;
   }
 }
 
@@ -40,7 +39,10 @@ exports.assignMoneyToCategory = async (req, res) => {
   try {
     await updateUserBudgetForCategoryActions(req.user._id, numericAmount, 'assign');
     const category = await Category.findById(categoryId);
-    if (!category) return handleNotFound(res, 'Category');
+    if (!category) {
+      console.error('Category not found');
+      return res.status(404).json({ error: 'Category not found' });
+    }
 
     category.categoryAssigned += numericAmount;
     category.categoryAvailable += numericAmount;
@@ -57,7 +59,8 @@ exports.assignMoneyToCategory = async (req, res) => {
         available: category.categoryAvailable,
       },
     });
-  } catch (err) {
+  } catch (error) {
+    console.error('Error assigning money to category:', error);
     res.status(400).json({ error: 'Failed to assign money to category' });
   }
 };
@@ -71,7 +74,10 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
       Category.findById(fromCategoryId),
       Category.findById(toCategoryId),
     ]);
-    if (!fromCategory || !toCategory) return handleNotFound(res, 'One or both categories');
+    if (!fromCategory || !toCategory) {
+      console.error('One or both categories not found');
+      return res.status(404).json({ error: 'One or both categories not found' });
+    }
 
     if (fromCategory.categoryAvailable < numericAmount) {
       return res.status(400).json({ error: 'Insufficient funds in the source category' });
@@ -91,7 +97,8 @@ exports.moveMoneyBetweenCategories = async (req, res) => {
         fromCategory.categoryTitle
       } to ${toCategory.categoryTitle}`,
     });
-  } catch (err) {
+  } catch (error) {
+    console.error('Error moving money between categories:', error);
     res.status(400).json({ error: 'Failed to move money between categories' });
   }
 };
@@ -102,7 +109,10 @@ exports.removeMoneyFromCategory = async (req, res) => {
 
   try {
     const category = await Category.findById(categoryId);
-    if (!category) return handleNotFound(res, 'Category');
+    if (!category) {
+      console.error('Category not found');
+      return res.status(404).json({ error: 'Category not found' });
+    }
     if (category.categoryAvailable < numericAmount) {
       return res.status(400).json({ error: 'Insufficient funds in the category.' });
     }
@@ -123,8 +133,8 @@ exports.removeMoneyFromCategory = async (req, res) => {
       },
       readyToAssign: updatedBudget.budgetReadyToAssign,
     });
-  } catch (err) {
-    console.error(err); // Log the actual error
+  } catch (error) {
+    console.error('Error removing money from category:', error);
     res.status(400).json({ error: 'Failed to remove money from category' });
   }
 };
@@ -132,10 +142,14 @@ exports.removeMoneyFromCategory = async (req, res) => {
 exports.readyToAssign = async (req, res) => {
   try {
     const budget = await Budget.findOne({ user: req.user._id });
-    if (!budget) return handleNotFound(res, 'Budget');
+    if (!budget) {
+      console.error('Budget not found');
+      return res.status(404).json({ error: 'Budget not found' });
+    }
 
     res.status(200).json({ readyToAssign: budget.budgetReadyToAssign });
-  } catch (err) {
+  } catch (error) {
+    console.error('Error retrieving Ready to Assign amount:', error);
     res.status(400).json({ error: 'Failed to retrieve Ready to Assign amount' });
   }
 };
