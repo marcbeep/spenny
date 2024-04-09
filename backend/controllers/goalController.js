@@ -1,6 +1,7 @@
 const Goal = require('../models/goalModel');
 const Category = require('../models/categoryModel');
 const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
+const { checkOwnership } = require('../utils/utils');
 
 const handleNotFound = (res, entity = 'Resource') =>
   res.status(404).json({ error: `${entity} not found` });
@@ -22,6 +23,9 @@ exports.getSingleGoal = async (req, res) => {
     const goal = await Goal.findById(id).populate('goalCategory');
     if (!goal) {
       return res.status(404).json({ error: 'Goal not found' });
+    }
+    if (!checkOwnership(goal, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to access this goal' });
     }
     res.status(200).json(goal);
   } catch (error) {
@@ -78,6 +82,10 @@ exports.updateGoal = async (req, res) => {
       return res.status(404).json({ error: 'Goal not found' });
     }
 
+    if (!checkOwnership(goal, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to update this goal' });
+    }
+
     // Always update goalType and goalTarget as they're required for both goal types
     goal.goalType = goalType.toLowerCase();
     goal.goalTarget = goalTarget;
@@ -106,6 +114,10 @@ exports.deleteGoal = async (req, res) => {
     const goal = await Goal.findById(id);
     if (!goal) {
       return res.status(404).json({ error: 'Goal not found' });
+    }
+
+    if (!checkOwnership(goal, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to delete this goal' });
     }
 
     // Before removing the goal, unset the categoryGoal field in the associated category
