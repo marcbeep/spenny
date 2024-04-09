@@ -56,6 +56,19 @@ exports.getAccounts = async (req, res) => {
   }
 };
 
+exports.getAccount = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const account = await Account.findById(id);
+    if (!account) return handleAccountNotFound(res);
+
+    res.status(200).json(account);
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to fetch account' });
+  }
+}
+
 exports.deleteAccount = async (req, res) => {
   const { id } = req.params;
 
