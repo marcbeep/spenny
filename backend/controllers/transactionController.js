@@ -223,11 +223,9 @@ exports.updateSingleTransaction = async (req, res) => {
 
   const account = await Account.findById(transactionAccount);
   if (account.accountStatus === 'archived') {
-    return res
-      .status(403)
-      .json({
-        error: 'Transaction cannot be edited as it is associated with an archived account.',
-      });
+    return res.status(403).json({
+      error: 'Transaction cannot be edited as it is associated with an archived account.',
+    });
   }
 
   const formattedAmount = formatAmount(transactionAmount);

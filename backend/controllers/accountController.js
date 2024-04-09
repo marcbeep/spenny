@@ -96,26 +96,37 @@ exports.getAccount = async (req, res) => {
   }
 };
 
-exports.deleteAccount = async (req, res) => {
+exports.archiveAccount = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const accountToDelete = await Account.findByIdAndDelete(id);
-    if (!accountToDelete) return handleAccountNotFound(res);
+    const accountToArchive = await Account.findById(id);
+    if (!accountToArchive) return handleAccountNotFound(res);
 
-    // Check ownership
-    if (!checkOwnership(account, req.user._id)) {
+    if (!checkOwnership(accountToArchive, req.user._id)) {
       return res
         .status(403)
-        .json({ error: 'User does not have permission to delete this account' });
+        .json({ error: 'User does not have permission to archive this account' });
     }
 
-    if (accountToDelete.accountType === 'spending') {
-      await updateUserBudget(req.user._id, -Number(accountToDelete.accountBalance));
+    // Check if the account is already archived
+    if (accountToArchive.accountStatus === 'archived') {
+      return res.status(400).json({ error: 'This account is already archived' });
     }
-    res.sendStatus(204);
+
+    // Adjust "Ready to Assign" based on the account balance
+    const adjustment =
+      accountToArchive.accountType === 'spending' ? -accountToArchive.accountBalance : 0;
+    await updateUserBudget(req.user._id, adjustment);
+
+    // Update account status to 'archived'
+    accountToArchive.accountStatus = 'archived';
+    await accountToArchive.save();
+
+    res.status(200).json({ message: 'Account successfully archived' });
   } catch (err) {
-    res.status(400).json({ error: 'Failed to delete account' });
+    console.error('Error archiving account:', err);
+    res.status(500).json({ error: 'Failed to archive account' });
   }
 };
 
@@ -126,6 +137,11 @@ exports.updateAccount = async (req, res) => {
   try {
     const accountToUpdate = await Account.findById(id);
     if (!accountToUpdate) return handleAccountNotFound(res);
+
+    // Prevent updates to archived accounts
+    if (accountToUpdate.accountStatus === 'archived') {
+      return res.status(403).json({ error: 'Updates to archived accounts are not allowed' });
+    }
 
     if (!checkOwnership(accountToUpdate, req.user._id)) {
       return res
@@ -189,7 +205,26 @@ exports.moveMoneyBetweenAccounts = async (req, res) => {
       Account.findById(toAccountId),
     ]);
 
+    // Account existence check
     if (!fromAccount || !toAccount) return handleAccountNotFound(res);
+
+    // Check for archived accounts
+    if (fromAccount.accountStatus === 'archived' || toAccount.accountStatus === 'archived') {
+      return res.status(403).json({ error: 'Cannot move money to or from archived accounts.' });
+    }
+
+    // Ownership check
+    if (
+      fromAccount.user.toString() !== req.user._id.toString() ||
+      toAccount.user.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ error: 'Unauthorized to move money between these accounts.' });
+    }
+
+    // Check for moving money between the same account
+    if (fromAccountId === toAccountId) {
+      return res.status(400).json({ error: 'Cannot move money within the same account.' });
+    }
 
     const budgetImpact = calculateBudgetImpact(fromAccount, toAccount, formattedAmount);
 
@@ -204,6 +239,7 @@ exports.moveMoneyBetweenAccounts = async (req, res) => {
 
     res.status(200).json({ message: 'Money moved successfully.' });
   } catch (err) {
+    console.error('Error moving money between accounts:', err);
     res.status(400).json({ error: 'Failed to move money between accounts' });
   }
 };

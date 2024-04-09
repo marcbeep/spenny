@@ -1,7 +1,7 @@
 const express = require('express');
 const {
   addAccount,
-  deleteAccount,
+  archiveAccount,
   updateAccount,
   getAccounts,
   getAccount,
@@ -17,6 +17,6 @@ router.get('/:id', getAccount);
 router.patch('/:id', updateAccount);
 router.post('/', addAccount);
 router.post('/moveMoney', moveMoneyBetweenAccounts);
-router.delete('/:id', deleteAccount);
+router.post('/archive/:id', archiveAccount);
 
 module.exports = router;
