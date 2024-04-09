@@ -274,3 +274,21 @@ This controller file handles transaction-related operations such as creating, re
 2. `signupUser`: Manages user signup by creating a new user account with the provided email, password, and a randomly generated profile picture URL. Additionally, initializes user data including default account, categories, budget, and analytics data. Returns a JWT token upon successful signup.
 
 This controller file interacts with the `User`, `Account`, `Category`, `Budget`, and `Analytics` models for user-related data manipulation and initialization. It utilizes JWT for user authentication and authorization and the `moment` library for date/time manipulation. Additionally, it utilizes helper functions such as `createToken` for JWT token generation and `initializeAnalyticsData` and `initializeUserData` for initializing user-specific data upon signup.
+
+---
+
+## Status Codes
+
+1. **200 OK**: Used to indicate that the request has succeeded. For example, in `getAllTransactions`, `getSingleTransaction`, `getAllGoals`, and other endpoints where data is successfully fetched or operations are performed without errors.
+
+2. **201 Created**: Indicates that the request has been fulfilled and has resulted in one or more new resources being created. For example, in `createTransaction` and `signupUser` endpoints where new transactions or user accounts are created.
+
+3. **204 No Content**: Used to indicate that the server successfully processed the request and is not returning any content. For example, in the `deleteCategory` endpoint where the category is successfully deleted without returning any content.
+
+4. **400 Bad Request**: Indicates that the server cannot or will not process the request due to a client error, such as invalid input or missing parameters. For example, in `createTransaction`, `updateSingleTransaction`, and `signupUser` endpoints when there are validation errors or missing required fields.
+
+5. **401 Unauthorized**: Indicates that the client must authenticate itself to get the requested response. For example, in `loginUser` endpoint when the provided credentials are invalid.
+
+6. **404 Not Found**: Indicates that the requested resource could not be found at the specified URL. For example, in `handleNotFound` and `handleNoTransactionFound` helper functions, and various endpoints when resources like categories, transactions, or goals are not found.
+
+7. **500 Internal Server Error**: Indicates that the server encountered an unexpected condition that prevented it from fulfilling the request. For example, in catch blocks of various endpoints when an unexpected error occurs during data processing or database operations.
