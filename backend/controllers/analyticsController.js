@@ -1,15 +1,3 @@
-/*
-For each type of analytic, create corresponding functions in an analyticsController file. These functions will handle the logic for calculating, updating, and retrieving analytics data. Example functions might include:
-
-calculateTotalSpend
-calculateSpendingByCategory
-calculateNetWorth
-calculateIncomeVsExpenses
-calculateSavingsRate
-
-Each function will fetch relevant transaction and account data, perform calculations, and update the analytics document for the user.
-*/
-
 const mongoose = require('mongoose');
 const Transaction = require('../models/transactionModel'); 
 const Analytics = require('../models/analyticsModel'); 
@@ -242,9 +230,129 @@ exports.calculateIncomeVsExpenses = async (req, res) => {
   }
 };
 
+exports.calculateSavingsRate = async (req, res) => {
+  console.log("Starting calculateSavingsRate...");
+  const userId = req.user._id;
+  console.log("UserID for savings rate calculation:", userId);
 
+  const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
+  console.log("Calculation Period:", startOfWeek, endOfWeek);
 
+  try {
+      console.log("Attempting to fetch income and expenses transactions...");
+      // Aggregate transactions to calculate total income and expenses
+      const results = await Transaction.aggregate([
+          {
+              $match: {
+                  user: userId,
+                  createdAt: { $gte: startOfWeek, $lte: endOfWeek },
+              },
+          },
+          {
+              $group: {
+                  _id: '$transactionType',
+                  total: { $sum: '$transactionAmount' },
+              },
+          },
+      ]);
 
+      // Initialize income and expenses to 0
+      let income = 0, expenses = 0;
+      results.forEach(result => {
+          if (result._id === 'credit') {
+              income += result.total;
+          } else if (result._id === 'debit') {
+              expenses += result.total;
+          }
+      });
 
+      // Calculate savings rate
+      let savingsRate = income > 0 ? ((income - expenses) / income) * 100 : 0;
+      console.log("Savings Rate:", savingsRate);
 
+      // Upsert the savings rate analytics document for the user
+      await Analytics.findOneAndUpdate(
+          { user: userId, analyticsType: 'savingsRate' },
+          {
+              $set: {
+                  analyticsData: savingsRate,
+                  analyticsLastCalculated: new Date(),
+                  // period, periodStart, and periodEnd could be adjusted based on your specific requirements
+                  period: 'weekly',
+                  periodStart: startOfWeek,
+                  periodEnd: endOfWeek,
+              }
+          },
+          { new: true, upsert: true }
+      );
 
+      console.log("Savings rate analytics document updated successfully.");
+      res.status(200).json({ message: 'Savings rate calculated successfully.', savingsRate });
+  } catch (error) {
+      console.error('Error calculating savings rate:', error);
+      res.status(500).json({ error: 'Failed to calculate savings rate. Check server logs for more details.' });
+  }
+};
+
+exports.calculateAllTimeAnalytics = async (req, res) => {
+  const userId = req.user._id;
+  console.log("Starting calculateAllTimeAnalytics for userID:", userId);
+
+  try {
+      // All-time Net Worth
+      const accounts = await Account.find({ user: userId });
+      const netWorth = accounts.reduce((acc, account) => acc + account.accountBalance, 0);
+
+      // All-time Total Income and Expenditure
+      const transactionAggregation = await Transaction.aggregate([
+          { $match: { user: userId } },
+          {
+              $group: {
+                  _id: '$transactionType',
+                  total: { $sum: '$transactionAmount' }
+              }
+          }
+      ]);
+
+      let totalIncome = 0;
+      let totalExpenditure = 0;
+      transactionAggregation.forEach(group => {
+          if (group._id === 'credit') totalIncome = group.total;
+          if (group._id === 'debit') totalExpenditure = group.total;
+      });
+
+      // All-time Savings Rate
+      let savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenditure) / totalIncome) * 100 : 0;
+
+      // Update or Create All-time Analytics Document
+      await Analytics.findOneAndUpdate(
+          { user: userId, analyticsType: 'allTime' },
+          {
+              $set: {
+                  analyticsData: {
+                      netWorth,
+                      totalIncome,
+                      totalExpenditure,
+                      savingsRate
+                  },
+                  analyticsLastCalculated: new Date()
+              }
+          },
+          { new: true, upsert: true }
+      );
+
+      console.log("All-time analytics updated successfully.");
+      res.status(200).json({
+          message: 'All-time analytics calculated successfully.',
+          data: {
+              netWorth,
+              totalIncome,
+              totalExpenditure,
+              savingsRate
+          }
+      });
+  } catch (error) {
+      console.error('Error calculating all-time analytics:', error);
+      res.status(500).json({ error: 'Failed to calculate all-time analytics. Check server logs for more details.' });
+  }
+};

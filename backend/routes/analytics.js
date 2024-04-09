@@ -16,6 +16,8 @@ const {
     calculateSpendingByCategory,
     calculateNetWorth,
     calculateIncomeVsExpenses,
+    calculateSavingsRate,
+    calculateAllTimeAnalytics
 } = require('../controllers/analyticsController');
 const requireAuth = require('../middleware/requireAuth');
 
@@ -26,5 +28,7 @@ router.get('/total-spend', calculateTotalSpend);
 router.get('/spending-by-category', calculateSpendingByCategory);
 router.get('/net-worth', calculateNetWorth);
 router.get('/income-vs-expenses', calculateIncomeVsExpenses);
+router.get('/savings-rate', calculateSavingsRate);
+router.get('/all-time', calculateAllTimeAnalytics);
 
 module.exports = router;
