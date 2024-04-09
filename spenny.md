@@ -1,4 +1,4 @@
-# Spennny
+# Spenny
 
 Spenny is a zero-based budget tool for desktop & mobile inspired by the popular YNAB software and built using the MERN stack.
 
@@ -201,3 +201,57 @@ Note:
 - `periodEnd`: (Date) - The end date for the period covered by this analytic.
 - `analyticsData`: (Mixed) - A flexible data structure to store different types of analytics data based on analyticsType.
 - `analyticsLastCalculated`: (Date) - The last date when the analytic was updated.
+
+---
+
+## Controllers
+
+**accountController:**
+
+1. `addAccount`: Creates a new account for the logged-in user. If the account type is spending, updates the user's budget accordingly.
+2. `getAccounts`: Retrieves all accounts associated with the logged-in user.
+3. `deleteAccount`: Deletes an account by its ID and updates the budget accordingly if the deleted account is of spending type.
+4. `updateAccount`: Updates an account by its ID. If the account type is spending and the balance changes, adjusts the budget accordingly.
+5. `moveMoneyBetweenAccounts`: Moves money between two accounts. Updates account balances and adjusts the user's budget if necessary.
+
+**budgetController:**
+
+1. `assignMoneyToCategory`: Assigns a specified amount of money to a category. Updates the category's assigned and available amounts, then checks and updates associated goal status.
+2. `moveMoneyBetweenCategories`: Moves a specified amount of money from one category to another. Updates available amounts for both categories and checks/updates associated goal status.
+3. `removeMoneyFromCategory`: Removes a specified amount of money from a category. Updates the category's available amount, updates the budget based on the action, and checks/updates associated goal status.
+4. `readyToAssign`: Retrieves the amount of money ready to be assigned from the budget associated with the logged-in user.
+
+**categoryController:**
+
+1. `addCategory`: Creates a new category for the logged-in user with the specified title.
+2. `getCategories`: Retrieves all categories associated with the logged-in user, sorted alphabetically by title.
+3. `getSingleCategory`: Retrieves a single category by its ID.
+4. `deleteCategory`: Deletes a category by its ID. Reassigns transactions to a new category if specified, deletes associated goals, and checks/updates goal status for the new category if applicable.
+5. `updateCategory`: Updates the title of a category by its ID. Checks and updates goal status related to the category after the update.
+
+**goalController:**
+
+1. `getAllGoals`: Retrieves all goals associated with the logged-in user, including the details of the category for each goal.
+2. `getSingleGoal`: Retrieves a single goal by its ID, including the details of the associated category.
+3. `createGoal`: Creates a new goal for a specified category. Updates the category with the new goal's ID and checks/updates goal status.
+4. `updateGoal`: Updates an existing goal by its ID. Updates goal type, target, and reset day if applicable. Checks and updates goal status after the update.
+5. `deleteGoal`: Deletes a goal by its ID. Unsets the `categoryGoal` field in the associated category before removing the goal.
+
+**transactionController:**
+
+1. `getAllTransactions`: Retrieves all transactions associated with the logged-in user, sorted by creation date.
+2. `getSingleTransaction`: Retrieves a single transaction by its ID.
+3. `createTransaction`: Creates a new transaction for the user. Updates category and account balances accordingly. If no category is specified, adjusts the "Ready to Assign" balance in the budget.
+4. `deleteSingleTransaction`: Deletes a transaction by its ID. Reverts the effects of the transaction on category and account balances. Also updates goal status if applicable.
+5. `updateSingleTransaction`: Updates an existing transaction by its ID. Adjusts category and account balances based on the changes. Also updates goal status if applicable.
+6. `ai`: Utilizes OpenAI's GPT-3.5 model to analyze OCR text extracted from a receipt and fill out transaction details in JSON format. Validates the provided category and account IDs and creates a new transaction accordingly.
+
+**userController:**
+
+1. `loginUser`: Handles user login by validating the email and password. If successful, generates a JWT token and returns it along with the user's email.
+2. `signupUser`: Manages user signup by creating a new user account with the provided email, password, and a randomly generated profile picture URL. Additionally, initializes essential user data such as categories, accounts, and budget. Upon successful signup, generates a JWT token and returns it along with the user's email and profile picture URL.
+
+Utility functions:
+
+1. `createToken`: Generates a JWT token using the user's ID and a secret key.
+2. `initializeUserData`: Initializes essential user data such as categories, accounts, and budget upon user signup. It creates generic categories, a generic spending account, and initializes the budget for the new user. Returns `{ success: true }` upon successful initialization or `{ error: errorMessage }` if initialization fails.
