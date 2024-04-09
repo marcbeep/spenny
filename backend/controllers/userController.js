@@ -6,7 +6,6 @@ const Analytics = require('../models/analyticsModel');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 
-// Utility to create JWT token
 const createToken = (_id) => jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
 
 const initializeAnalyticsData = async (userId) => {
@@ -21,7 +20,6 @@ const initializeAnalyticsData = async (userId) => {
     'savingsRate',
   ];
 
-  // For simplicity, initialize analyticsData with a default state
   const promises = analyticsTypes.map((type) =>
     Analytics.create({
       user: userId,
@@ -29,21 +27,18 @@ const initializeAnalyticsData = async (userId) => {
       period: 'weekly',
       periodStart: weekStart,
       periodEnd: weekEnd,
-      analyticsData: 0, // Assuming a numerical default; adjust based on your data structure needs
-      analyticsLastCalculated: new Date(), // Initialize with the current date/time
+      analyticsData: 0,
+      analyticsLastCalculated: new Date(),
     }),
   );
 
   await Promise.all(promises);
 };
 
-// Utility to initialize essential user data
 const initializeUserData = async (userId) => {
   try {
-    // Define some generic categories for a new user
     const genericCategories = ['groceries', 'rent', 'eating out', 'fun money', 'savings'];
 
-    // Create a generic spending account for the new user
     const genericAccountTitle = 'example spending account';
     const genericAccount = await Account.create({
       user: userId,
@@ -52,7 +47,6 @@ const initializeUserData = async (userId) => {
       accountBalance: 0.0,
     });
 
-    // Create the categories for the new user
     await Promise.all(
       genericCategories.map((categoryTitle) =>
         Category.create({
@@ -65,7 +59,6 @@ const initializeUserData = async (userId) => {
       ),
     );
 
-    // Initialize the budget for the new user
     await Budget.create({
       user: userId,
       budgetTotalAvailable: 0.0,
@@ -73,7 +66,6 @@ const initializeUserData = async (userId) => {
       budgetReadyToAssign: 0.0,
     });
 
-    // Initialize analytics data for the new user
     await initializeAnalyticsData(userId);
 
     return { success: true };
@@ -105,10 +97,9 @@ exports.signupUser = async (req, res) => {
     const user = await User.signup(email, password, profilePictureUrl);
     const token = createToken(user._id);
 
-    // Attempt to initialize user data
     const initDataResult = await initializeUserData(user._id);
     if (initDataResult.error) {
-      throw new Error(initDataResult.error); // Propagate initialization error if exists
+      throw new Error(initDataResult.error);
     }
 
     res.status(201).json({ email: user.userEmail, token, profilePicture: user.userProfilePicture });
@@ -117,7 +108,7 @@ exports.signupUser = async (req, res) => {
     if (err.code === 11000) {
       errorMessage = 'Email already exists. Please try another one.';
     } else if (err.message) {
-      errorMessage = err.message; // Use the specific error message if available
+      errorMessage = err.message;
     }
     res.status(400).json({ error: errorMessage });
   }

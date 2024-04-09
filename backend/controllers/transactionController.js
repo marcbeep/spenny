@@ -345,13 +345,11 @@ ${text}
 
       const newTransaction = await createNewTransaction(newTransactionDetails);
 
-      return res
-        .status(201)
-        .json({
-          success: true,
-          message: 'Transaction created successfully.',
-          transaction: newTransaction,
-        });
+      return res.status(201).json({
+        success: true,
+        message: 'Transaction created successfully.',
+        transaction: newTransaction,
+      });
     }
 
     res.status(200).json(completion.choices[0]);
