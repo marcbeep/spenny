@@ -236,6 +236,7 @@ The controller file handles various analytics-related operations such as calcula
 2. `moveMoneyBetweenCategories`: Moves a specified amount of money from one category to another. Updates the available amounts for both categories. Checks and updates the associated goals' statuses for both categories.
 3. `removeMoneyFromCategory`: Removes a specified amount of money from a category. Updates the category's available amount and adjusts the user's budget accordingly. Checks and updates the associated goal's status.
 4. `readyToAssign`: Retrieves the amount of money ready to be assigned from the user's budget.
+5. `moveToReadyToAssign`: Move money from category back to ready to assign.
 
 The controller file handles budget-related operations such as assigning money to categories, moving money between categories, removing money from categories, and retrieving the amount of money ready to be assigned. It interacts with the `Budget` and `Category` models and utilizes utility functions like `checkAndUpdateGoalStatus` for goal-related operations.
 
