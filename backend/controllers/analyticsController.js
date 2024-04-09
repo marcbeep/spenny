@@ -181,6 +181,68 @@ exports.calculateNetWorth = async (req, res) => {
     }
 };
 
+exports.calculateIncomeVsExpenses = async (req, res) => {
+  console.log("Starting calculateIncomeVsExpenses...");
+  const userId = req.user._id;
+  console.log("UserID for income vs. expenses calculation:", userId);
+
+  const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
+  console.log("Calculation Period:", startOfWeek, endOfWeek);
+
+  try {
+      console.log("Attempting to fetch income and expenses transactions...");
+      // Aggregate transactions to calculate total income and expenses
+      const results = await Transaction.aggregate([
+          {
+              $match: {
+                  user: userId,
+                  createdAt: { $gte: startOfWeek, $lte: endOfWeek },
+              },
+          },
+          {
+              $group: {
+                  _id: '$transactionType',
+                  total: { $sum: '$transactionAmount' },
+              },
+          },
+      ]);
+
+      console.log("Aggregation results:", results);
+
+      // Initialize income and expenses to 0
+      let income = 0, expenses = 0;
+      results.forEach(result => {
+          if (result._id === 'credit') {
+              income = result.total;
+          } else if (result._id === 'debit') {
+              expenses = result.total;
+          }
+      });
+
+      console.log("Total Income:", income, "Total Expenses:", expenses);
+
+      // Upsert the income vs. expenses analytics document for the user
+      const analytics = await Analytics.findOneAndUpdate(
+          { user: userId, analyticsType: 'incomeVsExpenses' },
+          {
+              user: userId,
+              analyticsType: 'incomeVsExpenses',
+              period: 'weekly',
+              analyticsData: { income, expenses },
+              analyticsLastCalculated: new Date(),
+          },
+          { new: true, upsert: true }
+      );
+
+      console.log("Income vs. Expenses analytics document updated successfully.");
+      res.status(200).json({ message: 'Income vs. expenses calculated successfully.', income, expenses });
+  } catch (error) {
+      console.error('Error calculating income vs. expenses:', error);
+      res.status(500).json({ error: 'Failed to calculate income vs. expenses. Check server logs for more details.' });
+  }
+};
+
+
 
 
 
