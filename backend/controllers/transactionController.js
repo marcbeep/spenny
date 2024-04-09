@@ -308,12 +308,18 @@ exports.ai = async (req, res) => {
     }, {});
     const categoryDictionaryString = JSON.stringify(categoryDictionary, null, 2);
 
-    const accounts = await Account.find({ user: userId });
-    const accountWithHighestBalance = accounts.reduce(
-      (max, account) => (max.balance > account.balance ? max : account),
-      accounts[0],
-    );
-    const accountToUse = accountWithHighestBalance._id.toString();
+    // Fetch only "spending" type accounts and sort them
+    const spendingAccounts = await Account.find({ user: userId, accountType: 'spending' }).sort({
+      accountTitle: 1,
+      balance: -1,
+    }); // Sort alphabetically, then by descending balance
+
+    if (spendingAccounts.length === 0) {
+      return res.status(404).json({ error: 'No spending accounts found.' });
+    }
+
+    // The first account after sorting will be the one to use
+    const accountToUse = spendingAccounts[0]._id.toString();
 
     const { text } = req.body;
     const prompt = `

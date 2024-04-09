@@ -5,7 +5,7 @@ const {
   assignMoneyToCategory,
   removeMoneyFromCategory,
   readyToAssign,
-  moveToReadyToAssign
+  moveToReadyToAssign,
 } = require('../controllers/budgetController');
 
 const router = express.Router();
