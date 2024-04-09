@@ -49,7 +49,7 @@ Spenny is a zero-based budget tool for desktop & mobile inspired by the popular 
 
 ### Analytics
 
-1. Total Spend for the Week
+#### 1. Total Spend for the Week
 
 - **Description**: Calculate the total amount spent over the current week and compare it with the previous week to show trends.
 - **Representation**: A card display showing total spend and percentage change from the previous week with up/down arrows to indicate direction.
@@ -66,7 +66,7 @@ Spenny is a zero-based budget tool for desktop & mobile inspired by the popular 
 }
 ```
 
-2. Spending by Category
+#### 2. Spending by Category
 
 - **Description**: Show how much money has been spent in each category for the last week.
 - **Representation**: Pie chart or bar graph to display the proportion of spending by category.
@@ -85,7 +85,7 @@ Spenny is a zero-based budget tool for desktop & mobile inspired by the popular 
 }
 ```
 
-3. Net Worth Tracking
+#### 3. Net Worth Tracking
 
 - **Description**: Track the total net worth over time, showing increases or decreases.
 - **Representation**: Line chart to display net worth over weeks/months/years.
@@ -101,40 +101,38 @@ Spenny is a zero-based budget tool for desktop & mobile inspired by the popular 
 }
 ```
 
-4. Income vs. Expenses (Monthly)
+#### 4. Income vs. Expenses (Now Weekly)
 
-- **Description**: Compare total income to total expenses for a given time period, such as monthly, to help users understand their financial health.
-- **Representation**: Bar chart with two bars for each period, one for income and one for expenses, color-coded for clarity.
-- **Frequency**: Calculate monthly.
+- **Description**: Compare total income to total expenses for the current week. This helps users understand their financial health on a more immediate basis.
+- **Representation**: Bar chart with two bars for the week, one for income and one for expenses, color-coded for clarity.
+- **Frequency**: Calculate weekly at 0:00 every Monday.
 - **MongoDB Storage**:
 
 ```json
 {
-  "month": 4,
+  "weekOfYear": 15,
   "year": 2024,
   "income": 3000,
   "expenses": 2500
 }
 ```
 
-5. Savings Rate (Monthly)
+#### 5. Savings Rate (Weekly)
 
-- **Description**: The percentage of income saved during a specific time frame. This is calculated as the percentage of income left after expenses.
-- **Representation**: A gauge chart or progress bar to show the savings rate against a goal or average.
-- **Frequency**: Calculate monthly.
+- **Description**: The percentage of income saved during the past week. This is calculated as the percentage of weekly income left after weekly expenses.
+- **Representation**: A card display showing the rate and percentage change from the previous week with up/down arrows to indicate direction.
+- **Frequency**: Calculate weekly at 0:00 every Monday.
 - **MongoDB Storage**:
 
 ```json
 {
-  "month": 4,
+  "weekOfYear": 15,
   "year": 2024,
   "income": 3000,
   "expenses": 2500,
   "savingsRate": 16.67
 }
 ```
-
-This approach ensures that users have timely, actionable information on a weekly basis for most stats, while still providing a monthly overview of their income vs. expenses and savings rate. Such a schema offers a comprehensive yet clear snapshot of financial health and habits, suitable for tracking and improvement over time.
 
 ---
 
@@ -196,7 +194,10 @@ Note:
 
 **analyticsModel:**
 
-- `user`: (ObjectId) - Represents the user associated.
-- `analyticsType`: (String) - Type of analytic (e.g. either `networth` or `spending`).
-- `analyticsData`: (Array) - Contains the `date` (Date) and `value` (Number) for each entry.
-- `analyticsLastCalculated`: (Date) - Contains the date for when the last calculated value was stored.
+- "user": "ObjectId - Represents the user associated with this analytic record.",
+- "analyticsType": "String - Type of analytic, such as 'totalSpend', 'spendingByCategory', 'netWorth', 'incomeVsExpenses', or 'savingsRate'.",
+- "period": "String - Represents the time period of the data ('weekly' for all except 'incomeVsExpenses' and 'savingsRate' which are calculated weekly but can also be aggregated monthly).",
+- "periodStart": "Date - The start date for the period covered by this analytic.",
+- "periodEnd": "Date - The end date for the period covered by this analytic.",
+- "analyticsData": "Mixed - A flexible data structure to store different types of analytics data based on analyticsType.",
+- "analyticsLastCalculated": "Date - The last date when the analytic was updated."
