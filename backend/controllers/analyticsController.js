@@ -12,61 +12,60 @@ function getCurrentWeekStartEnd() {
   return { startOfWeek, endOfWeek };
 }
 
-exports.calculateTotalSpend = async (req, res) => {
-    const userId = req.user._id;
-    const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
+async function calculateTotalSpendForUserId(userId) {
+  const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
+  // Fetch debit transactions for the user within the current week
+  const transactions = await Transaction.find({
+    user: userId,
+    transactionType: 'debit', 
+    createdAt: { $gte: startOfWeek, $lte: endOfWeek }
+  });
 
-  try {
-    // Fetch debit transactions for the user within the current week
-    const transactions = await Transaction.find({
-      user: userId,
-      transactionType: 'debit', 
-      createdAt: { $gte: startOfWeek, $lte: endOfWeek }
-    });
+  // Calculate total spend
+  const totalSpend = transactions.reduce((acc, transaction) => acc + transaction.transactionAmount, 0);
 
-    // Calculate total spend
-    const totalSpend = transactions.reduce((acc, transaction) => acc + transaction.transactionAmount, 0);
+  // Check if an analytics document for total spend this week already exists
+  const analytics = await Analytics.findOne({
+    user: userId,
+    analyticsType: 'totalSpend',
+    periodStart: startOfWeek,
+    periodEnd: endOfWeek
+  });
 
-    // Check if an analytics document for total spend this week already exists
-    const analytics = await Analytics.findOne({
+  if (analytics) {
+    // Update the existing document
+    analytics.analyticsData = totalSpend;
+    await analytics.save();
+  } else {
+    // Create a new analytics document
+    await Analytics.create({
       user: userId,
       analyticsType: 'totalSpend',
+      period: 'weekly',
       periodStart: startOfWeek,
-      periodEnd: endOfWeek
+      periodEnd: endOfWeek,
+      analyticsData: totalSpend,
+      analyticsLastCalculated: new Date()
     });
+  }
 
-    if (analytics) {
-      // Update the existing document
-      analytics.analyticsData = totalSpend;
-      await analytics.save();
-    } else {
-      // Create a new analytics document
-      await Analytics.create({
-        user: userId,
-        analyticsType: 'totalSpend',
-        period: 'weekly',
-        periodStart: startOfWeek,
-        periodEnd: endOfWeek,
-        analyticsData: totalSpend,
-        analyticsLastCalculated: new Date()
-      });
-    }
+  return totalSpend;
+}
 
+exports.calculateTotalSpend = async (req, res) => {
+    const userId = req.user._id;
+
+  try {
+    const totalSpend = await calculateTotalSpendForUserId(userId);
     res.status(200).json({ message: 'Total spend calculated successfully.', totalSpend });
   } catch (error) {
     console.error('Error calculating total spend:', error);
   }
 };
 
-exports.calculateSpendingByCategory = async (req, res) => {
-  console.log("Starting calculateSpendingByCategory...");
-  const userId = req.user._id;
-  console.log("UserID for aggregation:", userId);
-
+async function calculateSpendingByCategoryForUserId(userId) {
   const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
-  console.log("Aggregation Period:", startOfWeek, endOfWeek);
-
-  try {
+    console.log("Aggregation Period:", startOfWeek, endOfWeek);
     console.log("Attempting to fetch transactions...");
     const transactions = await Transaction.aggregate([
       {
@@ -126,6 +125,16 @@ exports.calculateSpendingByCategory = async (req, res) => {
 
     await analytics.save();
     console.log("Analytics document saved successfully.");
+  return analyticsData;
+};
+
+exports.calculateSpendingByCategory = async (req, res) => {
+  console.log("Starting calculateSpendingByCategory...");
+  const userId = req.user._id;
+  console.log("UserID for aggregation:", userId);
+
+  try {
+    const analyticsData = await calculateSpendingByCategoryForUserId(userId);
     res.status(200).json({ message: 'Spending by category analytics updated successfully.', analyticsData });
   } catch (error) {
     console.error('Error calculating spending by category:', error);
@@ -133,13 +142,8 @@ exports.calculateSpendingByCategory = async (req, res) => {
   }
 };
 
-exports.calculateNetWorth = async (req, res) => {
-    console.log("Starting calculateNetWorth...");
-    const userId = req.user._id;
-    console.log("UserID for net worth calculation:", userId);
-
-    try {
-        console.log("Attempting to fetch accounts for net worth calculation...");
+async function calculateNetWorthForUserId(userId) {
+  console.log("Attempting to fetch accounts for net worth calculation...");
         // Fetch all accounts (both spending and tracking) for the user
         const accounts = await Account.find({ user: userId });
 
@@ -162,6 +166,16 @@ exports.calculateNetWorth = async (req, res) => {
         );
 
         console.log("Net worth analytics document updated successfully.");
+  return netWorth;
+};
+
+exports.calculateNetWorth = async (req, res) => {
+    console.log("Starting calculateNetWorth...");
+    const userId = req.user._id;
+    console.log("UserID for net worth calculation:", userId);
+
+    try {
+      const netWorth = await calculateNetWorthForUserId(userId);
         res.status(200).json({ message: 'Net worth calculated successfully.', netWorth });
     } catch (error) {
         console.error('Error calculating net worth:', error);
@@ -169,15 +183,9 @@ exports.calculateNetWorth = async (req, res) => {
     }
 };
 
-exports.calculateIncomeVsExpenses = async (req, res) => {
-  console.log("Starting calculateIncomeVsExpenses...");
-  const userId = req.user._id;
-  console.log("UserID for income vs. expenses calculation:", userId);
-
+async function calculateIncomeVsExpensesForUserId(userId) {
   const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
-  console.log("Calculation Period:", startOfWeek, endOfWeek);
-
-  try {
+    console.log("Calculation Period:", startOfWeek, endOfWeek);
       console.log("Attempting to fetch income and expenses transactions...");
       // Aggregate transactions to calculate total income and expenses
       const results = await Transaction.aggregate([
@@ -223,6 +231,16 @@ exports.calculateIncomeVsExpenses = async (req, res) => {
       );
 
       console.log("Income vs. Expenses analytics document updated successfully.");
+  return {income, expenses};
+}
+
+exports.calculateIncomeVsExpenses = async (req, res) => {
+  console.log("Starting calculateIncomeVsExpenses...");
+  const userId = req.user._id;
+  console.log("UserID for income vs. expenses calculation:", userId);
+
+  try {
+      const { income, expenses } = await calculateIncomeVsExpensesForUserId(userId);
       res.status(200).json({ message: 'Income vs. expenses calculated successfully.', income, expenses });
   } catch (error) {
       console.error('Error calculating income vs. expenses:', error);
@@ -230,15 +248,9 @@ exports.calculateIncomeVsExpenses = async (req, res) => {
   }
 };
 
-exports.calculateSavingsRate = async (req, res) => {
-  console.log("Starting calculateSavingsRate...");
-  const userId = req.user._id;
-  console.log("UserID for savings rate calculation:", userId);
-
+async function calculateSavingsRateForUserId(userId) {
   const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
   console.log("Calculation Period:", startOfWeek, endOfWeek);
-
-  try {
       console.log("Attempting to fetch income and expenses transactions...");
       // Aggregate transactions to calculate total income and expenses
       const results = await Transaction.aggregate([
@@ -287,6 +299,16 @@ exports.calculateSavingsRate = async (req, res) => {
       );
 
       console.log("Savings rate analytics document updated successfully.");
+  return savingsRate;
+}
+
+exports.calculateSavingsRate = async (req, res) => {
+  console.log("Starting calculateSavingsRate...");
+  const userId = req.user._id;
+  console.log("UserID for savings rate calculation:", userId);
+
+  try {
+      const savingsRate = await calculateSavingsRateForUserId(userId);
       res.status(200).json({ message: 'Savings rate calculated successfully.', savingsRate });
   } catch (error) {
       console.error('Error calculating savings rate:', error);
@@ -294,10 +316,7 @@ exports.calculateSavingsRate = async (req, res) => {
   }
 };
 
-exports.calculateAllTimeAnalytics = async (req, res) => {
-  const userId = req.user._id;
-  console.log("Starting calculateAllTimeAnalytics for userID:", userId);
-
+async function calculateAllTimeAnalyticsForUserId(userId) {
   try {
       // All-time Net Worth
       const accounts = await Account.find({ user: userId });
@@ -324,32 +343,41 @@ exports.calculateAllTimeAnalytics = async (req, res) => {
       // All-time Savings Rate
       let savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenditure) / totalIncome) * 100 : 0;
 
+      return {
+          netWorth,
+          totalIncome,
+          totalExpenditure,
+          savingsRate
+      };
+  } catch (error) {
+      console.error('Error calculating all-time analytics for user:', error);
+      throw error; // Rethrow the error to handle it in the calling function
+  }
+}
+
+exports.calculateAllTimeAnalytics = async (req, res) => {
+  const userId = req.user._id;
+  console.log("Starting calculateAllTimeAnalytics for userID:", userId);
+
+  try {
+      const analyticsData = await calculateAllTimeAnalyticsForUserId(userId);
+      console.log("All-time analytics calculated successfully.");
+
       // Update or Create All-time Analytics Document
       await Analytics.findOneAndUpdate(
           { user: userId, analyticsType: 'allTime' },
           {
               $set: {
-                  analyticsData: {
-                      netWorth,
-                      totalIncome,
-                      totalExpenditure,
-                      savingsRate
-                  },
+                  analyticsData: analyticsData,
                   analyticsLastCalculated: new Date()
               }
           },
           { new: true, upsert: true }
       );
 
-      console.log("All-time analytics updated successfully.");
       res.status(200).json({
           message: 'All-time analytics calculated successfully.',
-          data: {
-              netWorth,
-              totalIncome,
-              totalExpenditure,
-              savingsRate
-          }
+          data: analyticsData
       });
   } catch (error) {
       console.error('Error calculating all-time analytics:', error);
