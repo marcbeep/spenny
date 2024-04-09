@@ -105,7 +105,9 @@ exports.deleteAccount = async (req, res) => {
 
     // Check ownership
     if (!checkOwnership(account, req.user._id)) {
-      return res.status(403).json({ error: 'User does not have permission to view this account' });
+      return res
+        .status(403)
+        .json({ error: 'User does not have permission to delete this account' });
     }
 
     if (accountToDelete.accountType === 'spending') {
@@ -119,19 +121,25 @@ exports.deleteAccount = async (req, res) => {
 
 exports.updateAccount = async (req, res) => {
   const { id } = req.params;
-  const { accountTitle, accountBalance } = req.body;
+  const { accountTitle, accountType, accountBalance } = req.body;
 
   try {
     const accountToUpdate = await Account.findById(id);
     if (!accountToUpdate) return handleAccountNotFound(res);
 
-    // Check ownership
-    if (!checkOwnership(account, req.user._id)) {
-      return res.status(403).json({ error: 'User does not have permission to view this account' });
+    if (!checkOwnership(accountToUpdate, req.user._id)) {
+      return res
+        .status(403)
+        .json({ error: 'User does not have permission to update this account' });
+    }
+
+    // Check if an attempt is being made to change the account type
+    if (accountType && accountType.toLowerCase() !== accountToUpdate.accountType) {
+      return res.status(400).json({ error: 'Changing the account type is not allowed' });
     }
 
     const currentBalance = Number(accountToUpdate.accountBalance);
-    const intendedBalance = Number(formatAmount(accountBalance));
+    const intendedBalance = accountBalance ? Number(formatAmount(accountBalance)) : currentBalance;
     const balanceDifference = intendedBalance - currentBalance;
 
     if (balanceDifference !== 0 && accountToUpdate.accountType === 'spending') {
@@ -154,18 +162,19 @@ exports.updateAccount = async (req, res) => {
       await updateUserBudget(req.user._id, balanceDifference);
     }
 
-    // Proceed to update the account balance and title as before
-    const updatedAccount = await Account.findByIdAndUpdate(
-      id,
-      {
-        ...(accountTitle && { accountTitle: accountTitle.toLowerCase() }),
-        ...(accountBalance !== undefined && { accountBalance: formatAmount(accountBalance) }),
-      },
-      { new: true },
-    );
+    if (accountTitle) {
+      accountToUpdate.accountTitle = accountTitle.toLowerCase();
+    }
 
-    res.status(200).json(updatedAccount);
+    if (accountBalance !== undefined) {
+      accountToUpdate.accountBalance = formatAmount(accountBalance);
+    }
+
+    await accountToUpdate.save();
+
+    res.status(200).json(accountToUpdate);
   } catch (err) {
+    console.error('Error updating account:', err);
     res.status(400).json({ error: 'Failed to update account' });
   }
 };
