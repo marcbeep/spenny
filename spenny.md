@@ -210,48 +210,67 @@ Note:
 
 1. `addAccount`: Creates a new account for the logged-in user. If the account type is spending, updates the user's budget accordingly.
 2. `getAccounts`: Retrieves all accounts associated with the logged-in user.
-3. `deleteAccount`: Deletes an account by its ID and updates the budget accordingly if the deleted account is of spending type.
-4. `updateAccount`: Updates an account by its ID. If the account type is spending and the balance changes, adjusts the budget accordingly.
-5. `moveMoneyBetweenAccounts`: Moves money between two accounts. Updates account balances and adjusts the user's budget if necessary.
+3. `getAccount`: Retrieves an account by its ID.
+4. `deleteAccount`: Deletes an account by its ID and updates the budget accordingly if the deleted account is of spending type.
+5. `updateAccount`: Updates an account by its ID. If the account type is spending and the balance changes, adjusts the budget accordingly.
+6. `moveMoneyBetweenAccounts`: Moves money between two accounts. Updates account balances and adjusts the user's budget if necessary.
+
+The controller file handles account-related operations such as adding, retrieving, updating, and deleting accounts. Additionally, it includes functionality to move money between accounts while ensuring proper updates to account balances and user budgets.
+
+**analyticsController:**
+
+1. `calculateTotalSpend`: Calculates the total amount spent by the user in the current week. Updates or creates an analytics record for the total spend.
+2. `calculateSpendingByCategory`: Calculates the total spending by category for the user in the current week. Updates or creates an analytics record for spending by category.
+3. `calculateNetWorth`: Calculates the net worth of the user by summing up the balances of all accounts. Updates or creates an analytics record for net worth.
+4. `calculateIncomeVsExpenses`: Calculates the total income and expenses of the user in the current week. Updates or creates an analytics record for income versus expenses.
+5. `calculateSavingsRate`: Calculates the savings rate of the user in the current week based on income and expenses. Updates or creates an analytics record for savings rate.
+6. `calculateAllTimeAnalytics`: Calculates all-time analytics for the user, including net worth, total income, total expenditure, and savings rate. Updates or creates an analytics record for all-time analytics.
+
+The controller file handles various analytics-related operations such as calculating total spend, spending by category, net worth, income versus expenses, savings rate, and all-time analytics. It interacts with the `Transaction`, `Analytics`, and `Account` models to retrieve necessary data and update analytics records accordingly.
 
 **budgetController:**
 
-1. `assignMoneyToCategory`: Assigns a specified amount of money to a category. Updates the category's assigned and available amounts, then checks and updates associated goal status.
-2. `moveMoneyBetweenCategories`: Moves a specified amount of money from one category to another. Updates available amounts for both categories and checks/updates associated goal status.
-3. `removeMoneyFromCategory`: Removes a specified amount of money from a category. Updates the category's available amount, updates the budget based on the action, and checks/updates associated goal status.
-4. `readyToAssign`: Retrieves the amount of money ready to be assigned from the budget associated with the logged-in user.
+1. `assignMoneyToCategory`: Assigns a specified amount of money to a category. Updates the category's assigned and available amounts. Checks and updates the associated goal's status.
+2. `moveMoneyBetweenCategories`: Moves a specified amount of money from one category to another. Updates the available amounts for both categories. Checks and updates the associated goals' statuses for both categories.
+3. `removeMoneyFromCategory`: Removes a specified amount of money from a category. Updates the category's available amount and adjusts the user's budget accordingly. Checks and updates the associated goal's status.
+4. `readyToAssign`: Retrieves the amount of money ready to be assigned from the user's budget.
+
+The controller file handles budget-related operations such as assigning money to categories, moving money between categories, removing money from categories, and retrieving the amount of money ready to be assigned. It interacts with the `Budget` and `Category` models and utilizes utility functions like `checkAndUpdateGoalStatus` for goal-related operations.
 
 **categoryController:**
 
 1. `addCategory`: Creates a new category for the logged-in user with the specified title.
-2. `getCategories`: Retrieves all categories associated with the logged-in user, sorted alphabetically by title.
+2. `getCategories`: Retrieves all categories associated with the logged-in user, sorted by category title.
 3. `getSingleCategory`: Retrieves a single category by its ID.
-4. `deleteCategory`: Deletes a category by its ID. Reassigns transactions to a new category if specified, deletes associated goals, and checks/updates goal status for the new category if applicable.
-5. `updateCategory`: Updates the title of a category by its ID. Checks and updates goal status related to the category after the update.
+4. `deleteCategory`: Deletes a category by its ID and reassigns transactions to a new category if specified. Also deletes associated goals for the deleted category and checks and updates the goal status for the new category.
+5. `updateCategory`: Updates the title of a category by its ID.
+
+The controller file handles category-related operations such as adding, retrieving, updating, and deleting categories. It interacts with the `Category`, `Transaction`, and `Goal` models for category-related data manipulation. Additionally, it utilizes the `checkAndUpdateGoalStatus` utility function for updating goal statuses.
 
 **goalController:**
 
-1. `getAllGoals`: Retrieves all goals associated with the logged-in user, including the details of the category for each goal.
-2. `getSingleGoal`: Retrieves a single goal by its ID, including the details of the associated category.
-3. `createGoal`: Creates a new goal for a specified category. Updates the category with the new goal's ID and checks/updates goal status.
-4. `updateGoal`: Updates an existing goal by its ID. Updates goal type, target, and reset day if applicable. Checks and updates goal status after the update.
-5. `deleteGoal`: Deletes a goal by its ID. Unsets the `categoryGoal` field in the associated category before removing the goal.
+1. `getAllGoals`: Retrieves all goals associated with the logged-in user, including details of the associated category.
+2. `getSingleGoal`: Retrieves a single goal by its ID, including details of the associated category.
+3. `createGoal`: Creates a new goal for the specified category. Updates the category with the new goal's ID and checks and updates the goal status.
+4. `updateGoal`: Updates an existing goal with the specified ID. Updates the goal type, target, and reset day as required. Checks and updates the goal status after updating.
+5. `deleteGoal`: Deletes a goal by its ID. Before removal, unsets the categoryGoal field in the associated category.
+
+The controller file handles goal-related operations such as creating, retrieving, updating, and deleting goals. It interacts with the `Goal` and `Category` models for goal-related data manipulation and utilizes the `checkAndUpdateGoalStatus` utility function for updating goal statuses.
 
 **transactionController:**
 
 1. `getAllTransactions`: Retrieves all transactions associated with the logged-in user, sorted by creation date.
 2. `getSingleTransaction`: Retrieves a single transaction by its ID.
-3. `createTransaction`: Creates a new transaction for the user. Updates category and account balances accordingly. If no category is specified, adjusts the "Ready to Assign" balance in the budget.
-4. `deleteSingleTransaction`: Deletes a transaction by its ID. Reverts the effects of the transaction on category and account balances. Also updates goal status if applicable.
-5. `updateSingleTransaction`: Updates an existing transaction by its ID. Adjusts category and account balances based on the changes. Also updates goal status if applicable.
-6. `ai`: Utilizes OpenAI's GPT-3.5 model to analyze OCR text extracted from a receipt and fill out transaction details in JSON format. Validates the provided category and account IDs and creates a new transaction accordingly.
+3. `createTransaction`: Creates a new transaction with the provided details. Updates balances for the associated category and account. Checks and updates goal status if applicable.
+4. `deleteSingleTransaction`: Deletes a single transaction by its ID. Reverts the balance changes made by the transaction and checks and updates goal status if applicable.
+5. `updateSingleTransaction`: Updates a single transaction with the provided details. Reverts the balance changes made by the original transaction, updates the balances with the new details, and checks and updates goal status if applicable.
+6. `ai`: Utilizes OpenAI's GPT-3.5 model to analyze OCR text from a receipt and generate transaction details in JSON format. Validates category and account IDs, creates a new transaction based on the generated details, and returns the result.
+
+This controller file handles transaction-related operations such as creating, retrieving, updating, and deleting transactions. It interacts with the `Transaction`, `Category`, `Account`, and `Budget` models for data manipulation and utilizes the `checkAndUpdateGoalStatus` utility function for updating goal statuses. Additionally, it utilizes the OpenAI API for AI-powered transaction detail generation.
 
 **userController:**
 
-1. `loginUser`: Handles user login by validating the email and password. If successful, generates a JWT token and returns it along with the user's email.
-2. `signupUser`: Manages user signup by creating a new user account with the provided email, password, and a randomly generated profile picture URL. Additionally, initializes essential user data such as categories, accounts, and budget. Upon successful signup, generates a JWT token and returns it along with the user's email and profile picture URL.
+1. `loginUser`: Handles user login by verifying the provided email and password against the stored credentials. If authentication is successful, generates a JWT token for the user session.
+2. `signupUser`: Manages user signup by creating a new user account with the provided email, password, and a randomly generated profile picture URL. Additionally, initializes user data including default account, categories, budget, and analytics data. Returns a JWT token upon successful signup.
 
-Utility functions:
-
-1. `createToken`: Generates a JWT token using the user's ID and a secret key.
-2. `initializeUserData`: Initializes essential user data such as categories, accounts, and budget upon user signup. It creates generic categories, a generic spending account, and initializes the budget for the new user. Returns `{ success: true }` upon successful initialization or `{ error: errorMessage }` if initialization fails.
+This controller file interacts with the `User`, `Account`, `Category`, `Budget`, and `Analytics` models for user-related data manipulation and initialization. It utilizes JWT for user authentication and authorization and the `moment` library for date/time manipulation. Additionally, it utilizes helper functions such as `createToken` for JWT token generation and `initializeAnalyticsData` and `initializeUserData` for initializing user-specific data upon signup.
