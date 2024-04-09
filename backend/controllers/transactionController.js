@@ -107,8 +107,15 @@ exports.getSingleTransaction = async (req, res) => {
   try {
     const transaction = await Transaction.findById(id);
     if (!transaction) return handleNoTransactionFound(res);
+
+    // Check if the transaction was created by the user making the request
+    if (transaction.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'User does not have permission to view this transaction' });
+    }
+
     res.status(200).json(transaction);
   } catch (error) {
+    console.error('Error fetching transaction:', error);
     res.status(500).json({ error: 'Failed to fetch transaction' });
   }
 };
@@ -162,10 +169,15 @@ exports.deleteSingleTransaction = async (req, res) => {
     const transactionToDelete = await Transaction.findById(id);
     if (!transactionToDelete) return handleNoTransactionFound(res);
 
+    // Check if the transaction was created by the user making the request
+    if (transactionToDelete.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'User does not have permission to delete this transaction' });
+    }
+
     const amountChange =
       transactionToDelete.transactionType === 'debit'
-        ? transactionToDelete.transactionAmount
-        : -transactionToDelete.transactionAmount;
+        ? -transactionToDelete.transactionAmount
+        : transactionToDelete.transactionAmount;
 
     if (transactionToDelete.transactionCategory) {
       await updateBalances({
@@ -177,7 +189,7 @@ exports.deleteSingleTransaction = async (req, res) => {
       });
       await checkAndUpdateGoalStatus(null, transactionToDelete.transactionCategory);
     } else {
-      await updateUserBudgetForTransaction(req.user._id, -amountChange, true);
+      await updateUserBudgetForTransaction(req.user._id, amountChange, true);
     }
 
     await Transaction.findByIdAndDelete(id);
@@ -185,7 +197,7 @@ exports.deleteSingleTransaction = async (req, res) => {
     res.status(200).json({ message: 'Transaction successfully deleted' });
   } catch (error) {
     console.error('Error deleting transaction:', error);
-    handleNoTransactionFound(res);
+    res.status(500).json({ error: 'Failed to delete transaction' });
   }
 };
 
@@ -205,6 +217,11 @@ exports.updateSingleTransaction = async (req, res) => {
   try {
     const transactionToUpdate = await Transaction.findById(id);
     if (!transactionToUpdate) return handleNoTransactionFound(res);
+
+    // Check if the transaction was created by the user making the request
+    if (transactionToUpdate.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'User does not have permission to edit this transaction' });
+    }
 
     const originalCategory = transactionToUpdate.transactionCategory
       ? transactionToUpdate.transactionCategory.toString()
