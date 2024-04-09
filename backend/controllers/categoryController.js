@@ -4,31 +4,32 @@ const Goal = require('../models/goalModel');
 const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 const mongoose = require('mongoose');
 
-// Shared error handling for simplicity and DRY principles
 const handleNoCategoryFound = (res) => res.status(404).json({ error: 'Category not found' });
 
 exports.addCategory = async (req, res) => {
-  const { title } = req.body; // Accepting title from request body
+  const { title } = req.body;
 
   try {
     const category = await Category.create({
       user: req.user._id,
-      categoryTitle: title.toLowerCase(), // Ensure lowercase for consistency
+      categoryTitle: title.toLowerCase(),
       categoryAssigned: 0,
       categoryAvailable: 0,
       categoryActivity: 0,
     });
     res.status(201).json(category);
-  } catch (err) {
+  } catch (error) {
+    console.error('Error creating category:', error);
     res.status(400).json({ error: 'Failed to create category' });
   }
 };
 
 exports.getCategories = async (req, res) => {
   try {
-    const categories = await Category.find({ user: req.user._id }).sort('categoryTitle'); // Sort by title for better organization
+    const categories = await Category.find({ user: req.user._id }).sort('categoryTitle');
     res.status(200).json(categories);
-  } catch (err) {
+  } catch (error) {
+    console.error('Error fetching categories:', error);
     res.status(400).json({ error: 'Failed to fetch categories' });
   }
 };
@@ -37,15 +38,16 @@ exports.getSingleCategory = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return handleNoCategoryFound(res);
+    return handleNotFound(res, 'Category');
   }
 
   try {
     const category = await Category.findById(id);
-    if (!category) return handleNoCategoryFound(res);
+    if (!category) return handleNotFound(res, 'Category');
     res.status(200).json(category);
-  } catch (err) {
-    handleNoCategoryFound(res);
+  } catch (error) {
+    console.error('Error fetching single category:', error);
+    handleNotFound(res, 'Category');
   }
 };
 
@@ -71,14 +73,14 @@ exports.deleteCategory = async (req, res) => {
     await Goal.findOneAndDelete({ goalCategory: id });
     await Category.findByIdAndDelete(id);
 
-    // Call to check and update goal status for the new category's goal, if it exists
     const newCategoryGoal = await Goal.findOne({ goalCategory: newCategoryId });
     if (newCategoryGoal) {
       await checkAndUpdateGoalStatus(newCategoryGoal._id);
     }
 
-    res.sendStatus(204); // No content to send back for a delete operation
-  } catch (err) {
+    res.sendStatus(204);
+  } catch (error) {
+    console.error('Error deleting category:', error);
     res.status(500).json({ error: 'Failed to delete category and reassign transactions' });
   }
 };
@@ -100,14 +102,14 @@ exports.updateCategory = async (req, res) => {
 
     if (!updatedCategory) return handleNoCategoryFound(res);
 
-    // After updating the category, check and update goal status related to this category
     const relatedGoal = await Goal.findOne({ goalCategory: updatedCategory._id });
     if (relatedGoal) {
       await checkAndUpdateGoalStatus(relatedGoal._id);
     }
 
     res.status(200).json(updatedCategory);
-  } catch (err) {
+  } catch (error) {
+    console.error('Error updating category:', error);
     res.status(400).json({ error: 'Failed to update category' });
   }
 };
