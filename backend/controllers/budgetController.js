@@ -167,3 +167,52 @@ exports.readyToAssign = async (req, res) => {
     res.status(400).json({ error: 'Failed to retrieve Ready to Assign amount' });
   }
 };
+
+exports.moveToReadyToAssign = async (req, res) => {
+  const { categoryId, amount } = req.body;
+  const numericAmount = parseFloat(amount);
+
+  if (numericAmount <= 0) {
+    return res.status(400).json({ error: 'Amount must be greater than zero.' });
+  }
+
+  try {
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return handleNotFound(res, 'Category');
+    }
+
+    if (!checkOwnership(category, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to modify this category' });
+    }
+
+    if (category.categoryAssigned < numericAmount) {
+      return res.status(400).json({ error: 'Insufficient assigned funds in the category.' });
+    }
+
+    // Decrease category's assigned funds
+    category.categoryAssigned -= numericAmount;
+    // Optionally, adjust categoryAvailable if necessary
+    // category.categoryAvailable -= numericAmount;
+
+    await category.save();
+
+    // Increase the budget's Ready to Assign
+    await updateUserBudgetForCategoryActions(req.user._id, numericAmount, 'remove');
+
+    res.status(200).json({
+      message: `£${numericAmount.toFixed(2)} successfully moved back to Ready to Assign from ${
+        category.categoryTitle
+      }`,
+      category: {
+        _id: category._id,
+        title: category.categoryTitle,
+        assigned: category.categoryAssigned,
+        // available: category.categoryAvailable,
+      },
+    });
+  } catch (error) {
+    console.error('Error moving money to Ready to Assign:', error);
+    res.status(500).json({ error: 'Failed to move money to Ready to Assign' });
+  }
+};
