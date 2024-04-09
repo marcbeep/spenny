@@ -2,6 +2,7 @@ const Category = require('../models/categoryModel');
 const Transaction = require('../models/transactionModel');
 const Goal = require('../models/goalModel');
 const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
+const { checkOwnership } = require('../utils/utils');
 const mongoose = require('mongoose');
 
 const handleNoCategoryFound = (res) => res.status(404).json({ error: 'Category not found' });
@@ -44,6 +45,9 @@ exports.getSingleCategory = async (req, res) => {
   try {
     const category = await Category.findById(id);
     if (!category) return handleNotFound(res, 'Category');
+    if (!checkOwnership(category, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to access this category' });
+    }
     res.status(200).json(category);
   } catch (error) {
     console.error('Error fetching single category:', error);
@@ -63,6 +67,10 @@ exports.deleteCategory = async (req, res) => {
     const newCategory = await Category.findById(newCategoryId);
     if (!newCategory) {
       return res.status(404).json({ error: 'New category not found' });
+    }
+
+    if (!checkOwnership(category, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to delete this category' });
     }
 
     await Transaction.updateMany(
@@ -101,6 +109,10 @@ exports.updateCategory = async (req, res) => {
     );
 
     if (!updatedCategory) return handleNoCategoryFound(res);
+
+    if (!checkOwnership(category, req.user._id)) {
+      return res.status(403).json({ error: 'Unauthorized to modify this category' });
+    }
 
     const relatedGoal = await Goal.findOne({ goalCategory: updatedCategory._id });
     if (relatedGoal) {
