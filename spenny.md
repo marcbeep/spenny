@@ -194,10 +194,10 @@ Note:
 
 **analyticsModel:**
 
-- `user`: "ObjectId - Represents the user associated with this analytic record.",
-- `analyticsType`: "String - Type of analytic, such as 'totalSpend', 'spendingByCategory', 'netWorth', 'incomeVsExpenses', or 'savingsRate'.",
-- `period`: "String - Represents the time period of the data ('weekly' for all except 'incomeVsExpenses' and 'savingsRate' which are calculated weekly but can also be aggregated monthly).",
-- `periodStart`: "Date - The start date for the period covered by this analytic.",
-- `periodEnd`: "Date - The end date for the period covered by this analytic.",
-- `analyticsData`: "Mixed - A flexible data structure to store different types of analytics data based on analyticsType.",
-- `analyticsLastCalculated`: "Date - The last date when the analytic was updated."
+- `user`: (ObjectId) - Represents the user associated with this analytic record.
+- `analyticsType`: (String) - Type of analytic, such as 'totalSpend', 'spendingByCategory', 'netWorth', 'incomeVsExpenses', or 'savingsRate'.
+- `period`: (String) - Represents the time period of the data ('weekly' for all except 'incomeVsExpenses' and 'savingsRate' which are calculated weekly but can also be aggregated monthly).
+- `periodStart`: (Date) - The start date for the period covered by this analytic.
+- `periodEnd`: (Date) - The end date for the period covered by this analytic.
+- `analyticsData`: (Mixed) - A flexible data structure to store different types of analytics data based on analyticsType.
+- `analyticsLastCalculated`: (Date) - The last date when the analytic was updated.
