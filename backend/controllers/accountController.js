@@ -1,5 +1,6 @@
 const Account = require('../models/accountModel');
 const Budget = require('../models/budgetModel');
+const Transaction = require('../models/transactionModel');
 
 const formatAmount = (amount) => parseFloat(amount).toFixed(2);
 
@@ -48,9 +49,19 @@ exports.addAccount = async (req, res) => {
       accountBalance: formattedBalance,
     });
 
+    // Check if the account type is 'spending' before creating a transaction
     if (account.accountType === 'spending') {
+      await Transaction.create({
+        user: req.user._id,
+        transactionAccount: account._id,
+        transactionType: 'credit',
+        transactionTitle: `[${accountTitle.toLowerCase()}] account creation`,
+        transactionAmount: formattedBalance,
+      });
+
       await updateUserBudget(req.user._id, Number(formattedBalance));
     }
+
     res.status(201).json(account);
   } catch (err) {
     res.status(400).json({ error: 'Failed to create account' });
