@@ -1,31 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../hooks/useAuth';
-import { Link, useNavigate } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signup } = useAuth(); // Using the signup function from useAuth hook
+  const { signup, user } = useAuth(); 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/placeholder'); // Navigate to the placeholder or dashboard page on successful signup
+    }
+  }, [user, navigate]);
 
   const handleInputChange = (setter) => (e) => {
     setter(e.target.value);
-    if (feedback.message) setFeedback({ message: '', type: '' });
+    if (feedback.message) {
+      setFeedback({ message: '', type: '' });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const success = await signup(email, password);
-      if (success) {
-        navigate('/placeholder'); // Redirect on success
-      }
+      await signup(email, password);
+      // Feedback for successful signup is now primarily handled by useEffect
+      // Only setting feedback here for immediate UI response, navigation will occur via useEffect
       setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
     } catch (error) {
       console.error('Signup Error:', error.message);

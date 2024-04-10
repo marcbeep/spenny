@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +10,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login } = useAuth(); 
+  const { login, user } = useAuth(); 
   const navigate = useNavigate();
 
   const handleInputChange = (setter) => (e) => {
@@ -18,15 +18,18 @@ const Login = () => {
     if (feedback.message) setFeedback({ message: '', type: '' });
   };
 
+  useEffect(() => {
+    if (user) {
+      navigate('/placeholder'); 
+    }
+  }, [user, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const success = await login(email, password);
-      if (success) {
-        navigate('/placeholder'); // Redirect on success
-      }
+      await login(email, password); 
     } catch (err) {
       setFeedback({ message: err.message || 'Failed to log in. Please try again.', type: 'error' });
     } finally {

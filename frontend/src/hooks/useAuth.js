@@ -5,14 +5,14 @@ import { loginUserAPI, signupUserAPI } from '../api/authService';
 import { setAuthToken } from '../utils/axiosConfig';
 
 export const useAuth = () => {
-  const { dispatch } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext); // Destructure `user` from the context
 
   const login = useCallback(async (email, password) => {
     try {
       const { email: userEmail, token } = await loginUserAPI(email, password);
-      const user = { email: userEmail };
-      dispatch({ type: 'LOGIN', payload: user });
-      localStorage.setItem('user', JSON.stringify(user));
+      const userPayload = { email: userEmail }; // Use a different name to avoid confusion with `user` from context
+      dispatch({ type: 'LOGIN', payload: userPayload });
+      localStorage.setItem('user', JSON.stringify(userPayload));
       localStorage.setItem('token', token);
       setAuthToken(token);
       return true; // Indicate success
@@ -25,12 +25,12 @@ export const useAuth = () => {
   const signup = useCallback(async (email, password) => {
     try {
       const { email: userEmail, token, profilePicture } = await signupUserAPI(email, password);
-      const user = { email: userEmail, profilePicture };
-      dispatch({ type: 'LOGIN', payload: user });
-      localStorage.setItem('user', JSON.stringify(user));
+      const userPayload = { email: userEmail, profilePicture }; // Same here, use `userPayload` to avoid naming conflict
+      dispatch({ type: 'LOGIN', payload: userPayload });
+      localStorage.setItem('user', JSON.stringify(userPayload));
       localStorage.setItem('token', token);
       setAuthToken(token);
-      return true; // Indicate success
+      return true; 
     } catch (error) {
       console.error('Signup failed:', error.message);
       throw error;
@@ -44,5 +44,5 @@ export const useAuth = () => {
     setAuthToken(null);
   }, [dispatch]);
 
-  return { login, logout, signup };
+  return { user, login, logout, signup };
 };
