@@ -89,9 +89,7 @@ exports.loginUser = async (req, res) => {
 
 exports.signupUser = async (req, res) => {
   const { email, password } = req.body;
-  const profilePictureUrl = `https://api.randomuser.me/portraits/lego/${
-    Math.floor(Math.random() * 10) + 1
-  }.jpg`;
+  const profilePictureUrl = `https://api.dicebear.com/8.x/notionists-neutral/svg?seed=${email}`;
 
   try {
     // Use the signup static method defined on the User model
