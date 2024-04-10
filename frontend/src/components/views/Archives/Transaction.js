@@ -6,10 +6,10 @@ import { useAuthContext } from '../../hooks/useAuthContext';
 import { useTransactionContext } from '../../context/TransactionContext';
 import { useCategoryContext } from '../../context/CategoryContext';
 import { useAccountContext } from '../../context/AccountContext';
-import TransactionModal from '../archived/Modals/TransactionModal';
-import TransactionCard from '../archived/Cards/TransactionCard';
-import Pagination from '../archived/Pagination';
-import backendURL from '../../config';
+import TransactionModal from '../../archived/Modals/TransactionModal';
+import TransactionCard from '../../archived/Cards/TransactionCard';
+import Pagination from '../../archived/Pagination';
+import backendURL from '../../../config';
 
 const TransactionPage = () => {
   const { user } = useAuthContext();

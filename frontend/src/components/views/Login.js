@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import { useAuthContext } from '../../hooks/useAuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import backendURL from '../../config';
 
@@ -11,7 +11,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { dispatch } = useAuthContext();
+  const { dispatch } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (e, setter) => {

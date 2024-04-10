@@ -1,6 +1,6 @@
 // useAuth.js
 import { useContext, useCallback } from 'react';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from '../context/AuthContext';
 import { loginUserAPI } from '../api/authService';
 import { setAuthToken } from '../utils/axiosConfig';
 
