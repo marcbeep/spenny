@@ -13,4 +13,16 @@ export const loginUserAPI = async (email, password) => {
   }
 };
 
+export const signupUserAPI = async (email, password) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/users/signup`, {
+      email,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.error || 'An error occurred during signup.');
+  }
+};
+
 

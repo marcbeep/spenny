@@ -1,7 +1,7 @@
 // useAuth.js
 import { useContext, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { loginUserAPI } from '../api/authService';
+import { loginUserAPI, signupUserAPI } from '../api/authService';
 import { setAuthToken } from '../utils/axiosConfig';
 
 export const useAuth = () => {
@@ -20,6 +20,19 @@ export const useAuth = () => {
     }
   }, [dispatch]);
 
+  const signup = useCallback(async (email, password) => {
+    try {
+      const { user, token } = await signupUserAPI(email, password);
+      dispatch({ type: 'LOGIN', payload: user });
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', token);
+      setAuthToken(token);
+    } catch (error) {
+      console.error('Signup failed:', error.message);
+      throw error;
+    }
+  }, [dispatch]);
+
   const logout = useCallback(() => {
     dispatch({ type: 'LOGOUT' });
     localStorage.removeItem('user');
@@ -28,6 +41,6 @@ export const useAuth = () => {
     // TODO: Redirect & perform additional cleanup 
   }, [dispatch]);
 
-  return { login, logout, isAuthReady: authIsReady, user };
+  return { login, logout, signup, isAuthReady: authIsReady, user };
 };
 

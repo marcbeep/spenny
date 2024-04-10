@@ -2,16 +2,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth'; 
 import { useNavigate, Link } from 'react-router-dom';
-import backendURL from '../../config';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { dispatch } = useAuth();
+  const { signup } = useAuth(); 
   const navigate = useNavigate();
 
   const handleInputChange = (setter) => (e) => {
@@ -23,30 +22,17 @@ const Signup = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${backendURL}/user/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
-        localStorage.setItem('user', JSON.stringify(data));
-        dispatch({ type: 'LOGIN', payload: data });
-        navigate('/transaction');
-      } else {
-        // Display backend-specific error message
-        setFeedback({ message: data.error, type: 'error' });
-      }
-    } catch (err) {
-      // Handle unexpected errors gracefully
-      setFeedback({ message: 'Network error. Please try again later.', type: 'error' });
+      await signup(email, password);
+      setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
+      navigate('/placeholder');
+    } catch (error) {
+      console.error('Signup Error:', error.message);
+      setFeedback({ message: error.message || 'An error occurred, please try again.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
   return (
     <div className='flex items-center justify-center min-h-screen bg-gray-100'>
       <div className='card w-96 bg-base-100 shadow-xl'>
