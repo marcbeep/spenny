@@ -2,16 +2,16 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthContext } from './hooks/useAuthContext';
 
 //pages
-import Account from './pages/Account';
-import Signup from './pages/Signup';
-import Login from './pages/Login';
-import LandingPage from './pages/LandingPage';
-import Category from './pages/Category';
-import TransactionPage from './pages/TransactionPage';
-import Dash from './pages/Dash';
+import Account from './components/views/Account';
+import Signup from './components/views/Signup';
+import Login from './components/views/Login';
+import Landing from './components/views/Landing';
+import Category from './components/views/Category';
+import Transaction from './components/views/Transaction';
+import Dash from './components/views/Dash';
 
 // components
-import Navbar from './components/Layouts/Navbar';
+import Navbar from './components/layout/Navbar';
 
 function App() {
   const { user } = useAuthContext();
@@ -26,10 +26,10 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path='/' element={!user ? <LandingPage /> : <Navigate to='/' />} />
+          <Route path='/' element={!user ? <Landing /> : <Navigate to='/' />} />
           <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/' />} />
           <Route path='/login' element={!user ? <Login /> : <Navigate to='/' />} />
-          <Route path='/transaction' element={user ? <TransactionPage /> : <Navigate to='/' />} />
+          <Route path='/transaction' element={user ? <Transaction /> : <Navigate to='/' />} />
           <Route path='/account' element={user ? <Account /> : <Navigate to='/' />} />
           <Route path='/category' element={user ? <Category /> : <Navigate to='/' />} />
           <Route path='/dash' element={user ? <Dash /> : <Navigate to='/' />} />

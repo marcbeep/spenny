@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faCreditCard, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useAccountContext } from '../context/AccountContext';
-import { useBudgetContext } from '../context/BudgetContext';
-import AccountModal from '../components/AccountModal';
-import Card from '../components/Card';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useAccountContext } from '../../context/AccountContext';
+import { useBudgetContext } from '../../context/BudgetContext';
+import AccountModal from '../archived/AccountModal';
+import Card from '../archived/Card';
 
 const Account = () => {
   const { user } = useAuthContext();

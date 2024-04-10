@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useCategoryContext } from '../context/CategoryContext';
-import { useBudgetContext } from '../context/BudgetContext';
-import CategoryModal from '../components/CategoryModal';
-import AssignFundsModal from '../components/AssignFundsModal';
-import MoveFundsModal from '../components/MoveFundsModal';
-import backendURL from '../config';
-import Card from '../components/Card';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useCategoryContext } from '../../context/CategoryContext';
+import { useBudgetContext } from '../../context/BudgetContext';
+import CategoryModal from '../archived/CategoryModal';
+import AssignFundsModal from '../archived/AssignFundsModal';
+import Card from '../archived/Card';
+import MoveFundsModal from '../archived/MoveFundsModal';
+import backendURL from '../../config';
 
 const Category = () => {
   const { user } = useAuthContext();

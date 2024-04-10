@@ -1,8 +1,8 @@
 import { React, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
-import { getCategoryDetails } from '../../utils/getCategoryDetails';
-import { formatDate } from '../../utils/formatDate';
+import { getCategoryDetails } from '../../../utils/getCategoryDetails';
+import { formatDate } from '../../../utils/formatDate';
 
 const TransactionCard = ({ transactions, categories, onRowClick }) => {
   const getTransactionIcon = (type) => {

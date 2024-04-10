@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useTransactionContext } from '../context/TransactionContext';
-import { useCategoryContext } from '../context/CategoryContext';
-import { useAccountContext } from '../context/AccountContext';
-import TransactionModal from '../components/Modals/TransactionModal';
-import TransactionCard from '../components/Cards/TransactionCard';
-import Pagination from '../components/Pagination';
-import backendURL from '../config';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useTransactionContext } from '../../context/TransactionContext';
+import { useCategoryContext } from '../../context/CategoryContext';
+import { useAccountContext } from '../../context/AccountContext';
+import TransactionModal from '../archived/Modals/TransactionModal';
+import TransactionCard from '../archived/Cards/TransactionCard';
+import Pagination from '../archived/Pagination';
+import backendURL from '../../config';
 
 const TransactionPage = () => {
   const { user } = useAuthContext();

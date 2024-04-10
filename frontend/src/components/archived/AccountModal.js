@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { formatCurrencyInput } from '../utils/currencyInputFormatter';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useAccountContext } from '../context/AccountContext';
-import backendURL from '../config';
+import { formatCurrencyInput } from '../../utils/currencyInputFormatter';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useAccountContext } from '../../context/AccountContext';
+import backendURL from '../../config';
 
 const AccountModal = ({ isOpen, closeModal, editingAccount, onSuccess }) => {
   // Define initialState using useMemo to prevent unnecessary re-renders

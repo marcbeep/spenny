@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useCategoryContext } from '../context/CategoryContext';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useBudgetContext } from '../context/BudgetContext';
-import { formatCurrencyInput } from '../utils/currencyInputFormatter'; // Import the utility function
-import backendURL from '../config';
+import { useCategoryContext } from '../../context/CategoryContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useBudgetContext } from '../../context/BudgetContext';
+import { formatCurrencyInput } from '../../utils/currencyInputFormatter'; // Import the utility function
+import backendURL from '../../config';
 
 const AssignFundsModal = ({ isOpen, closeModal, readyToAssign, fetchCategories }) => {
   const { user } = useAuthContext();

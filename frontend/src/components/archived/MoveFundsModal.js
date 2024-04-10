@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { formatCurrencyInput } from '../utils/currencyInputFormatter';
-import { useAuthContext } from '../hooks/useAuthContext';
-import { useBudgetContext } from '../context/BudgetContext';
-import { useCategoryContext } from '../context/CategoryContext';
+import { formatCurrencyInput } from '../../utils/currencyInputFormatter';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { useBudgetContext } from '../../context/BudgetContext';
+import { useCategoryContext } from '../../context/CategoryContext';
 import { faCaretDown, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import backendURL from '../config';
+import backendURL from '../../config';
 
 const MoveFundsModal = ({ isOpen, closeModal, category, refreshCategories }) => {
   const { user } = useAuthContext();

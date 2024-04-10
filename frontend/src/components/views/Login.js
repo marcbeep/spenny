@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import { useAuthContext } from '../hooks/useAuthContext';
+import { useAuthContext } from '../../hooks/useAuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import backendURL from '../config';
+import backendURL from '../../config';
 
-const Signup = () => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [feedback, setFeedback] = useState({ message: '', type: '' });
@@ -14,7 +14,7 @@ const Signup = () => {
   const { dispatch } = useAuthContext();
   const navigate = useNavigate();
 
-  const handleInputChange = (setter) => (e) => {
+  const handleInputChange = (e, setter) => {
     setter(e.target.value);
     if (feedback.message) setFeedback({ message: '', type: '' });
   };
@@ -22,26 +22,29 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+
     try {
-      const response = await fetch(`${backendURL}/user/signup`, {
+      const response = await fetch(`${backendURL}/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
+
       const data = await response.json();
 
       if (response.ok) {
-        setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
-        localStorage.setItem('user', JSON.stringify(data));
         dispatch({ type: 'LOGIN', payload: data });
+        localStorage.setItem('user', JSON.stringify(data));
         navigate('/transaction');
+        setFeedback({ message: 'Login successful. Welcome back!', type: 'success' });
       } else {
-        // Display backend-specific error message
-        setFeedback({ message: data.error, type: 'error' });
+        setFeedback({
+          message: 'Failed to log in. Please check your email and password.',
+          type: 'error',
+        });
       }
     } catch (err) {
-      // Handle unexpected errors gracefully
-      setFeedback({ message: 'Network error. Please try again later.', type: 'error' });
+      setFeedback({ message: 'Something went wrong. Please try again later.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -51,7 +54,7 @@ const Signup = () => {
     <div className='flex items-center justify-center min-h-screen bg-gray-100'>
       <div className='card w-96 bg-base-100 shadow-xl'>
         <div className='card-body'>
-          <h2 className='card-title justify-center'>Create an account</h2>
+          <h2 className='card-title justify-center'>Login</h2>
           <form onSubmit={handleSubmit}>
             <div className='form-control'>
               <label className='label'>
@@ -62,7 +65,7 @@ const Signup = () => {
                 placeholder='m@example.com'
                 className='input input-bordered'
                 value={email}
-                onChange={handleInputChange(setEmail)}
+                onChange={(e) => handleInputChange(e, setEmail)}
               />
             </div>
             <div className='form-control mt-4'>
@@ -74,17 +77,17 @@ const Signup = () => {
                 placeholder=''
                 className='input input-bordered'
                 value={password}
-                onChange={handleInputChange(setPassword)}
+                onChange={(e) => handleInputChange(e, setPassword)}
               />
             </div>
             <div className='form-control mt-6'>
               <button type='submit' disabled={isSubmitting} className='btn btn-primary'>
-                {isSubmitting ? 'Signing up...' : 'Signup'}
+                {isSubmitting ? 'Logging in...' : 'Login'}
               </button>
             </div>
             <div className='form-control mt-4 text-center'>
-              <Link to='/login' className='link link-secondary'>
-                Already have an account? Login
+              <Link to='/signup' className='link link-secondary'>
+                Need an account? Sign up
               </Link>
             </div>
           </form>
@@ -113,4 +116,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;

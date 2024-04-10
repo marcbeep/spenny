@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const LandingPage = () => {
+const Landing = () => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -47,9 +47,9 @@ const LandingPage = () => {
         {/* Image Container */}
         <motion.div className='flex-1 hidden lg:flex justify-end' variants={itemVariants}>
           <motion.img
-            src='/landing.jpeg'
+            src='/landing-img.png'
             alt='Finance Management'
-            className='rounded-lg max-w-md border-4 border-black'
+            className='max-w-md'
           />
         </motion.div>
       </motion.div>
@@ -57,4 +57,4 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage;
+export default Landing;
