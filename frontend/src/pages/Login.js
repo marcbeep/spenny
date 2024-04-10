@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import backendURL from '../config';
 
 const Login = () => {
@@ -38,42 +37,41 @@ const Login = () => {
         dispatch({ type: 'LOGIN', payload: data });
         navigate('/transaction');
       } else {
-        throw new Error(
-          data.message || 'Login failed. Please check your credentials and try again.',
-        );
+        throw new Error('Login failed. Please check your credentials and try again.');
       }
     } catch (err) {
-      setFeedback({ message: err.message, type: 'error' });
+      // Custom user-friendly error message instead of using `err.message`
+      setFeedback({ message: 'Something went wrong. Please try again later.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className='flex items-center justify-center'>
-      <div className='px-8 py-6 mt-4 text-left'>
+    <div className='flex items-center justify-center min-h-screen bg-gray-100'>
+      <div className='p-6 m-4 bg-white rounded-lg shadow-md w-96'>
         <h3 className='text-2xl font-semibold text-center'>Welcome back</h3>
         <form onSubmit={handleSubmit}>
           <div className='mt-4'>
             <input
               type='email'
               placeholder='Email'
-              className='w-full px-4 py-2 mt-4 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'
+              className='input input-bordered w-full max-w-xs'
               value={email}
               onChange={handleInputChange(setEmail)}
             />
             <input
               type='password'
               placeholder='Password'
-              className='w-full px-4 py-2 mt-4 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'
+              className='input input-bordered w-full max-w-xs mt-4'
               value={password}
               onChange={handleInputChange(setPassword)}
             />
             <button type='submit' disabled={isSubmitting} className='btn btn-primary w-full mt-4'>
               {isSubmitting ? 'Logging in...' : 'Login'}
             </button>
-            <div className='mt-4'>
-              <Link to='/signup'>
+            <div className='mt-4 text-center'>
+              <Link to='/signup' className='link'>
                 <p>No account?</p>
               </Link>
             </div>
@@ -86,9 +84,7 @@ const Login = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
               transition={{ duration: 0.5 }}
-              className={`mt-4 text-center p-4 ${
-                feedback.type === 'success' ? 'text-green-600' : 'text-red-600'
-              }`}
+              className={`mt-4 alert ${feedback.type === 'success' ? 'alert-success' : 'alert-error'}`}
             >
               <FontAwesomeIcon
                 icon={feedback.type === 'success' ? faCheckCircle : faTimesCircle}
