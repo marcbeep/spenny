@@ -21,7 +21,7 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" replace />} />
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
-          <Route path="/placeholder" element={user ? <Placeholder /> : <Navigate to="/login" replace />} />
+          <Route path="/placeholder" element={user ? <Placeholder /> : <Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </div>
