@@ -94,6 +94,7 @@ exports.signupUser = async (req, res) => {
   }.jpg`;
 
   try {
+    // Use the signup static method defined on the User model
     const user = await User.signup(email, password, profilePictureUrl);
     const token = createToken(user._id);
 

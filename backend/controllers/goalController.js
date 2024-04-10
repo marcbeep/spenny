@@ -45,11 +45,9 @@ exports.createGoal = async (req, res) => {
 
     // Check if the category already has a goal associated with it
     if (category.categoryGoal) {
-      return res
-        .status(400)
-        .json({
-          error: 'This category already has a goal. Only one goal per category is allowed.',
-        });
+      return res.status(400).json({
+        error: 'This category already has a goal. Only one goal per category is allowed.',
+      });
     }
 
     const newGoal = {
