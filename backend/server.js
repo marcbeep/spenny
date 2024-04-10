@@ -44,12 +44,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/account', accountRoutes);
+app.use('/accounts', accountRoutes);
 app.use('/budget', budgetRoutes);
-app.use('/category', categoryRoutes);
-app.use('/transaction', transactionRoutes);
-app.use('/user', userRoutes);
-app.use('/goal', goalRoutes);
+app.use('/categories', categoryRoutes);
+app.use('/transactions', transactionRoutes);
+app.use('/users', userRoutes);
+app.use('/goals', goalRoutes);
 app.use('/analytics', analyticsRoutes);
 
 async function startServer() {
