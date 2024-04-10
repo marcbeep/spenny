@@ -1,6 +1,7 @@
 //AuthContext.js: Stores user authentication state and provides functions for logging in, logging out, and checking authentication status.
 
 import { createContext, useReducer, useEffect } from 'react';
+import { setAuthToken } from '../utils/axiosConfig'; 
 
 export const AuthContext = createContext();
 
@@ -22,11 +23,11 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
+    const token = localStorage.getItem('token');
+    if (user && token) {
+      setAuthToken(token); // Set Axios Authorization header if token exists
       dispatch({ type: 'AUTH_READY', payload: user });
     } else {
-      // Explicitly mark auth as ready even if no user is found to handle cases where
-      // the app needs to know it can proceed without a logged-in user.
       dispatch({ type: 'AUTH_READY', payload: null });
     }
   }, []);

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthContext } from './hooks/useAuthContext';
 
-//pages
+// views
 import Account from './components/views/Account';
 import Signup from './components/views/Signup';
 import Login from './components/views/Login';
@@ -10,7 +10,7 @@ import Category from './components/views/Category';
 import Transaction from './components/views/Transaction';
 import Dash from './components/views/Dash';
 
-// components
+// layouts
 import Navbar from './components/layout/Navbar';
 
 function App() {
