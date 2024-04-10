@@ -9,10 +9,6 @@ const Navbar = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
-
   const closeDrawer = () => {
     setIsDrawerOpen(false);
   };
