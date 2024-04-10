@@ -4,7 +4,7 @@ import backendURL from '../config';
 const API_BASE_URL = backendURL;
 
 // Set up Axios for Authorization header globally or per request based on user's token.
-axios.defaults.headers.common['Authorization'] = '';
+// This setup is assumed and should be adapted to the authentication handling.
 
 export const getCategories = async () => {
   const response = await axios.get(`${API_BASE_URL}/categories`);
