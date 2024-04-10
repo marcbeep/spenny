@@ -7,21 +7,11 @@ export const AuthContext = createContext();
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN':
-      return {
-        ...state,
-        user: action.payload,
-      };
+      return { ...state, user: action.payload };
     case 'LOGOUT':
-      return {
-        ...state,
-        user: null,
-      };
+      return { ...state, user: null };
     case 'AUTH_READY':
-      return {
-        ...state,
-        user: action.payload,
-        authIsReady: true,
-      };
+      return { ...state, user: action.payload, authIsReady: true };
     default:
       return state;
   }
@@ -32,7 +22,13 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
-    dispatch({ type: 'AUTH_READY', payload: user });
+    if (user) {
+      dispatch({ type: 'AUTH_READY', payload: user });
+    } else {
+      // Explicitly mark auth as ready even if no user is found to handle cases where
+      // the app needs to know it can proceed without a logged-in user.
+      dispatch({ type: 'AUTH_READY', payload: null });
+    }
   }, []);
 
   return <AuthContext.Provider value={{ ...state, dispatch }}>{children}</AuthContext.Provider>;

@@ -335,8 +335,8 @@ This controller file interacts with the `User`, `Account`, `Category`, `Budget`,
 
 ### User
 
-- POST /user/login
-- POST /user/signup
+- POST /users/login
+- POST /users/signup
 
 ---
 
