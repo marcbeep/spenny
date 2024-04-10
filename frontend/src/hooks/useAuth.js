@@ -15,6 +15,7 @@ export const useAuth = () => {
       localStorage.setItem('user', JSON.stringify(userPayload));
       localStorage.setItem('token', token);
       setAuthToken(token);
+      console.log('Login successful:', userPayload);
       return true; // Indicate success
     } catch (error) {
       console.error('Login failed:', error);
@@ -30,6 +31,7 @@ export const useAuth = () => {
       localStorage.setItem('user', JSON.stringify(userPayload));
       localStorage.setItem('token', token);
       setAuthToken(token);
+      console.log('Signup successful:', userPayload);
       return true; 
     } catch (error) {
       console.error('Signup failed:', error.message);
