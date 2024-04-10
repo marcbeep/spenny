@@ -2,8 +2,8 @@
 
 
 import { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
-import { useAuthContext } from '../hooks/useAuthContext';
-import backendURL from '../config';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import backendURL from '../../config';
 
 export const AccountContext = createContext();
 

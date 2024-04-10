@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import backendURL from '../config';
+import backendURL from '../../../config';
 
 const Login = () => {
   const [email, setEmail] = useState('');

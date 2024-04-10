@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
-import backendURL from '../config';
-import { useAuthContext } from '../hooks/useAuthContext';
+import backendURL from '../../config';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 export const CategoryContext = createContext();
 
