@@ -36,12 +36,12 @@ const Signup = () => {
         dispatch({ type: 'LOGIN', payload: data });
         navigate('/transaction');
       } else {
-        // Custom user-friendly error message
-        setFeedback({ message: 'Something went wrong. Please try again later.', type: 'error' });
+        // Display backend-specific error message
+        setFeedback({ message: data.error, type: 'error' });
       }
     } catch (err) {
-      // Custom user-friendly error message
-      setFeedback({ message: 'Something went wrong. Please try again later.', type: 'error' });
+      // Handle unexpected errors gracefully
+      setFeedback({ message: 'Network error. Please try again later.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
