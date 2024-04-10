@@ -1,5 +1,49 @@
 # Frontend Files
 
+```bash
+/src
+    /api
+        /accountService.js
+        /analyticsService.js
+        /authService.js
+        /budgetService.js
+        /categoryService.js
+        /goalsService.js
+        /transactionService.js
+    /components
+        /common
+        /layout
+            Navbar.js
+        /views
+            Account.js
+            Category.js
+            Landing.js
+            Login.js
+            Signup.js
+            Transaction.js
+    /context
+        AccountsContext.js
+        AnalyticsContext.js
+        AuthContext.js
+        BudgetContext.js
+        CategoriesContext.js
+        GoalsContext.js
+        TransactionsContext.js
+    /hooks
+        useAccounts.js
+        useAnalytics.js
+        useAuth.js
+        useBudget.js
+        useCategories.js
+        useGoals.js
+        useTransactions.js
+    /mocks
+    /utils
+        axiosConfig.js
+    App.js
+    index.js
+```
+
 ### Custom Hooks in the `hooks/` folder:
 
 These hooks abstract the logic for interacting with context providers and can also handle side effects, API calls, and state updates.

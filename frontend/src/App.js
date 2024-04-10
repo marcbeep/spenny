@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuthContext } from './hooks/useAuthContext';
+import { useAuth } from './hooks/useAuth'; 
 
 // views
 import Account from './components/views/Account';
@@ -8,31 +8,24 @@ import Login from './components/views/Login';
 import Landing from './components/views/Landing';
 import Category from './components/views/Category';
 import Transaction from './components/views/Transaction';
-import Dash from './components/views/Dash';
 
 // layouts
 import Navbar from './components/layout/Navbar';
 
 function App() {
-  const { user } = useAuthContext();
-
-  // const { user, authIsReady } = useAuthContext();
-  // if (!authIsReady) {
-  //   return <div>Loading...</div>;
-  // };
+  const { user } = useAuth(); 
 
   return (
-    <div className='App'>
+    <div className="App">
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path='/' element={!user ? <Landing /> : <Navigate to='/' />} />
-          <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/' />} />
-          <Route path='/login' element={!user ? <Login /> : <Navigate to='/' />} />
-          <Route path='/transaction' element={user ? <Transaction /> : <Navigate to='/' />} />
-          <Route path='/account' element={user ? <Account /> : <Navigate to='/' />} />
-          <Route path='/category' element={user ? <Category /> : <Navigate to='/' />} />
-          <Route path='/dash' element={user ? <Dash /> : <Navigate to='/' />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" replace />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
+          <Route path="/transaction" element={user ? <Transaction /> : <Navigate to="/login" replace />} />
+          <Route path="/account" element={user ? <Account /> : <Navigate to="/login" replace />} />
+          <Route path="/category" element={user ? <Category /> : <Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
     </div>
@@ -40,3 +33,4 @@ function App() {
 }
 
 export default App;
+
