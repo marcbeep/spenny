@@ -1,3 +1,5 @@
+//BudgetContext.js: Manages the overall budget state, including the allocation of funds to categories and tracking of "Ready to Assign" funds.
+
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import backendURL from '../config';
 import { useAuthContext } from '../hooks/useAuthContext';

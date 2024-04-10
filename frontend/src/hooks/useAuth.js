@@ -1,0 +1,1 @@
+//useAuth.js: Manage authentication states, including login, logout, and user session management.

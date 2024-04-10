@@ -1,0 +1,1 @@
+//useAccounts.js: Handle fetching, updating, and archiving accounts. It could also include moving money between accounts.

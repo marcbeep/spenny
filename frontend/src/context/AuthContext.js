@@ -1,3 +1,5 @@
+//AuthContext.js: Stores user authentication state and provides functions for logging in, logging out, and checking authentication status.
+
 import { createContext, useReducer, useEffect } from 'react';
 
 export const AuthContext = createContext();
