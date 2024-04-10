@@ -78,6 +78,11 @@ const Navbar = () => {
               Categories
             </Link>
           </li>
+          {/* <li>
+            <Link to='/dash' className={`p-2 ${isActive('/dash')}`} onClick={closeDrawer}>
+              Dash
+            </Link>
+          </li> */}
         </ul>
       </div>
     </div>

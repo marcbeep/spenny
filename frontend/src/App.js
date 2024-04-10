@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
 import Category from './pages/Category';
 import TransactionPage from './pages/TransactionPage';
+import Dash from './pages/Dash';
 
 // components
 import Navbar from './components/Layouts/Navbar';
@@ -25,12 +26,13 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path='/' element={!user ? <LandingPage /> : <Navigate to='/transaction' />} />
+          <Route path='/' element={!user ? <LandingPage /> : <Navigate to='/' />} />
+          <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/' />} />
+          <Route path='/login' element={!user ? <Login /> : <Navigate to='/' />} />
           <Route path='/transaction' element={user ? <TransactionPage /> : <Navigate to='/' />} />
           <Route path='/account' element={user ? <Account /> : <Navigate to='/' />} />
           <Route path='/category' element={user ? <Category /> : <Navigate to='/' />} />
-          <Route path='/signup' element={!user ? <Signup /> : <Navigate to='/transaction' />} />
-          <Route path='/login' element={!user ? <Login /> : <Navigate to='/transaction' />} />
+          <Route path='/dash' element={user ? <Dash /> : <Navigate to='/' />} />
         </Routes>
       </BrowserRouter>
     </div>
