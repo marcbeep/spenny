@@ -40,7 +40,40 @@ const Login = () => {
         <div className='card-body'>
           <h2 className='card-title justify-center'>Login</h2>
           <form onSubmit={handleSubmit}>
-            {/* Form inputs remain unchanged */}
+          <div className='form-control'>
+              <label className='label'>
+                <span className='label-text'>Email</span>
+              </label>
+              <input
+                type='email'
+                placeholder='m@example.com'
+                className='input input-bordered'
+                value={email}
+                onChange={handleInputChange(setEmail)}
+              />
+            </div>
+            <div className='form-control mt-4'>
+              <label className='label'>
+                <span className='label-text'>Password</span>
+              </label>
+              <input
+                type='password'
+                placeholder=''
+                className='input input-bordered'
+                value={password}
+                onChange={handleInputChange(setPassword)}
+              />
+            </div>
+            <div className='form-control mt-6'>
+              <button type='submit' disabled={isSubmitting} className='btn btn-primary'>
+                {isSubmitting ? 'Logging in...' : 'Login'}
+              </button>
+            </div>
+            <div className='form-control mt-4 text-center'>
+              <Link to='/signup' className='link link-secondary'>
+                Need an account? Sign up
+              </Link>
+            </div>
           </form>
           <AnimatePresence>
             {feedback.message && (

@@ -9,7 +9,8 @@ export const useAuth = () => {
 
   const login = useCallback(async (email, password) => {
     try {
-      const { user, token } = await loginUserAPI(email, password); // Assumes loginUserAPI returns { user, token } - Also profilePictureUrl
+      const { email: userEmail, token } = await loginUserAPI(email, password); // Assumes loginUserAPI returns { email, token }
+      const user = { email: userEmail }; // Construct the user object if needed
       dispatch({ type: 'LOGIN', payload: user });
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('token', token); // Store token separately
@@ -19,6 +20,7 @@ export const useAuth = () => {
       throw error;
     }
   }, [dispatch]);
+  
 
   const signup = useCallback(async (email, password) => {
     try {
