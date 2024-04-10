@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useAuthContext } from '../hooks/useAuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import backendURL from '../config';
 
 const Signup = () => {
@@ -23,71 +23,89 @@ const Signup = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${backendURL}/user/signup`, {
+      const response = await fetch(`${backendURL}/user/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await response.json();
+
+      if (response.ok) {
         setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
         localStorage.setItem('user', JSON.stringify(data));
         dispatch({ type: 'LOGIN', payload: data });
         navigate('/transaction');
       } else {
-        throw new Error(data.error || 'Failed to signup. Please try again.');
+        // Custom user-friendly error message
+        setFeedback({ message: 'Something went wrong. Please try again later.', type: 'error' });
       }
     } catch (err) {
-      setFeedback({ message: err.message, type: 'error' });
+      // Custom user-friendly error message
+      setFeedback({ message: 'Something went wrong. Please try again later.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className='flex items-center justify-center'>
-      <div className='px-8 py-6 mt-4 text-left'>
-        <h3 className='text-2xl font-semibold text-center'>Create an account</h3>
-        <form onSubmit={handleSubmit}>
-          <div className='mt-4'>
-            <input
-              type='email'
-              placeholder='Email'
-              className='w-full px-4 py-2 mt-4 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'
-              value={email}
-              onChange={handleInputChange(setEmail)}
-            />
-            <input
-              type='password'
-              placeholder='Password'
-              className='w-full px-4 py-2 mt-4 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600'
-              value={password}
-              onChange={handleInputChange(setPassword)}
-            />
-            <button type='submit' disabled={isSubmitting} className='btn btn-primary w-full mt-4'>
-              {isSubmitting ? 'Signing up...' : 'Signup'}
-            </button>
-          </div>
-        </form>
-        <AnimatePresence>
-          {feedback.message && (
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              transition={{ duration: 0.5 }}
-              className={`mt-4 text-center p-4 ${
-                feedback.type === 'success' ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              <FontAwesomeIcon
-                icon={feedback.type === 'success' ? faCheckCircle : faTimesCircle}
-                className='mr-2'
+    <div className='flex items-center justify-center min-h-screen bg-gray-100'>
+      <div className='card w-96 bg-base-100 shadow-xl'>
+        <div className='card-body'>
+          <h2 className='card-title justify-center'>Create an account</h2>
+          <form onSubmit={handleSubmit}>
+            <div className='form-control'>
+              <label className='label'>
+                <span className='label-text'>Email</span>
+              </label>
+              <input
+                type='email'
+                placeholder='m@example.com'
+                className='input input-bordered'
+                value={email}
+                onChange={handleInputChange(setEmail)}
               />
-              {feedback.message}
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+            <div className='form-control mt-4'>
+              <label className='label'>
+                <span className='label-text'>Password</span>
+              </label>
+              <input
+                type='password'
+                placeholder=''
+                className='input input-bordered'
+                value={password}
+                onChange={handleInputChange(setPassword)}
+              />
+            </div>
+            <div className='form-control mt-6'>
+              <button type='submit' disabled={isSubmitting} className='btn btn-primary'>
+                {isSubmitting ? 'Signing up...' : 'Signup'}
+              </button>
+            </div>
+            <div className='form-control mt-4 text-center'>
+              <Link to='/login' className='link link-secondary'>
+                Already have an account? Login
+              </Link>
+            </div>
+          </form>
+          <AnimatePresence>
+            {feedback.message && (
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 50 }}
+                transition={{ duration: 0.5 }}
+                className={`alert ${feedback.type === 'success' ? 'alert-success' : 'alert-error'} mt-4`}
+              >
+                <FontAwesomeIcon
+                  icon={feedback.type === 'success' ? faCheckCircle : faTimesCircle}
+                  className='mr-2'
+                />
+                {feedback.message}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
