@@ -14,13 +14,11 @@ export const fetchGoalById = async (goalId) => {
 };
 
 export const createGoal = async (goalData) => {
-  // goalData should include details like goalCategory, goalType, goalTarget, goalCurrent, goalDeadline
   const response = await axios.post(`${API_BASE_URL}/goals`, goalData);
   return response.data;
 };
 
 export const updateGoal = async (goalId, updateData) => {
-  // updateData can include changes to goalType, goalTarget, goalDeadline, etc.
   const response = await axios.patch(`${API_BASE_URL}/goals/${goalId}`, updateData);
   return response.data;
 };

@@ -3,17 +3,6 @@ import backendURL from '../config';
 
 const API_BASE_URL = backendURL;
 
-// Set the Authorization header for all requests
-axios.defaults.headers.common['Authorization'] = '';
-
-export const setAuthToken = (token) => {
-  if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  } else {
-    delete axios.defaults.headers.common['Authorization'];
-  }
-};
-
 export const fetchAccounts = async () => {
   const response = await axios.get(`${API_BASE_URL}/accounts`);
   return response.data;
@@ -48,7 +37,8 @@ export const archiveAccount = async (accountId) => {
   return response.data;
 };
 
-export const fetchTotalBalanceAPI = async () => {
-  const response = await axios.get(`${API_BASE_URL}/account/totalBalance`);
+export const fetchTotalBalance = async () => {
+  // This endpoint is not yet implemented in the backend
+  const response = await axios.get(`${API_BASE_URL}/accounts/totalBalance`);
   return response.data;
 };
