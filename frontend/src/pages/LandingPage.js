@@ -30,9 +30,9 @@ const LandingPage = () => {
             The ultra-simple money management tool to get your financial act together.
           </motion.h1>
           <motion.p variants={itemVariants}>
-            Spenny is a zero-based budgeting tool designed to help you keep track of every dollar you
-            earn and spend. Plan for essentials, cut out unnecessary expenses, and start saving more
-            every month.
+            Spenny is a zero-based budgeting tool designed to help you keep track of every dollar
+            you earn and spend. Plan for essentials, cut out unnecessary expenses, and start saving
+            more every month.
           </motion.p>
           <div className='flex flex-wrap gap-6'>
             <Link to='/login' className='btn btn-outline' variants={itemVariants}>

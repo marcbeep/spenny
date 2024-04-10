@@ -95,7 +95,9 @@ const Signup = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 50 }}
                 transition={{ duration: 0.5 }}
-                className={`alert ${feedback.type === 'success' ? 'alert-success' : 'alert-error'} mt-4`}
+                className={`alert ${
+                  feedback.type === 'success' ? 'alert-success' : 'alert-error'
+                } mt-4`}
               >
                 <FontAwesomeIcon
                   icon={feedback.type === 'success' ? faCheckCircle : faTimesCircle}

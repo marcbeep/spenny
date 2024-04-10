@@ -38,7 +38,10 @@ const Login = () => {
         navigate('/transaction');
         setFeedback({ message: 'Login successful. Welcome back!', type: 'success' });
       } else {
-        setFeedback({ message: 'Failed to log in. Please check your email and password.', type: 'error' });
+        setFeedback({
+          message: 'Failed to log in. Please check your email and password.',
+          type: 'error',
+        });
       }
     } catch (err) {
       setFeedback({ message: 'Something went wrong. Please try again later.', type: 'error' });
@@ -95,7 +98,9 @@ const Login = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 50 }}
                 transition={{ duration: 0.5 }}
-                className={`alert ${feedback.type === 'success' ? 'alert-success' : 'alert-error'} mt-4`}
+                className={`alert ${
+                  feedback.type === 'success' ? 'alert-success' : 'alert-error'
+                } mt-4`}
               >
                 <FontAwesomeIcon
                   icon={feedback.type === 'success' ? faCheckCircle : faTimesCircle}

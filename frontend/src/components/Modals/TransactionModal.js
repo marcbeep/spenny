@@ -122,10 +122,18 @@ const TransactionModal = ({ isOpen, closeModal, editingTransaction }) => {
           {editingTransaction ? 'Edit Transaction' : 'Add Transaction'}
         </h3>
         <form onSubmit={handleSubmit}>
-        <div className='form-control'>
+          <div className='form-control'>
             <label className='label cursor-pointer'>
-              <span className='label-text mr-2'>{formData.type === 'debit' ? 'Debit' : 'Credit'}</span>
-              <input type='checkbox' checked={formData.type === 'credit'} onChange={handleInputChange} name='type' className='toggle toggle-primary' />
+              <span className='label-text mr-2'>
+                {formData.type === 'debit' ? 'Debit' : 'Credit'}
+              </span>
+              <input
+                type='checkbox'
+                checked={formData.type === 'credit'}
+                onChange={handleInputChange}
+                name='type'
+                className='toggle toggle-primary'
+              />
             </label>
           </div>
           <div className='form-control my-4'>

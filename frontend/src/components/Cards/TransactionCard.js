@@ -15,14 +15,12 @@ const TransactionCard = ({ transactions, categories, onRowClick }) => {
         return null;
     }
   };
-  
+
   return (
     <section className='card col-span-12 overflow-hidden bg-base-100 shadow-sm xl:col-span-7 border-2 border-black rounded-xl'>
       <div className='card-body grow-0'>
         <div className='flex justify-between gap-2'>
-          <h2 className='card-title grow'>
-              Recent Transactions
-          </h2>
+          <h2 className='card-title grow'>Recent Transactions</h2>
           <div className='dropdown dropdown-end'>
             <div tabIndex={0} role='button' className='btn btn-sm'>
               Filter

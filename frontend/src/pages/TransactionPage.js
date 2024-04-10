@@ -41,7 +41,7 @@ const TransactionPage = () => {
         transactionDispatch({ type: 'SET_TRANSACTIONS', payload: transactionsData });
         // Assuming similar dispatch functions for categories and accounts in their respective contexts
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
 
