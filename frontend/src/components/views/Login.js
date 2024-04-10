@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../hooks/useAuth'; 
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +11,7 @@ const Login = () => {
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth(); 
+  const navigate = useNavigate();
 
   const handleInputChange = (setter) => (e) => {
     setter(e.target.value);
@@ -22,7 +23,10 @@ const Login = () => {
     setIsSubmitting(true);
 
     try {
-      await login(email, password); // Using login from useAuth
+      const success = await login(email, password);
+      if (success) {
+        navigate('/placeholder'); // Redirect on success
+      }
     } catch (err) {
       setFeedback({ message: err.message || 'Failed to log in. Please try again.', type: 'error' });
     } finally {

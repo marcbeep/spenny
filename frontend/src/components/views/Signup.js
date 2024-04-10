@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../hooks/useAuth';
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +11,7 @@ const Signup = () => {
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { signup } = useAuth(); // Using the signup function from useAuth hook
+  const navigate = useNavigate();
 
   const handleInputChange = (setter) => (e) => {
     setter(e.target.value);
@@ -21,8 +22,10 @@ const Signup = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await signup(email, password);
-      // Navigation after signup is handled within the useAuth hook, so no need to navigate here
+      const success = await signup(email, password);
+      if (success) {
+        navigate('/placeholder'); // Redirect on success
+      }
       setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
     } catch (error) {
       console.error('Signup Error:', error.message);
