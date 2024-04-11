@@ -109,7 +109,7 @@ async function fetchAllAccounts() {
         console.log('All Accounts:', accounts);
         // Update UI with these accounts
         displayList('accountsList', accounts, account => 
-            `${account._id} / ${account.accountTitle} / ${account.accountType} / ${account.accountStatus}/£${account.accountBalance}`);
+            `${account._id} / ${account.accountTitle} / ${account.accountType} / ${account.accountStatus} / £${account.accountBalance}`);
     } catch (error) {
         console.error('Error fetching all accounts:', error);
     }
@@ -308,7 +308,7 @@ async function fetchUserCategories() {
     try {
         const categories = await makeFetchRequest('/categories');
         displayList('categoriesList', categories, category => 
-            `${category._id} / ${category.categoryTitle} / £${category.categoryAvailable}`);
+            `${category._id} / ${category.categoryTitle} / activity: £${category.categoryActivity} / assigned: £${category.categoryAssigned} / available: £${category.categoryAvailable}`);
     } catch (error) {
         console.error('Error fetching categories:', error);
     }

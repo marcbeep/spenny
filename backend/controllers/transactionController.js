@@ -10,9 +10,8 @@ const { checkOwnership } = require('../utils/utils');
 
 const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
 
-const formatAmount = (amount) => {
-  return Number(parseFloat(amount).toFixed(2));
-};
+const formatAmount = (amount) => parseFloat(parseFloat(amount).toFixed(2));
+
 
 const updateUserBudgetForTransaction = async (userId, amount, addToReadyToAssign) => {
   const budget = await Budget.findOne({ user: userId });
@@ -40,7 +39,7 @@ const updateBalances = async ({
     await Category.findByIdAndUpdate(categoryId, {
       $inc: {
         categoryActivity: formattedAmount, // Always increment activity by positive amount
-        categoryAvailable: amountChange   // Increase or decrease available funds based on transaction type
+        categoryAvailable: amountChange   // Adjust available funds correctly
       },
     });
   }
@@ -48,7 +47,10 @@ const updateBalances = async ({
   // Update Account
   const account = await Account.findById(accountId);
   if (account) {
-    account.accountBalance += amountChange; // Directly adjust the balance
+    // Ensure all numeric operations are clearly defined
+    let currentBalance = parseFloat(account.accountBalance); // Make sure it's a number
+    let newBalance = currentBalance + amountChange;
+    account.accountBalance = formatAmount(newBalance); // Reformat to maintain consistency
     await account.save();
   }
 };
