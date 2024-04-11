@@ -102,7 +102,7 @@ async function fetchAllAccounts() {
         console.log('All Accounts:', accounts);
         // Update UI with these accounts
         displayList('accountsList', accounts, account => 
-            `${account.accountId} - ${account.accountTitle} - £${account.accountBalance}`);
+            `${account._id} - ${account.accountTitle} - £${account.accountBalance}`);
     } catch (error) {
         console.error('Error fetching all accounts:', error);
     }
@@ -301,7 +301,7 @@ async function fetchUserCategories() {
     try {
         const categories = await makeFetchRequest('/categories');
         displayList('categoriesList', categories, category => 
-            `${category.categoryId} - ${category.categoryTitle} - £${category.categoryAvailable}`);
+            `${category._id} - ${category.categoryTitle} - £${category.categoryAvailable}`);
     } catch (error) {
         console.error('Error fetching categories:', error);
     }
@@ -427,7 +427,7 @@ async function fetchAllTransactions() {
         console.log('All Transactions:', transactions);
         // Update UI with these transactions
         displayList('transactionsList', transactions, transaction => 
-            `${transaction.transactionId} - ${transaction.transactionTitle} - £${transaction.transactionAmount}`);
+            `${transaction._id} - ${transaction.transactionTitle} - £${transaction.transactionAmount}`);
     } catch (error) {
         console.error('Error fetching all transactions:', error);
     }
