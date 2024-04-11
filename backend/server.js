@@ -22,23 +22,24 @@ const allowedOrigins = [
   'http://localhost:4000',
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
+app.use(cors({
+  origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-
       if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+          return callback(null, true);
       } else {
-        const message =
-          'The CORS policy for this site does not allow access from the specified Origin.';
-        return callback(new Error(message), false);
+          const message = 'The CORS policy for this site does not allow access from the specified Origin.';
+          return callback(new Error(message), false);
       }
-    },
-  }),
-);
+  },
+  credentials: true,
+  allowedHeaders: 'Content-Type,Authorization',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
+}));
 
+// Ensure CORS is the first middleware defined
 app.use(express.json());
+
 
 app.use((req, res, next) => {
   next();
