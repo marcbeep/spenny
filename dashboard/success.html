@@ -26,7 +26,7 @@
             const categoriesList = document.getElementById('categoriesList');
             categories.forEach(category => {
                 const item = document.createElement('li');
-                item.textContent = category.categoryTitle; 
+                item.textContent = `${category.categoryTitle} - Available: £${category.categoryAvailable}`; 
                 categoriesList.appendChild(item);
             });
         }
