@@ -9,6 +9,7 @@
     <p id="userEmail"></p>
     <img id="userProfilePicture" src="" alt="Profile Picture" style="width:100px;height:100px;">
     <button onclick="logoutUser()">Logout</button>
+    <ul id="categoriesList"></ul>
     <script src="auth.js"></script> 
     <script>
         const userEmail = sessionStorage.getItem('userEmail');
@@ -20,6 +21,18 @@
             document.getElementById('userEmail').textContent = `Email: ${userEmail}`;
             document.getElementById('userProfilePicture').src = userProfilePicture;
         }
-    </script>
+    
+        function displayCategories(categories) {
+            const categoriesList = document.getElementById('categoriesList');
+            categories.forEach(category => {
+                const item = document.createElement('li');
+                item.textContent = category.categoryTitle; 
+                categoriesList.appendChild(item);
+            });
+        }
+    
+        // Call fetchUserCategories to load categories after the page is fully loaded
+        document.addEventListener('DOMContentLoaded', fetchUserCategories);
+    </script>    
 </body>
 </html>
