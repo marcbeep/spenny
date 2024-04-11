@@ -53,3 +53,13 @@ async function signupUser(event) {
         alert(error.message);
     }
 }
+
+// Function to logout user
+function logoutUser() {
+    // Clear all stored data from sessionStorage
+    sessionStorage.clear();
+
+    // Redirect to the index.html page
+    window.location.href = 'index.html';
+}
+
