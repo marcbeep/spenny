@@ -2,12 +2,11 @@ const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:300
 
 // Function to login user
 async function loginUser(event) {
-    event.preventDefault(); // Prevent form from submitting normally
+    event.preventDefault();
     
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     
-    // Example API call for login
     try {
         const response = await fetch(`${API_URL}/users/login`, {
             method: 'POST',
@@ -18,11 +17,12 @@ async function loginUser(event) {
         if (!response.ok) throw new Error('Login failed');
         
         const data = await response.json();
-        // Store user data in sessionStorage
         sessionStorage.setItem('userEmail', data.email);
         sessionStorage.setItem('userProfilePicture', data.profilePicture);
+        sessionStorage.setItem('token', data.token);
+        sessionStorage.setItem('userId', data.userId);
         
-        window.location.href = 'success.html'; // Redirect to success page
+        window.location.href = 'success.html';
     } catch (error) {
         alert(error.message);
     }
@@ -30,12 +30,12 @@ async function loginUser(event) {
 
 // Function to sign up user
 async function signupUser(event) {
-    event.preventDefault(); // Prevent form from submitting normally
+    event.preventDefault(); 
     
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     
-    // Example API call for signup
+    // API call for signup
     try {
         const response = await fetch(`${API_URL}/users/signup`, {
             method: 'POST',
@@ -46,11 +46,12 @@ async function signupUser(event) {
         if (!response.ok) throw new Error('Signup failed');
         
         const data = await response.json();
-        // Store user data in sessionStorage
         sessionStorage.setItem('userEmail', data.email);
         sessionStorage.setItem('userProfilePicture', data.profilePicture);
+        sessionStorage.setItem('token', data.token); 
+        sessionStorage.setItem('userId', data.userId); 
         
-        window.location.href = 'success.html'; // Redirect to success page
+        window.location.href = 'success.html';
     } catch (error) {
         alert(error.message);
     }
