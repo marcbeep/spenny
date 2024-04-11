@@ -30,15 +30,19 @@ const updateBalances = async ({
   amount,
   transactionType
 }) => {
-  const formattedAmount = formatAmount(amount);
-  const amountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
+  // Directly determine the change amount, ensuring it reflects the transaction type accurately
+  const amountChange = transactionType === 'debit' ? -amount : amount;
+
+  console.log('amount:', amount);
+  console.log('transactionType:', transactionType);
+  console.log('amountChange:', amountChange);
 
   // Update Category if applicable
   if (categoryId) {
     await Category.findByIdAndUpdate(categoryId, {
       $inc: {
-        categoryActivity: formattedAmount, // Always increment activity by positive amount
-        categoryAvailable: amountChange   // Adjust available funds correctly
+        categoryActivity: Math.abs(amountChange), // Always increment activity by the absolute amount
+        categoryAvailable: amountChange          // Correctly update available funds based on transaction type
       },
     });
   }
@@ -46,10 +50,8 @@ const updateBalances = async ({
   // Update Account
   const account = await Account.findById(accountId);
   if (account) {
-    // Ensure all numeric operations are clearly defined
-    let currentBalance = parseFloat(account.accountBalance); // Make sure it's a number
-    let newBalance = currentBalance + amountChange;
-    account.accountBalance = formatAmount(newBalance); // Reformat to maintain consistency
+    let newBalance = account.accountBalance + amountChange;
+    account.accountBalance = formatAmount(newBalance); // Apply formatting at the very end
     await account.save();
   }
 };
@@ -136,15 +138,14 @@ exports.createTransaction = async (req, res) => {
   }
 
   const effectiveTransactionCategory = transactionCategory === '' ? null : transactionCategory;
-  const formattedAmount = formatAmount(transactionAmount);
-  const amountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
+  const amountChange = transactionType === 'debit' ? -transactionAmount : transactionAmount;  // Directly use raw amount for changes
 
   try {
     const newTransaction = await Transaction.create({
       user: req.user._id,
       transactionTitle,
       transactionType,
-      transactionAmount: formattedAmount,
+      transactionAmount: formatAmount(transactionAmount), // Only format for saving
       transactionCategory: effectiveTransactionCategory,
       transactionAccount,
     });
