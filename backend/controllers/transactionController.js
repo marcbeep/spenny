@@ -30,25 +30,25 @@ const updateBalances = async ({
   categoryId,
   accountId,
   amount,
-  transactionType,
-  revert = false,
+  transactionType
 }) => {
-  const multiplier = revert ? -1 : 1;
   const formattedAmount = formatAmount(amount);
   const amountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
 
-  // Update Category
-  await Category.findByIdAndUpdate(categoryId, {
-    $inc: {
-      categoryActivity: formattedAmount * multiplier,
-      categoryAvailable: amountChange * multiplier,
-    },
-  });
+  // Update Category if applicable
+  if (categoryId) {
+    await Category.findByIdAndUpdate(categoryId, {
+      $inc: {
+        categoryActivity: formattedAmount, // Always increment activity by positive amount
+        categoryAvailable: amountChange   // Increase or decrease available funds based on transaction type
+      },
+    });
+  }
 
   // Update Account
   const account = await Account.findById(accountId);
   if (account) {
-    account.accountBalance = formatAmount(account.accountBalance + amountChange * multiplier);
+    account.accountBalance += amountChange; // Directly adjust the balance
     await account.save();
   }
 };
@@ -130,7 +130,7 @@ exports.createTransaction = async (req, res) => {
   } = req.body;
 
   const account = await Account.findById(transactionAccount);
-  if (account.accountStatus === 'archived') {
+  if (!account || account.accountStatus === 'archived') {
     return res.status(403).json({ error: 'Transactions cannot be added to an archived account.' });
   }
 
@@ -148,16 +148,20 @@ exports.createTransaction = async (req, res) => {
       transactionAccount,
     });
 
+    // Update account and category balances
+    await updateBalances({
+      categoryId: effectiveTransactionCategory,
+      accountId: transactionAccount,
+      amount: amountChange,
+      transactionType: transactionType,
+    });
+
+    // Optionally update goal status if linked to a category
     if (effectiveTransactionCategory) {
-      await updateBalances({
-        categoryId: effectiveTransactionCategory,
-        accountId: transactionAccount,
-        amount: amountChange,
-        transactionType: transactionType,
-      });
       await checkAndUpdateGoalStatus(null, effectiveTransactionCategory);
     } else {
-      await updateUserBudgetForTransaction(req.user._id, amountChange, true);
+      // Update user's budget if no category is linked
+      await updateUserBudgetForTransaction(req.user._id, amountChange, transactionType !== 'debit');
     }
 
     res.status(201).json(newTransaction);
