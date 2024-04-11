@@ -16,6 +16,13 @@ function displayList(elementId, items, formatter) {
     });
 }
 
+function updateUI() {
+    fetchAllAccounts();
+    fetchUserCategories();
+    fetchAllTransactions();
+    fetchAllGoals();
+}
+
 async function makeFetchRequest(path, options = {}) {
     const token = sessionStorage.getItem('token');
     const headers = {
@@ -125,7 +132,7 @@ async function addAccount(accountData) {
             body: JSON.stringify(accountData)
         });
         console.log('Account Created:', newAccount);
-        fetchAllAccounts(); // Refresh the account list
+        updateUI();
     } catch (error) {
         alert('Error creating account:', error.message);
     }
@@ -316,7 +323,7 @@ async function addCategory(categoryTitle) {
 
         console.log('New Category Added:', newCategory);
 
-        fetchUserCategories(); // Refresh categories list
+        updateUI();
     } catch (error) {
         alert(error.message);
     }
@@ -389,7 +396,7 @@ async function createGoal(categoryId, goalType, goalTarget, goalResetDay) {
             body: JSON.stringify(body)
         });
         console.log('Goal created:', goal);
-        // Optionally: Update UI to show the new goal
+        updateUI();
     } catch (error) {
         console.error('Error creating goal:', error);
     }
@@ -450,7 +457,7 @@ async function createTransaction(transactionData) {
             body: JSON.stringify(transactionData)
         });
         console.log('Transaction Created:', newTransaction);
-        fetchAllTransactions(); // Refresh the transaction list
+        updateUI();
     } catch (error) {
         alert('Error creating transaction:', error.message);
     }
