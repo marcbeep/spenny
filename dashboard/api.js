@@ -49,6 +49,12 @@ function createListItem(title, value) {
     return listItem;
 }
 
+function createListItem(title, value) {
+    const listItem = document.createElement('li');
+    listItem.textContent = `${title}: ${value}`;
+    return listItem;
+}
+
 function updateUI() {
     fetchAllAccounts();
     fetchUserCategories();
@@ -264,11 +270,12 @@ async function calculateSavingsRate() {
 
 async function calculateAllTimeAnalytics() {
     try {
-        const result = await makeFetchRequest('/analytics/alltime', { method: 'GET' });
-        console.log('All-Time Analytics:', result);
-        // Optionally: Display all-time analytics data in the UI
+        const response = await makeFetchRequest('/analytics/alltime', { method: 'GET' });
+        console.log('All-Time Analytics:', response);
+        return response; 
     } catch (error) {
         console.error('Error calculating all-time analytics:', error);
+        return null; 
     }
 }
 
