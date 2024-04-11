@@ -69,6 +69,16 @@ function logoutUser() {
     window.location.href = 'index.html';
 }
 
+function displayCategories(categories) {
+    const categoriesList = document.getElementById('categoriesList');
+    categoriesList.innerHTML = ''; 
+    categories.forEach(category => {
+        const item = document.createElement('li');
+        item.textContent = `${category.categoryTitle} - Available: £${category.categoryAvailable}`; 
+        categoriesList.appendChild(item);
+    });
+}
+
 async function fetchUserCategories() {
     try {
         const categories = await makeFetchRequest('/categories');
