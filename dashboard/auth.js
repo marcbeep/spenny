@@ -96,12 +96,15 @@ async function fetchUserCategories() {
 
 function displayCategories(categories) {
     const categoriesList = document.getElementById('categoriesList');
+    // Clear the existing categories list before adding new ones
+    categoriesList.innerHTML = ''; 
     categories.forEach(category => {
         const item = document.createElement('li');
-        item.textContent = category.categoryTitle;
+        item.textContent = `${category.categoryTitle} - Available: £${category.categoryAvailable}`; 
         categoriesList.appendChild(item);
     });
 }
+
 
 async function addCategory(categoryTitle) {
     const token = sessionStorage.getItem('token');
