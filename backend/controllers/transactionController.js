@@ -181,7 +181,6 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
-
 exports.deleteSingleTransaction = async (req, res) => {
   const { id } = req.params;
 

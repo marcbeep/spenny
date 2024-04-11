@@ -48,30 +48,51 @@
         <button type="submit">Add Transaction</button>
     </form>
 
+    <h2>Delete a Transaction</h2>
+    <form id="deleteTransactionForm">
+        <input type="text" id="deleteTransactionId" placeholder="Transaction ID" required>
+        <button type="submit">Delete Transaction</button>
+    </form>
+
+    <h2>Update a Transaction</h2>
+    <form id="updateTransactionForm">
+        <input type="text" id="updateTransactionId" placeholder="Transaction ID" required>
+        <input type="text" id="updateTransactionTitle" placeholder="New Title">
+        <select id="updateTransactionType">
+            <option value="debit">Debit</option>
+            <option value="credit">Credit</option>
+        </select>
+        <input type="number" id="updateTransactionAmount" placeholder="New Amount">
+        <input type="text" id="updateTransactionCategory" placeholder="New Category ID">
+        <button type="submit">Update Transaction</button>
+    </form>
+
     <h2>Your Transactions</h2>
     <ul id="transactionsList"></ul>
 
     <script>
         const userEmail = sessionStorage.getItem('userEmail');
         const userProfilePicture = sessionStorage.getItem('userProfilePicture');
-
+    
         if (!userEmail || !userProfilePicture) {
             window.location.href = 'index.html'; // Redirect if no user data found
         } else {
             document.getElementById('userEmail').textContent = `Email: ${userEmail}`;
             document.getElementById('userProfilePicture').src = userProfilePicture;
         }
-
+    
         document.getElementById('addAccountForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const accountTitle = document.getElementById('accountTitle').value.trim();
             const accountType = document.getElementById('accountType').value;
             const accountBalance = parseFloat(document.getElementById('accountBalance').value);
-            if (accountTitle && accountType && accountBalance) {
+            if (accountTitle && accountType && !isNaN(accountBalance)) {
                 await addAccount({ accountTitle, accountType, accountBalance });
+                document.getElementById('accountTitle').value = '';
+                document.getElementById('accountBalance').value = '';
             }
         });
-
+    
         document.getElementById('addTransactionForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const transactionTitle = document.getElementById('transactionTitle').value.trim();
@@ -79,7 +100,7 @@
             const transactionAmount = parseFloat(document.getElementById('transactionAmount').value);
             const transactionCategory = document.getElementById('transactionCategory').value;
             const transactionAccount = document.getElementById('transactionAccount').value;
-            if (transactionTitle && transactionType && transactionAmount && transactionCategory && transactionAccount) {
+            if (transactionTitle && transactionType && !isNaN(transactionAmount) && transactionCategory && transactionAccount) {
                 await createTransaction({
                     transactionTitle,
                     transactionType,
@@ -87,9 +108,13 @@
                     transactionCategory,
                     transactionAccount
                 });
+                document.getElementById('transactionTitle').value = '';
+                document.getElementById('transactionAmount').value = '';
+                document.getElementById('transactionCategory').value = '';
+                document.getElementById('transactionAccount').value = '';
             }
         });
-
+    
         document.getElementById('addCategoryForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const categoryTitle = document.getElementById('newCategoryTitle').value.trim();
@@ -98,12 +123,50 @@
                 document.getElementById('newCategoryTitle').value = ''; // Clear the input field
             }
         });
-
+    
+        // Delete a Transaction
+        document.getElementById('deleteTransactionForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const transactionId = document.getElementById('deleteTransactionId').value.trim();
+            if (transactionId) {
+                await deleteTransaction(transactionId);
+                document.getElementById('deleteTransactionId').value = ''; // Clear the input field after deletion
+                fetchAllTransactions(); // Refresh the transaction list
+            }
+        });
+    
+        // Update a Transaction
+        document.getElementById('updateTransactionForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const transactionId = document.getElementById('updateTransactionId').value.trim();
+            const transactionTitle = document.getElementById('updateTransactionTitle').value.trim();
+            const transactionType = document.getElementById('updateTransactionType').value;
+            const transactionAmount = parseFloat(document.getElementById('updateTransactionAmount').value);
+            const transactionCategory = document.getElementById('updateTransactionCategory').value;
+    
+            // Build the updatedData object with only the fields that are provided
+            const updatedData = {};
+            if (transactionTitle) updatedData.transactionTitle = transactionTitle;
+            if (transactionType) updatedData.transactionType = transactionType;
+            if (!isNaN(transactionAmount)) updatedData.transactionAmount = transactionAmount;
+            if (transactionCategory) updatedData.transactionCategory = transactionCategory;
+    
+            if (transactionId && (transactionTitle || transactionType || !isNaN(transactionAmount) || transactionCategory)) {
+                await updateTransaction(transactionId, updatedData);
+                document.getElementById('updateTransactionId').value = '';
+                document.getElementById('updateTransactionTitle').value = '';
+                document.getElementById('updateTransactionAmount').value = '';
+                document.getElementById('updateTransactionCategory').value = '';
+                fetchAllTransactions(); // Refresh the transaction list
+            }
+        });
+    
         document.addEventListener('DOMContentLoaded', () => {
             fetchUserCategories();
             fetchAllAccounts();  
             fetchAllTransactions();
         });
-    </script>    
+    </script>
+        
 </body>
 </html>
