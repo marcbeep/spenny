@@ -13,18 +13,15 @@
     /components
         /common
         /layout
-            Navbar.js
         /views
-            Account.js
-            Category.js
-            Landing.js
-            Login.js
-            Signup.js
-            Transaction.js
+            Landing.js - need help creating
+            Login.js - need help creating
+            Signup.js - need help creating
+            Confirm.js - need help creating
     /context
         AccountsContext.js
         AnalyticsContext.js
-        AuthContext.js
+        AuthContext.js - need help creating
         BudgetContext.js
         CategoriesContext.js
         GoalsContext.js
@@ -32,7 +29,7 @@
     /hooks
         useAccounts.js
         useAnalytics.js
-        useAuth.js
+        useAuth.js - need help creating
         useBudget.js
         useCategories.js
         useGoals.js
@@ -40,8 +37,8 @@
     /mocks
     /utils
         axiosConfig.js
-    App.js
-    index.js
+    App.js - need help creating
+    index.js - need help creating
 ```
 
 ### Custom Hooks in the `hooks/` folder:

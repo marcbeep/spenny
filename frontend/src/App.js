@@ -1,32 +1,25 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './hooks/useAuth'; 
-
-// views
-import Signup from './components/views/Signup';
-import Login from './components/views/Login';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Landing from './components/views/Landing';
-import Placeholder from './components/views/Placeholder';
+import LoginComponent from './components/views/Login';
+import SignupComponent from './components/views/Signup';
+import HomeComponent from './components/views/Home';
+import { AuthProvider } from './context/AuthContext';
 
-// layouts
-import Navbar from './components/layout/Navbar';
-
-function App() {
-  const { user } = useAuth(); 
-
+const App = () => {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Navbar />
+    <Router>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" replace />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
-          <Route path="/placeholder" element={user ? <Placeholder /> : <Navigate to="/" replace />} />
+          <Route path="/login" element={<LoginComponent />} />
+          <Route path="/signup" element={<SignupComponent />} />
+          <Route path="/home" element={<HomeComponent />} />
+          {/* Add more routes as needed */}
         </Routes>
-      </BrowserRouter>
-    </div>
+      </AuthProvider>
+    </Router>
   );
-}
+};
 
 export default App;
-

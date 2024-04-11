@@ -1,46 +1,62 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+// src/context/AuthContext.js
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { loginUserAPI, signupUserAPI } from '../api/authService';
 import { setAuthToken } from '../utils/axiosConfig';
 
-// Create AuthContext
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-// Reducer function for handling auth state changes
-const authReducer = (state, action) => {
-  switch (action.type) {
-    case 'LOGIN':
-      // Optionally, handle token setting here if it makes sense for your use case
-      return { ...state, user: action.payload, authIsReady: true };
-    case 'LOGOUT':
-      setAuthToken(null); // Clear Axios Authorization header on logout
-      return { ...state, user: null, authIsReady: true };
-    default:
-      return state;
-  }
-};
+export const useAuth = () => useContext(AuthContext);
 
-// AuthContext provider component
-export const AuthContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, { user: null, authIsReady: false });
+export const AuthProvider = ({ children }) => {
+  const [authState, setAuthState] = useState({
+    token: null,
+    isAuthenticated: false,
+    user: null,
+  });
 
   useEffect(() => {
-    // Initialize auth state from localStorage
-    const user = JSON.parse(localStorage.getItem('user'));
     const token = localStorage.getItem('token');
-
-    if (user && token) {
-      setAuthToken(token); // Set Axios Authorization header if token exists
-      dispatch({ type: 'LOGIN', payload: user }); // Consider using 'LOGIN' for consistency if it fits your use case
-    } else {
-      dispatch({ type: 'LOGOUT' }); // Ensures state is clean if no valid user/token is found
+    if (token) {
+      setAuthToken(token);
+      setAuthState({ ...authState, isAuthenticated: true, token });
+      // Optionally, fetch user details here and update the authState with user details
     }
   }, []);
 
+  const loginUser = async (email, password) => {
+    try {
+      const { token, email: userEmail, ...userDetails } = await loginUserAPI(email, password);
+      localStorage.setItem('token', token);
+      setAuthToken(token);
+      setAuthState({ token, isAuthenticated: true, user: { email: userEmail, ...userDetails } });
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    }
+  };
+
+  const signupUser = async (email, password) => {
+    try {
+      const { token, email: userEmail, ...userDetails } = await signupUserAPI(email, password);
+      localStorage.setItem('token', token);
+      setAuthToken(token);
+      setAuthState({ token, isAuthenticated: true, user: { email: userEmail, ...userDetails } });
+    } catch (error) {
+      console.error('Signup failed:', error);
+      throw error;
+    }
+  };
+
+  const logoutUser = () => {
+    localStorage.removeItem('token');
+    setAuthToken(null);
+    setAuthState({ token: null, isAuthenticated: false, user: null });
+  };
+
   return (
-    <AuthContext.Provider value={{ ...state, dispatch }}>
+    <AuthContext.Provider value={{ ...authState, loginUser, signupUser, logoutUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-// Custom hook to use AuthContext
-export const useAuth = () => useContext(AuthContext);
