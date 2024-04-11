@@ -510,7 +510,7 @@ async function deleteTransaction(transactionId) {
             method: 'DELETE'
         });
         console.log(`Transaction ${transactionId} deleted.`);
-        fetchAllTransactions(); // Refresh the transaction list
+        updateUI();
     } catch (error) {
         alert('Error deleting transaction:', error.message);
     }
@@ -523,7 +523,7 @@ async function updateTransaction(transactionId, updatedData) {
             body: JSON.stringify(updatedData)
         });
         console.log('Transaction Updated:', updatedTransaction);
-        fetchAllTransactions(); // Refresh the transaction list
+        updateUI();
     } catch (error) {
         alert('Error updating transaction:', error.message);
     }
