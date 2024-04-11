@@ -21,15 +21,35 @@
     <h2>Your Categories</h2>
     <ul id="categoriesList"></ul>
 
-    <!--TODO: ADD FORM THAT ADDS NEW ACCOUNTS. ACCEPTS accountTitle, accountType, accountBalance-->
+    <h2>Add a New Account</h2>
+    <form id="addAccountForm">
+        <input type="text" id="accountTitle" placeholder="Account Title" required>
+        <select id="accountType">
+            <option value="spending">Spending</option>
+            <option value="tracking">Tracking</option>
+        </select>
+        <input type="number" id="accountBalance" placeholder="Initial Balance" required>
+        <button type="submit">Add Account</button>
+    </form>
 
     <h2>Your Accounts</h2>
-    <ul id="accountsList"></ul> 
+    <ul id="accountsList"></ul>
 
-    <!--TODO: ADD FORM THAT ADDS NEW TRANSACTIONS. ACCEPTS transactionTitle, transactionType, transactionAmount, transactionCategory, transactionAccount-->
+    <h2>Add a New Transaction</h2>
+    <form id="addTransactionForm">
+        <input type="text" id="transactionTitle" placeholder="Transaction Title" required>
+        <select id="transactionType">
+            <option value="debit">Debit</option>
+            <option value="credit">Credit</option>
+        </select>
+        <input type="number" id="transactionAmount" placeholder="Amount" required>
+        <input type="text" id="transactionCategory" placeholder="Category ID" required>
+        <input type="text" id="transactionAccount" placeholder="Account ID" required>
+        <button type="submit">Add Transaction</button>
+    </form>
 
     <h2>Your Transactions</h2>
-    <ul id="transactionsList"></ul> 
+    <ul id="transactionsList"></ul>
 
     <script>
         const userEmail = sessionStorage.getItem('userEmail');
@@ -42,9 +62,34 @@
             document.getElementById('userProfilePicture').src = userProfilePicture;
         }
 
-        // TODO: Init forms for creating accounts and transactions. Any errors should be alerted to the user.
+        document.getElementById('addAccountForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const accountTitle = document.getElementById('accountTitle').value.trim();
+            const accountType = document.getElementById('accountType').value;
+            const accountBalance = parseFloat(document.getElementById('accountBalance').value);
+            if (accountTitle && accountType && accountBalance) {
+                await addAccount({ accountTitle, accountType, accountBalance });
+            }
+        });
 
-        // Initialize form submission handling TODO: Any errors should be alerted to the user.
+        document.getElementById('addTransactionForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const transactionTitle = document.getElementById('transactionTitle').value.trim();
+            const transactionType = document.getElementById('transactionType').value;
+            const transactionAmount = parseFloat(document.getElementById('transactionAmount').value);
+            const transactionCategory = document.getElementById('transactionCategory').value;
+            const transactionAccount = document.getElementById('transactionAccount').value;
+            if (transactionTitle && transactionType && transactionAmount && transactionCategory && transactionAccount) {
+                await createTransaction({
+                    transactionTitle,
+                    transactionType,
+                    transactionAmount,
+                    transactionCategory,
+                    transactionAccount
+                });
+            }
+        });
+
         document.getElementById('addCategoryForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const categoryTitle = document.getElementById('newCategoryTitle').value.trim();
@@ -62,4 +107,3 @@
     </script>    
 </body>
 </html>
-
