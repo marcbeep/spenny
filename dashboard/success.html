@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Success</title>
+</head>
+<body>
+    <h1>Success!</h1>
+    <p id="userEmail"></p>
+    <img id="userProfilePicture" src="" alt="Profile Picture" style="width:100px;height:100px;">
+    <script>
+        // Check if user information is stored in sessionStorage
+        const userEmail = sessionStorage.getItem('userEmail');
+        const userProfilePicture = sessionStorage.getItem('userProfilePicture');
+        
+        if (!userEmail || !userProfilePicture) {
+            window.location.href = 'index.html'; // Redirect if no user data found
+        } else {
+            document.getElementById('userEmail').textContent = `Email: ${userEmail}`;
+            document.getElementById('userProfilePicture').src = userProfilePicture;
+        }
+    </script>
+</body>
+</html>
