@@ -1,5 +1,19 @@
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://spenny-6e54c38e0b23.herokuapp.com';
 
+function displayList(elementId, items, formatter) {
+    const listElement = document.getElementById(elementId);
+    if (!listElement) {
+        console.error('List element not found:', elementId);
+        return;
+    }
+    listElement.innerHTML = ''; // Clear existing content
+    items.forEach(item => {
+        const listItem = document.createElement('li');
+        listItem.textContent = formatter(item); // Use formatter function to get display text
+        listElement.appendChild(listItem);
+    });
+}
+
 // Base fetch function to handle common fetch logic
 async function makeFetchRequest(path, options = {}) {
     const token = sessionStorage.getItem('token');
@@ -69,20 +83,11 @@ function logoutUser() {
     window.location.href = 'index.html';
 }
 
-function displayCategories(categories) {
-    const categoriesList = document.getElementById('categoriesList');
-    categoriesList.innerHTML = ''; 
-    categories.forEach(category => {
-        const item = document.createElement('li');
-        item.textContent = `${category.categoryTitle} - Available: £${category.categoryAvailable}`; 
-        categoriesList.appendChild(item);
-    });
-}
-
 async function fetchUserCategories() {
     try {
         const categories = await makeFetchRequest('/categories');
-        displayCategories(categories); // Ensure this function is defined or handled appropriately
+        displayList('categoriesList', categories, category => 
+            `${category.categoryTitle} - Available: £${category.categoryAvailable}`);
     } catch (error) {
         console.error('Error fetching categories:', error);
     }
@@ -96,8 +101,47 @@ async function addCategory(categoryTitle) {
         });
 
         console.log('New Category Added:', newCategory);
+
         fetchUserCategories(); // Refresh categories list
     } catch (error) {
         alert(error.message);
     }
 }
+
+async function fetchSingleCategory(categoryId) {
+    try {
+        const category = await makeFetchRequest(`/categories/${categoryId}`);
+        console.log('Fetched Category:', category);
+    } catch (error) {
+        console.error('Error fetching single category:', error);
+    }
+}
+
+async function updateCategory(categoryId, newTitle) {
+    try {
+        const updatedCategory = await makeFetchRequest(`/categories/${categoryId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ title: newTitle }),
+        });
+
+        console.log('Updated Category:', updatedCategory);
+        fetchUserCategories(); // Optionally refresh the categories list to reflect the update
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+async function deleteCategory(categoryId, newCategoryId) {
+    try {
+        await makeFetchRequest(`/categories/${categoryId}`, {
+            method: 'DELETE',
+            body: JSON.stringify({ newCategoryId }),
+        });
+
+        console.log(`Category ${categoryId} deleted.`);
+        fetchUserCategories(); // Refresh categories list to reflect the deletion
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
