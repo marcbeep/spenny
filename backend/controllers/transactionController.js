@@ -10,8 +10,7 @@ const { checkOwnership } = require('../utils/utils');
 
 const handleNoTransactionFound = (res) => res.status(404).json({ error: 'Transaction not found' });
 
-const formatAmount = (amount) => parseFloat(parseFloat(amount).toFixed(2));
-
+const formatAmount = (amount) => Number(amount);
 
 const updateUserBudgetForTransaction = async (userId, amount, addToReadyToAssign) => {
   const budget = await Budget.findOne({ user: userId });

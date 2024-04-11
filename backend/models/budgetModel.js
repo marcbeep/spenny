@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 function formatNumber(value) {
-  return parseFloat(parseFloat(value).toFixed(2));
+  return Number(value);
 }
 
 const budgetSchema = new Schema(

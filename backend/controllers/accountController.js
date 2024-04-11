@@ -3,7 +3,7 @@ const Budget = require('../models/budgetModel');
 const Transaction = require('../models/transactionModel');
 const { checkOwnership } = require('../utils/utils');
 
-const formatAmount = (amount) => parseFloat(amount).toFixed(2);
+const formatAmount = (amount) => Number(amount);
 
 const updateUserBudget = async (userId, balanceChange) => {
   try {

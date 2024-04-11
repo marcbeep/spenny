@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 // Helper function to format balance
 function formatBalance(value) {
-  return parseFloat(parseFloat(value).toFixed(2));
+  return Number(value);
 }
 
 const accountSchema = new Schema(
