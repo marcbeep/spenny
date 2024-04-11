@@ -21,8 +21,15 @@
     <h2>Your Categories</h2>
     <ul id="categoriesList"></ul>
 
+    <!--TODO: ADD FORM THAT ADDS NEW ACCOUNTS. ACCEPTS accountTitle, accountType, accountBalance-->
+
     <h2>Your Accounts</h2>
-    <ul id="accountsList"></ul>  <!-- Place to display accounts -->
+    <ul id="accountsList"></ul> 
+
+    <!--TODO: ADD FORM THAT ADDS NEW TRANSACTIONS. ACCEPTS transactionTitle, transactionType, transactionAmount, transactionCategory, transactionAccount-->
+
+    <h2>Your Transactions</h2>
+    <ul id="transactionsList"></ul> 
 
     <script>
         const userEmail = sessionStorage.getItem('userEmail');
@@ -35,7 +42,9 @@
             document.getElementById('userProfilePicture').src = userProfilePicture;
         }
 
-        // Initialize form submission handling
+        // TODO: Init forms for creating accounts and transactions. Any errors should be alerted to the user.
+
+        // Initialize form submission handling TODO: Any errors should be alerted to the user.
         document.getElementById('addCategoryForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const categoryTitle = document.getElementById('newCategoryTitle').value.trim();
@@ -47,7 +56,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchUserCategories();
-            fetchAllAccounts();  // Fetch and display accounts when the document is loaded
+            fetchAllAccounts();  
+            fetchAllTransactions();
         });
     </script>    
 </body>
