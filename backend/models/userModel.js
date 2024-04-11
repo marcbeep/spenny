@@ -50,24 +50,26 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.statics.signup = async function (userEmail, userPassword, userProfilePicture) {
-  // The actual validation happens automatically upon attempting to save the model
+  // Check if the email already exists
+  const existingUser = await this.findOne({ userEmail: userEmail.toLowerCase() });
+  if (existingUser) {
+    throw new Error('Email already exists. Please try another one.');
+  }
+
   const user = new this({ userEmail, userPassword, userProfilePicture });
 
   try {
     await user.save();
     return user;
   } catch (error) {
-    if (error.code === 11000) {
-      throw new Error('Email already exists');
+    let errorMessage = 'Signup failed due to an unexpected error.';
+    if (error.errors) {
+      errorMessage = Object.values(error.errors).map(val => val.message).join(', ');
     }
-    // If the error is related to validation
-    if (error.errors?.userEmail || error.errors?.userPassword) {
-      const message = error.errors.userEmail?.message || error.errors.userPassword?.message;
-      throw new Error(message);
-    }
-    throw error; // For other types of errors, throw them as they are
+    throw new Error(errorMessage);
   }
 };
+
 
 userSchema.statics.login = async function (userEmail, userPassword) {
   const user = await this.findOne({ userEmail });
