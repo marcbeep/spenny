@@ -44,7 +44,11 @@ async function makeFetchRequest(path, options = {}) {
     }
 }
 
-async function loginUser(email, password) {
+async function loginUser(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
     try {
         const data = await makeFetchRequest('/users/login', {
             method: 'POST',
@@ -61,7 +65,12 @@ async function loginUser(email, password) {
     }
 }
 
-async function signupUser(email, password) {
+
+async function signupUser(event) {
+    event.preventDefault(); 
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
     try {
         const data = await makeFetchRequest('/users/signup', {
             method: 'POST',
@@ -77,6 +86,7 @@ async function signupUser(email, password) {
         alert(error.message);
     }
 }
+
 
 function logoutUser() {
     sessionStorage.clear();
