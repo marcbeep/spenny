@@ -1,3 +1,5 @@
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://spenny-6e54c38e0b23.herokuapp.com';
+
 // Function to login user
 async function loginUser(event) {
     event.preventDefault(); // Prevent form from submitting normally
@@ -7,7 +9,7 @@ async function loginUser(event) {
     
     // Example API call for login
     try {
-        const response = await fetch('https://spenny-6e54c38e0b23.herokuapp.com/users/login', {
+        const response = await fetch(`${API_URL}/users/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -35,7 +37,7 @@ async function signupUser(event) {
     
     // Example API call for signup
     try {
-        const response = await fetch('https://spenny-6e54c38e0b23.herokuapp.com/users/signup', {
+        const response = await fetch(`${API_URL}/users/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })

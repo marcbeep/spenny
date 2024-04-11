@@ -7,10 +7,10 @@
 <body>
     <h1>Success!</h1>
     <p id="userEmail"></p>
-    <img id="userProfilePicture" src="userProfilePicture" alt="Profile Picture" style="width:100px;height:100px;">
+    <img id="userProfilePicture" src="" alt="Profile Picture" style="width:100px;height:100px;">
     <button onclick="logoutUser()">Logout</button>
+    <script src="auth.js"></script> 
     <script>
-        // Check if user information is stored in sessionStorage
         const userEmail = sessionStorage.getItem('userEmail');
         const userProfilePicture = sessionStorage.getItem('userProfilePicture');
         
