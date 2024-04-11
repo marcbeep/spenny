@@ -94,13 +94,46 @@ async function fetchUserCategories() {
     }
 }
 
-// function displayCategories(categories) {
-//     const categoriesList = document.getElementById('categoriesList');
-//     categories.forEach(category => {
-//         const item = document.createElement('li');
-//         item.textContent = category.categoryTitle;
-//         categoriesList.appendChild(item);
-//     });
-// }
+function displayCategories(categories) {
+    const categoriesList = document.getElementById('categoriesList');
+    categories.forEach(category => {
+        const item = document.createElement('li');
+        item.textContent = category.categoryTitle;
+        categoriesList.appendChild(item);
+    });
+}
+
+async function addCategory(categoryTitle) {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+        console.error('No token found, unauthorized.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/categories`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ title: categoryTitle })
+        });
+
+        if (!response.ok) {
+            // If the response is not ok, throw an error with the response status
+            const errorResponse = await response.json();
+            throw new Error(errorResponse.error || 'Failed to add category');
+        }
+
+        const newCategory = await response.json();
+        console.log('New Category Added:', newCategory);
+        // Optionally refresh the categories list or update the UI in some other way
+        fetchUserCategories(); // This will refetch categories, including the new one
+    } catch (error) {
+        console.error('Error adding category:', error);
+        alert(error.message);
+    }
+}
 
 

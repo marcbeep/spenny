@@ -9,7 +9,16 @@
     <p id="userEmail"></p>
     <img id="userProfilePicture" src="" alt="Profile Picture" style="width:100px;height:100px;">
     <button onclick="logoutUser()">Logout</button>
+
+    <h2>Add a New Category</h2>
+    <form id="addCategoryForm">
+        <input type="text" id="newCategoryTitle" placeholder="Category Title" required>
+        <button type="submit">Add Category</button>
+    </form>
+
+    <h2>Your Categories</h2>
     <ul id="categoriesList"></ul>
+
     <script src="auth.js"></script> 
     <script>
         const userEmail = sessionStorage.getItem('userEmail');
@@ -21,18 +30,19 @@
             document.getElementById('userEmail').textContent = `Email: ${userEmail}`;
             document.getElementById('userProfilePicture').src = userProfilePicture;
         }
-    
-        function displayCategories(categories) {
-            const categoriesList = document.getElementById('categoriesList');
-            categories.forEach(category => {
-                const item = document.createElement('li');
-                item.textContent = `${category.categoryTitle} - Available: £${category.categoryAvailable}`; 
-                categoriesList.appendChild(item);
-            });
-        }
-    
-        // Call fetchUserCategories to load categories after the page is fully loaded
+
+        // Initialize form submission handling
+        document.getElementById('addCategoryForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const categoryTitle = document.getElementById('newCategoryTitle').value.trim();
+            if (categoryTitle) {
+                await addCategory(categoryTitle); 
+                document.getElementById('newCategoryTitle').value = ''; // Clear the input field
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', fetchUserCategories);
     </script>    
 </body>
 </html>
+
