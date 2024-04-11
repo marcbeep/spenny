@@ -224,7 +224,7 @@ async function moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount) {
 
 async function calculateTotalSpend() {
     try {
-        const result = await makeFetchRequest('/analytics/totalSpend', { method: 'POST' });
+        const result = await makeFetchRequest('/analytics/totalSpend', { method: 'GET' });
         console.log('Total Spend:', result);
         // Optionally: Update UI with total spend data
     } catch (error) {
@@ -234,7 +234,7 @@ async function calculateTotalSpend() {
 
 async function calculateSpendingByCategory() {
     try {
-        const result = await makeFetchRequest('/analytics/spendByCategory', { method: 'POST' });
+        const result = await makeFetchRequest('/analytics/spendByCategory', { method: 'GET' });
         console.log('Spending by Category:', result);
         // Optionally: Update UI with spending by category data
     } catch (error) {
@@ -244,7 +244,7 @@ async function calculateSpendingByCategory() {
 
 async function calculateNetWorth() {
     try {
-        const result = await makeFetchRequest('/analytics/networth', { method: 'POST' });
+        const result = await makeFetchRequest('/analytics/networth', { method: 'GET' });
         console.log('Net Worth:', result);
         // Optionally: Display net worth in the UI
     } catch (error) {
@@ -254,7 +254,7 @@ async function calculateNetWorth() {
 
 async function calculateIncomeVsExpenses() {
     try {
-        const result = await makeFetchRequest('/analytics/incomeVsExpenses', { method: 'POST' });
+        const result = await makeFetchRequest('/analytics/incomeVsExpenses', { method: 'GET' });
         console.log('Income vs. Expenses:', result);
         // Optionally: Display income vs. expenses data in the UI
     } catch (error) {
@@ -264,7 +264,7 @@ async function calculateIncomeVsExpenses() {
 
 async function calculateSavingsRate() {
     try {
-        const result = await makeFetchRequest('/analytics/savingsRate', { method: 'POST' });
+        const result = await makeFetchRequest('/analytics/savingsRate', { method: 'GET' });
         console.log('Savings Rate:', result);
         // Optionally: Update UI with savings rate data
     } catch (error) {
@@ -274,7 +274,7 @@ async function calculateSavingsRate() {
 
 async function calculateAllTimeAnalytics() {
     try {
-        const result = await makeFetchRequest('/analytics/alltime', { method: 'POST' });
+        const result = await makeFetchRequest('/analytics/alltime', { method: 'GET' });
         console.log('All-Time Analytics:', result);
         // Optionally: Display all-time analytics data in the UI
     } catch (error) {
