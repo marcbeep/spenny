@@ -35,7 +35,7 @@ async function signupUser(event) {
     
     // Example API call for signup
     try {
-        const response = await fetch('https://spenny-6e54c38e0b23.herokuapp.com/users/singup', {
+        const response = await fetch('https://spenny-6e54c38e0b23.herokuapp.com/users/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
