@@ -7,7 +7,7 @@ async function loginUser(event) {
     
     // Example API call for login
     try {
-        const response = await fetch('http://localhost:4000/users/login', {
+        const response = await fetch('https://spenny-6e54c38e0b23.herokuapp.com/users/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -35,7 +35,7 @@ async function signupUser(event) {
     
     // Example API call for signup
     try {
-        const response = await fetch('http://localhost:4000/users/singup', {
+        const response = await fetch('https://spenny-6e54c38e0b23.herokuapp.com/users/singup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
