@@ -17,46 +17,36 @@ function displayList(elementId, items, formatter) {
 }
 
 async function fetchAndDisplayAnalytics() {
-    // Create an array to hold all the promises for fetching analytics
-    const analyticsPromises = [
-        calculateTotalSpend(),
-        calculateSpendingByCategory(),
-        calculateNetWorth(),
-        calculateIncomeVsExpenses(),
-        calculateSavingsRate(),
-        calculateAllTimeAnalytics(),
-    ];
-
     try {
-        // Wait for all analytics data to be fetched
-        const results = await Promise.all(analyticsPromises);
+        // Fetch all-time analytics data
+        const allTimeAnalyticsResult = await calculateAllTimeAnalytics();
 
-        // Clear previous analytics data from the UI
+        // Access the analytics list in the DOM
         const analyticsList = document.getElementById('analyticsList');
         if (!analyticsList) {
             console.error('Analytics list element not found');
             return;
         }
-        analyticsList.innerHTML = '';
+        analyticsList.innerHTML = '';  // Clear previous contents
 
-        // Display each piece of analytics data
-        const analyticsData = [
-            { title: 'Total Spend', data: results[0] },
-            { title: 'Spending by Category', data: results[1] },
-            { title: 'Net Worth', data: results[2] },
-            { title: 'Income vs. Expenses', data: results[3] },
-            { title: 'Savings Rate', data: results[4] },
-            { title: 'All-Time Analytics', data: results[5] },
-        ];
-
-        analyticsData.forEach(analytic => {
-            const listItem = document.createElement('li');
-            listItem.textContent = `${analytic.title}: ${JSON.stringify(analytic.data)}`;
-            analyticsList.appendChild(listItem);
-        });
+        // Append data to the list
+        if (allTimeAnalyticsResult && allTimeAnalyticsResult.data) {
+            analyticsList.appendChild(createListItem('Net Worth', allTimeAnalyticsResult.data.netWorth));
+            analyticsList.appendChild(createListItem('Total Income', allTimeAnalyticsResult.data.totalIncome));
+            analyticsList.appendChild(createListItem('Total Expenditure', allTimeAnalyticsResult.data.totalExpenditure));
+            analyticsList.appendChild(createListItem('Savings Rate', allTimeAnalyticsResult.data.savingsRate));
+        } else {
+            console.error('No data received for All-Time Analytics');
+        }
     } catch (error) {
-        console.error('Error fetching analytics:', error);
+        console.error('Error fetching all-time analytics:', error);
     }
+}
+
+function createListItem(title, value) {
+    const listItem = document.createElement('li');
+    listItem.textContent = `${title}: ${value}`;
+    return listItem;
 }
 
 function updateUI() {
