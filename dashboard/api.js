@@ -459,7 +459,7 @@ async function createTransaction(transactionData) {
         console.log('Transaction Created:', newTransaction);
         updateUI();
     } catch (error) {
-        alert('Error creating transaction:', error.message);
+        alert('Error creating transaction:', error);
     }
 }
 
