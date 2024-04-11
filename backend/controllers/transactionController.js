@@ -30,31 +30,33 @@ const updateBalances = async ({
   amount,
   transactionType
 }) => {
-  // Directly determine the change amount, ensuring it reflects the transaction type accurately
+  // Calculate the amount change based on the transaction type: subtract for debit, add for credit
   const amountChange = transactionType === 'debit' ? -amount : amount;
 
+  // Log details for debugging purposes
   console.log('amount:', amount);
   console.log('transactionType:', transactionType);
   console.log('amountChange:', amountChange);
 
-  // Update Category if applicable
+  // Update category balances if a categoryId is provided
   if (categoryId) {
     await Category.findByIdAndUpdate(categoryId, {
       $inc: {
-        categoryActivity: Math.abs(amountChange), // Always increment activity by the absolute amount
-        categoryAvailable: amountChange          // Correctly update available funds based on transaction type
+        categoryActivity: Math.abs(amount), // Increment activity by the absolute transaction amount
+        categoryAvailable: amountChange    // Update available funds based on the transaction type
       },
     });
   }
 
-  // Update Account
+  // Update the account balance
   const account = await Account.findById(accountId);
   if (account) {
-    let newBalance = account.accountBalance + amountChange;
-    account.accountBalance = formatAmount(newBalance); // Apply formatting at the very end
-    await account.save();
+    let newBalance = account.accountBalance + amountChange; // Compute the new balance
+    account.accountBalance = formatAmount(newBalance);      // Format the new balance for consistency
+    await account.save();                                   // Save the updated account
   }
 };
+
 
 async function verifyCategoryId(userId, categoryId) {
   const category = await Category.findOne({ _id: categoryId, user: userId });
@@ -132,46 +134,53 @@ exports.createTransaction = async (req, res) => {
     transactionAccount,
   } = req.body;
 
+  // Check if the specified account is available and not archived
   const account = await Account.findById(transactionAccount);
   if (!account || account.accountStatus === 'archived') {
     return res.status(403).json({ error: 'Transactions cannot be added to an archived account.' });
   }
 
+  // Handle case where no category is specified
   const effectiveTransactionCategory = transactionCategory === '' ? null : transactionCategory;
-  const amountChange = transactionType === 'debit' ? -transactionAmount : transactionAmount;  // Directly use raw amount for changes
+
+  // Determine the effect of the transaction type on the amount: debit reduces, credit increases
+  const amountChange = transactionType === 'debit' ? -transactionAmount : transactionAmount;
 
   try {
+    // Create and save the new transaction with the amount formatted for consistency
     const newTransaction = await Transaction.create({
       user: req.user._id,
       transactionTitle,
       transactionType,
-      transactionAmount: formatAmount(transactionAmount), // Only format for saving
+      transactionAmount: formatAmount(transactionAmount), // Format amount for storage
       transactionCategory: effectiveTransactionCategory,
       transactionAccount,
     });
 
-    // Update account and category balances
+    // Update balances in accounts and categories as per the transaction effect
     await updateBalances({
       categoryId: effectiveTransactionCategory,
       accountId: transactionAccount,
-      amount: amountChange,
+      amount: transactionAmount,
       transactionType: transactionType,
     });
 
-    // Optionally update goal status if linked to a category
+    // Update goal status if a category is linked to the transaction
     if (effectiveTransactionCategory) {
       await checkAndUpdateGoalStatus(null, effectiveTransactionCategory);
     } else {
-      // Update user's budget if no category is linked
+      // If no category is linked, adjust the user's budget according to the transaction type
       await updateUserBudgetForTransaction(req.user._id, amountChange, transactionType !== 'debit');
     }
 
+    // Respond with the newly created transaction details
     res.status(201).json(newTransaction);
   } catch (error) {
     console.error('Error creating transaction:', error);
     res.status(400).json({ error: 'Failed to create transaction' });
   }
 };
+
 
 exports.deleteSingleTransaction = async (req, res) => {
   const { id } = req.params;
