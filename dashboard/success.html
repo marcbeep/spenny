@@ -21,6 +21,9 @@
     <h2>Your Categories</h2>
     <ul id="categoriesList"></ul>
 
+    <h2>Your Accounts</h2>
+    <ul id="accountsList"></ul>  <!-- Place to display accounts -->
+
     <script>
         const userEmail = sessionStorage.getItem('userEmail');
         const userProfilePicture = sessionStorage.getItem('userProfilePicture');
@@ -42,7 +45,11 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', fetchUserCategories);
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchUserCategories();
+            fetchAllAccounts();  // Fetch and display accounts when the document is loaded
+        });
     </script>    
 </body>
 </html>
+
