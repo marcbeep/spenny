@@ -100,6 +100,7 @@ async function createNewTransaction(details) {
 exports.getAllTransactions = async (req, res) => {
   try {
     const transactions = await Transaction.find({ user: req.user._id }).sort({ createdAt: -1 });
+
     res.status(200).json(transactions);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch transactions' });
@@ -188,7 +189,7 @@ exports.deleteSingleTransaction = async (req, res) => {
     const transactionToDelete = await Transaction.findById(id);
     if (!transactionToDelete) return handleNoTransactionFound(res);
 
-    if (!checkOwnership(transaction, req.user._id)) {
+    if (!checkOwnership(transactionToDelete, req.user._id)) {
       return res.status(403).json({ error: 'Unauthorized to delete this transaction' });
     }
 
@@ -250,7 +251,7 @@ exports.updateSingleTransaction = async (req, res) => {
     const transactionToUpdate = await Transaction.findById(id);
     if (!transactionToUpdate) return handleNoTransactionFound(res);
 
-    if (!checkOwnership(transaction, req.user._id)) {
+    if (!checkOwnership(transactionToUpdate, req.user._id)) {
       return res.status(403).json({ error: 'Unauthorized to modify this transaction' });
     }
 
