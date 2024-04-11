@@ -16,11 +16,55 @@ function displayList(elementId, items, formatter) {
     });
 }
 
+async function fetchAndDisplayAnalytics() {
+    // Create an array to hold all the promises for fetching analytics
+    const analyticsPromises = [
+        calculateTotalSpend(),
+        calculateSpendingByCategory(),
+        calculateNetWorth(),
+        calculateIncomeVsExpenses(),
+        calculateSavingsRate(),
+        calculateAllTimeAnalytics(),
+    ];
+
+    try {
+        // Wait for all analytics data to be fetched
+        const results = await Promise.all(analyticsPromises);
+
+        // Clear previous analytics data from the UI
+        const analyticsList = document.getElementById('analyticsList');
+        if (!analyticsList) {
+            console.error('Analytics list element not found');
+            return;
+        }
+        analyticsList.innerHTML = '';
+
+        // Display each piece of analytics data
+        const analyticsData = [
+            { title: 'Total Spend', data: results[0] },
+            { title: 'Spending by Category', data: results[1] },
+            { title: 'Net Worth', data: results[2] },
+            { title: 'Income vs. Expenses', data: results[3] },
+            { title: 'Savings Rate', data: results[4] },
+            { title: 'All-Time Analytics', data: results[5] },
+        ];
+
+        analyticsData.forEach(analytic => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${analytic.title}: ${JSON.stringify(analytic.data)}`;
+            analyticsList.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error('Error fetching analytics:', error);
+    }
+}
+
 function updateUI() {
     fetchAllAccounts();
     fetchUserCategories();
     fetchAllTransactions();
     fetchAllGoals();
+    fetchAndDisplayAnalytics();
 }
 
 async function makeFetchRequest(path, options = {}) {

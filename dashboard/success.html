@@ -9,8 +9,10 @@
 <body>
     <h1>Success!</h1>
     <p id="userEmail"></p>
-    <img id="userProfilePicture" src="" alt="Profile Picture" style="width:100px;height:100px;">
     <button onclick="logoutUser()">Logout</button>
+    <img id="userProfilePicture" src="" alt="Profile Picture" style="width:100px;height:100px;">
+
+    <ul id="analyticsList"></ul>
 
     <h2>Add a New Category</h2>
     <form id="addCategoryForm">
@@ -162,9 +164,7 @@
         });
     
         document.addEventListener('DOMContentLoaded', () => {
-            fetchUserCategories();
-            fetchAllAccounts();  
-            fetchAllTransactions();
+            updateUi();
         });
     </script>
         
