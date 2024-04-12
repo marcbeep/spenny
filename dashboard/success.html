@@ -151,7 +151,7 @@
         required
       />
       <select id="goalType" onchange="toggleResetDayVisibility();">
-        <option value="savings">Savings</option>
+        <option value="saving">Savings</option>
         <option value="spending">Spending</option>
       </select>
       <input
@@ -562,9 +562,10 @@
           if (goalType === "spending" && goalResetDay !== "") {
             body.goalResetDay = goalResetDay;
           } else {
-            body.goalResetDay = null; // Ensure goalResetDay is null if not applicable
+            body.goalResetDay = ""; // Ensure goalResetDay is null if not applicable
           }
 
+          console.log(body);
           try {
             await createGoal(
               categoryId,

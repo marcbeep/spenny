@@ -86,7 +86,7 @@ exports.deleteCategory = async (req, res) => {
       await checkAndUpdateGoalStatus(newCategoryGoal._id);
     }
 
-    res.sendStatus(204);
+    res.status(200).json({ message: 'Category successfully deleted' });
   } catch (error) {
     console.error('Error deleting category:', error);
     res.status(500).json({ error: 'Failed to delete category and reassign transactions' });

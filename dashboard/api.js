@@ -501,7 +501,7 @@ async function createGoal(categoryId, goalType, goalTarget, goalResetDay) {
 
 async function updateGoal(goalId, goalTarget) {
   try {
-    const body = { goalTarget };
+    const body = goalTarget;
     console.log(body);
     const goal = await makeFetchRequest(`/goals/${goalId}`, {
       method: "PATCH",
@@ -516,11 +516,17 @@ async function updateGoal(goalId, goalTarget) {
 
 async function deleteGoal(goalId) {
   try {
-    await makeFetchRequest(`/goals/${goalId}`, { method: "DELETE" });
+    const response = await makeFetchRequest(`/goals/${goalId}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete goal");
+    }
     console.log("Goal deleted successfully");
     updateUI();
   } catch (error) {
     console.error("Error deleting goal:", error);
+    alert("Error deleting goal: " + error.message);
   }
 }
 
