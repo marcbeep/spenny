@@ -30,7 +30,6 @@ function displayList(elementId, items, formatter) {
     }
 }
 
-
 function createListItem(title, value) {
     const listItem = document.createElement('li');
     listItem.textContent = `${title}: ${value}`;
