@@ -361,449 +361,434 @@
     <ul id="transactionsList"></ul>
 
     <script>
-            const userEmail = sessionStorage.getItem("userEmail");
-            const userProfilePicture = sessionStorage.getItem("userProfilePicture");
+      const userEmail = sessionStorage.getItem("userEmail");
+      const userProfilePicture = sessionStorage.getItem("userProfilePicture");
 
-            if (!userEmail || !userProfilePicture) {
-              window.location.href = "index.html";
-            } else {
-              document.getElementById(
-                "userEmail",
-              ).textContent = `Email: ${userEmail}`;
-              document.getElementById("userProfilePicture").src = userProfilePicture;
-            }
+      if (!userEmail || !userProfilePicture) {
+        window.location.href = "index.html";
+      } else {
+        document.getElementById(
+          "userEmail",
+        ).textContent = `Email: ${userEmail}`;
+        document.getElementById("userProfilePicture").src = userProfilePicture;
+      }
 
-            // BUDGET RELATED FUNCTIONS
-            document.addEventListener("DOMContentLoaded", async () => {
-              try {
-                await displayReadyToAssign();
-              } catch (error) {
-                console.error("Failed to fetch Ready to Assign:", error);
-                document.getElementById("readyToAssignValue").textContent =
-                  "Error fetching data";
-              }
-            });
-
-            async function displayReadyToAssign() {
-              const result = await fetchReadyToAssign();
-              if (result && result.readyToAssign !== undefined) {
-                document.getElementById(
-                  "readyToAssignValue",
-                ).textContent = `£${result.readyToAssign}`;
-              } else {
-                throw new Error("Ready to Assign data is not available");
-              }
-            }
-
-            document
-              .getElementById("assignMoneyForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const categoryId = document
-                  .getElementById("assignCategoryId")
-                  .value.trim();
-                const amount = parseFloat(
-                  document.getElementById("assignAmount").value,
-                );
-                try {
-                  await assignMoneyToCategory(categoryId, amount);
-                  alert("Money assigned successfully!");
-                } catch (error) {
-                  alert("Error assigning money: " + error.message);
-                }
-              });
-
-            document
-              .getElementById("moveMoneyBetweenCategoriesForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const fromCategoryId = document
-                  .getElementById("fromCategoryId")
-                  .value.trim();
-                const toCategoryId = document
-                  .getElementById("toCategoryId")
-                  .value.trim();
-                const amount = parseFloat(
-                  document.getElementById("moveCatAmount").value,
-                );
-                try {
-                  await moveMoneyBetweenCategories(
-                    fromCategoryId,
-                    toCategoryId,
-                    amount,
-                  );
-                  alert("Money moved between categories successfully!");
-                } catch (error) {
-                  alert("Error moving money between categories: " + error.message);
-                }
-              });
-
-            document
-              .getElementById("removeMoneyForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const categoryId = document
-                  .getElementById("removeCategoryId")
-                  .value.trim();
-                const amount = parseFloat(
-                  document.getElementById("removeAmount").value,
-                );
-                try {
-                  await removeMoneyFromCategory(categoryId, amount);
-                  alert("Money removed from category successfully!");
-                } catch (error) {
-                  alert("Error removing money from category: " + error.message);
-                }
-              });
-
-            document
-              .getElementById("moveToReadyToAssignForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const categoryId = document
-                  .getElementById("moveToReadyCategoryId")
-                  .value.trim();
-                const amount = parseFloat(
-                  document.getElementById("moveToReadyAmount").value,
-                );
-                try {
-                  await moveToReadyToAssign(categoryId, amount);
-                  alert("Money moved to Ready to Assign successfully!");
-                } catch (error) {
-                  alert("Error moving money to Ready to Assign: " + error.message);
-                }
-              });
-
-            // CATEGORIES RELATED FUNCTIONS
-            // add category
-            document
-              .getElementById("addCategoryForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const categoryTitle = document
-                  .getElementById("newCategoryTitle")
-                  .value.trim();
-                if (categoryTitle) {
-                  await addCategory(categoryTitle);
-                  document.getElementById("newCategoryTitle").value = ""; // Clear the input field
-                }
-              });
-
-            // delete category
-            document
-              .getElementById("deleteCategoryForm")
-              .addEventListener("submit", async function (event) {
-                event.preventDefault();
-                const categoryId = document.getElementById("deleteCategoryId").value;
-
-                try {
-                  await deleteCategory(categoryId);
-                  alert("Category deleted successfully!");
-                } catch (error) {
-                  alert("Error deleting category: " + error.message);
-                }
-              });
-
-            // update category
-            document
-              .getElementById("updateCategoryForm")
-              .addEventListener("submit", async function (event) {
-                event.preventDefault();
-                const categoryId = document.getElementById("updateCategoryId").value;
-                const newTitle = document.getElementById("newCategoryTitle").value;
-
-                try {
-                  await updateCategory(categoryId, newTitle);
-                  alert("Category updated successfully!");
-                } catch (error) {
-                  alert("Error updating category: " + error.message);
-                }
-              });
-
-            // GOALS RELATED FUNCTIONS
-            document.addEventListener("DOMContentLoaded", async () => {
-              await displayGoals(); // New function to display goals
-            });
-
-            async function displayGoals() {
-              try {
-                const goals = await fetchAllGoals();
-                displayList(
-                  "goalsList",
-                  goals,
-                  (goal) =>
-                    `${goal._id} / ${goal.goalTitle} / cat: £${goal.goalCategory} / type: £${goal.goalType} / target: £${goal.goalTarget} / status: £${goal.goalStatus} / reset: ${goal.goalResetDay}`,
-                );
-              } catch (error) {
-                console.error("Failed to fetch goals:", error);
-                document.getElementById("goalsList").innerHTML =
-                  "<li>Error fetching goals.</li>";
-              }
-            }
-
-            document
-              .getElementById("createGoalForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const categoryId = document
-                  .getElementById("goalCategoryId")
-                  .value.trim();
-                const goalType = document.getElementById("goalType").value;
-                const goalTarget = parseFloat(
-                  document.getElementById("goalTarget").value,
-                );
-                const goalResetDay = parseInt(
-                  document.getElementById("goalResetDay").value,
-                  10,
-                );
-                try {
-                  await createGoal(categoryId, goalType, goalTarget, goalResetDay);
-                  alert("Goal created successfully!");
-                } catch (error) {
-                  alert("Error creating goal: " + error.message);
-                }
-              });
-
-            document
-              .getElementById("updateGoalForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const goalId = document.getElementById("updateGoalId").value.trim();
-                const goalTarget = parseFloat(
-                  document.getElementById("updateGoalTarget").value,
-                );
-
-                try {
-                  await updateGoal(goalId, { goalTarget }); // Updated to match new backend expectations
-                  alert("Goal updated successfully!");
-                } catch (error) {
-                  alert("Error updating goal: " + error.message);
-                }
-              });
-
-            document
-              .getElementById("deleteGoalForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const goalId = document.getElementById("deleteGoalId").value.trim();
-                try {
-                  await deleteGoal(goalId);
-                  alert("Goal deleted successfully!");
-                } catch (error) {
-                  alert("Error deleting goal: " + error.message);
-                }
-              });
-
-            // ACCOUNTS RELATED FUNCTIONS
-            // add account
-            document
-              .getElementById("addAccountForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const accountTitle = document
-                  .getElementById("accountTitle")
-                  .value.trim();
-                const accountType = document.getElementById("accountType").value;
-                const accountBalance = parseFloat(
-                  document.getElementById("accountBalance").value,
-                );
-                if (accountTitle && accountType && !isNaN(accountBalance)) {
-                  await addAccount({ accountTitle, accountType, accountBalance });
-                  document.getElementById("accountTitle").value = "";
-                  document.getElementById("accountBalance").value = "";
-                }
-              });
-
-            // Update an Account
-            document.getElementById("updateAccountForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const accountId = document.getElementById("updateAccountId").value.trim();
-        const accountBalance = parseFloat(document.getElementById("updateAccountBalance").value);
-
+      // BUDGET RELATED FUNCTIONS
+      document.addEventListener("DOMContentLoaded", async () => {
         try {
-          await updateAccount(accountId, accountBalance);
-          alert("Account balance updated successfully!");
+          await displayReadyToAssign();
         } catch (error) {
-          alert("Error updating account balance: " + error.message);
+          console.error("Failed to fetch Ready to Assign:", error);
+          document.getElementById("readyToAssignValue").textContent =
+            "Error fetching data";
         }
       });
-                event.preventDefault();
-                const accountId = document
-                  .getElementById("updateAccountId")
-                  .value.trim();
-                const accountTitle = document
-                  .getElementById("updateAccountTitle")
-                  .value.trim();
-                const accountType =
-                  document.getElementById("updateAccountType").value;
-                const accountBalance = parseFloat(
-                  document.getElementById("updateAccountBalance").value,
-                );
 
-                const updatedData = {};
-                if (accountTitle) updatedData.accountTitle = accountTitle;
-                if (accountType) updatedData.accountType = accountType;
-                if (!isNaN(accountBalance))
-                  updatedData.accountBalance = accountBalance;
+      async function displayReadyToAssign() {
+        const result = await fetchReadyToAssign();
+        if (result && result.readyToAssign !== undefined) {
+          document.getElementById(
+            "readyToAssignValue",
+          ).textContent = `£${result.readyToAssign}`;
+        } else {
+          throw new Error("Ready to Assign data is not available");
+        }
+      }
 
-                try {
-                  await updateAccount(accountId, updatedData);
-                  alert("Account updated successfully!");
-                } catch (error) {
-                  alert("Error updating account: " + error.message);
-                }
-              });
+      document
+        .getElementById("assignMoneyForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const categoryId = document
+            .getElementById("assignCategoryId")
+            .value.trim();
+          const amount = parseFloat(
+            document.getElementById("assignAmount").value,
+          );
+          try {
+            await assignMoneyToCategory(categoryId, amount);
+            alert("Money assigned successfully!");
+          } catch (error) {
+            alert("Error assigning money: " + error.message);
+          }
+        });
 
-            // Archive an Account
-            document
-              .getElementById("archiveAccountForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const accountId = document
-                  .getElementById("archiveAccountId")
-                  .value.trim();
-                try {
-                  await archiveAccount(accountId);
-                  alert("Account archived successfully!");
-                } catch (error) {
-                  alert("Error archiving account: " + error.message);
-                }
-              });
+      document
+        .getElementById("moveMoneyBetweenCategoriesForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const fromCategoryId = document
+            .getElementById("fromCategoryId")
+            .value.trim();
+          const toCategoryId = document
+            .getElementById("toCategoryId")
+            .value.trim();
+          const amount = parseFloat(
+            document.getElementById("moveCatAmount").value,
+          );
+          try {
+            await moveMoneyBetweenCategories(
+              fromCategoryId,
+              toCategoryId,
+              amount,
+            );
+            alert("Money moved between categories successfully!");
+          } catch (error) {
+            alert("Error moving money between categories: " + error.message);
+          }
+        });
 
-            // Move Money Between Accounts
-            document
-              .getElementById("moveMoneyForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const fromAccountId = document
-                  .getElementById("fromAccountId")
-                  .value.trim();
-                const toAccountId = document
-                  .getElementById("toAccountId")
-                  .value.trim();
-                const amount = parseFloat(
-                  document.getElementById("moveAmount").value,
-                );
+      document
+        .getElementById("removeMoneyForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const categoryId = document
+            .getElementById("removeCategoryId")
+            .value.trim();
+          const amount = parseFloat(
+            document.getElementById("removeAmount").value,
+          );
+          try {
+            await removeMoneyFromCategory(categoryId, amount);
+            alert("Money removed from category successfully!");
+          } catch (error) {
+            alert("Error removing money from category: " + error.message);
+          }
+        });
 
-                if (!isNaN(amount)) {
-                  try {
-                    await moveMoneyBetweenAccounts(
-                      fromAccountId,
-                      toAccountId,
-                      amount,
-                    );
-                    alert("Money moved successfully!");
-                  } catch (error) {
-                    alert("Error moving money: " + error.message);
-                  }
-                } else {
-                  alert("Please enter a valid amount.");
-                }
-              });
+      document
+        .getElementById("moveToReadyToAssignForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const categoryId = document
+            .getElementById("moveToReadyCategoryId")
+            .value.trim();
+          const amount = parseFloat(
+            document.getElementById("moveToReadyAmount").value,
+          );
+          try {
+            await moveToReadyToAssign(categoryId, amount);
+            alert("Money moved to Ready to Assign successfully!");
+          } catch (error) {
+            alert("Error moving money to Ready to Assign: " + error.message);
+          }
+        });
 
-            // TRANSACTIONS RELATED FUNCTIONS
-            // add transaction
-            document
-              .getElementById("addTransactionForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const transactionTitle = document
-                  .getElementById("transactionTitle")
-                  .value.trim();
-                const transactionType =
-                  document.getElementById("transactionType").value;
-                const transactionAmount = parseFloat(
-                  document.getElementById("transactionAmount").value,
-                );
-                const transactionCategory = document.getElementById(
-                  "transactionCategory",
-                ).value;
-                const transactionAccount =
-                  document.getElementById("transactionAccount").value;
-                if (
-                  transactionTitle &&
-                  transactionType &&
-                  !isNaN(transactionAmount) &&
-                  transactionCategory &&
-                  transactionAccount
-                ) {
-                  await createTransaction({
-                    transactionTitle,
-                    transactionType,
-                    transactionAmount,
-                    transactionCategory,
-                    transactionAccount,
-                  });
-                  document.getElementById("transactionTitle").value = "";
-                  document.getElementById("transactionAmount").value = "";
-                  document.getElementById("transactionCategory").value = "";
-                  document.getElementById("transactionAccount").value = "";
-                }
-              });
+      // CATEGORIES RELATED FUNCTIONS
+      // add category
+      document
+        .getElementById("addCategoryForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const categoryTitle = document
+            .getElementById("newCategoryTitle")
+            .value.trim();
+          if (categoryTitle) {
+            await addCategory(categoryTitle);
+            document.getElementById("newCategoryTitle").value = ""; // Clear the input field
+          }
+        });
 
-            // Delete a Transaction
-            document
-              .getElementById("deleteTransactionForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const transactionId = document
-                  .getElementById("deleteTransactionId")
-                  .value.trim();
-                if (transactionId) {
-                  await deleteTransaction(transactionId);
-                  document.getElementById("deleteTransactionId").value = ""; // Clear the input field after deletion
-                  fetchAllTransactions(); // Refresh the transaction list
-                }
-              });
+      // delete category
+      document
+        .getElementById("deleteCategoryForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const categoryId = document.getElementById("deleteCategoryId").value;
 
-            // Update a Transaction
-            document
-              .getElementById("updateTransactionForm")
-              .addEventListener("submit", async (event) => {
-                event.preventDefault();
-                const transactionId = document
-                  .getElementById("updateTransactionId")
-                  .value.trim();
-                const transactionTitle = document
-                  .getElementById("updateTransactionTitle")
-                  .value.trim();
-                const transactionType = document.getElementById(
-                  "updateTransactionType",
-                ).value;
-                const transactionAmount = parseFloat(
-                  document.getElementById("updateTransactionAmount").value,
-                );
-                const transactionCategory = document.getElementById(
-                  "updateTransactionCategory",
-                ).value;
+          try {
+            await deleteCategory(categoryId);
+            alert("Category deleted successfully!");
+          } catch (error) {
+            alert("Error deleting category: " + error.message);
+          }
+        });
 
-                const updatedData = {};
-                if (transactionTitle) updatedData.transactionTitle = transactionTitle;
-                if (transactionType) updatedData.transactionType = transactionType;
-                if (!isNaN(transactionAmount))
-                  updatedData.transactionAmount = transactionAmount;
-                if (transactionCategory)
-                  updatedData.transactionCategory = transactionCategory;
+      // update category
+      document
+        .getElementById("updateCategoryForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const categoryId = document.getElementById("updateCategoryId").value;
+          const newTitle = document.getElementById("newCategoryTitle").value;
 
-                if (
-                  transactionId &&
-                  (transactionTitle ||
-                    transactionType ||
-                    !isNaN(transactionAmount) ||
-                    transactionCategory)
-                ) {
-                  await updateTransaction(transactionId, updatedData);
-                  document.getElementById("updateTransactionId").value = "";
-                  document.getElementById("updateTransactionTitle").value = "";
-                  document.getElementById("updateTransactionAmount").value = "";
-                  document.getElementById("updateTransactionCategory").value = "";
-                  fetchAllTransactions(); // Refresh the transaction list
-                }
-              });
+          try {
+            await updateCategory(categoryId, newTitle);
+            alert("Category updated successfully!");
+          } catch (error) {
+            alert("Error updating category: " + error.message);
+          }
+        });
 
-            document.addEventListener("DOMContentLoaded", () => {
-              updateUI();
+      // GOALS RELATED FUNCTIONS
+      document.addEventListener("DOMContentLoaded", async () => {
+        await displayGoals(); // New function to display goals
+      });
+
+      async function displayGoals() {
+        try {
+          const goals = await fetchAllGoals();
+          displayList(
+            "goalsList",
+            goals,
+            (goal) =>
+              `${goal._id} / ${goal.goalTitle} / cat: £${goal.goalCategory} / type: £${goal.goalType} / target: £${goal.goalTarget} / status: £${goal.goalStatus} / reset: ${goal.goalResetDay}`,
+          );
+        } catch (error) {
+          console.error("Failed to fetch goals:", error);
+          document.getElementById("goalsList").innerHTML =
+            "<li>Error fetching goals.</li>";
+        }
+      }
+
+      document
+        .getElementById("createGoalForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const categoryId = document
+            .getElementById("goalCategoryId")
+            .value.trim();
+          const goalType = document.getElementById("goalType").value;
+          const goalTarget = parseFloat(
+            document.getElementById("goalTarget").value,
+          );
+          const goalResetDay = parseInt(
+            document.getElementById("goalResetDay").value,
+            10,
+          );
+          try {
+            await createGoal(categoryId, goalType, goalTarget, goalResetDay);
+            alert("Goal created successfully!");
+          } catch (error) {
+            alert("Error creating goal: " + error.message);
+          }
+        });
+
+      document
+        .getElementById("updateGoalForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const goalId = document.getElementById("updateGoalId").value.trim();
+          const goalTarget = parseFloat(
+            document.getElementById("updateGoalTarget").value,
+          );
+
+          try {
+            await updateGoal(goalId, { goalTarget }); // Updated to match new backend expectations
+            alert("Goal updated successfully!");
+          } catch (error) {
+            alert("Error updating goal: " + error.message);
+          }
+        });
+
+      document
+        .getElementById("deleteGoalForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const goalId = document.getElementById("deleteGoalId").value.trim();
+          try {
+            await deleteGoal(goalId);
+            alert("Goal deleted successfully!");
+          } catch (error) {
+            alert("Error deleting goal: " + error.message);
+          }
+        });
+
+      // ACCOUNTS RELATED FUNCTIONS
+      // add account
+      document
+        .getElementById("addAccountForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const accountTitle = document
+            .getElementById("accountTitle")
+            .value.trim();
+          const accountType = document.getElementById("accountType").value;
+          const accountBalance = parseFloat(
+            document.getElementById("accountBalance").value,
+          );
+          if (accountTitle && accountType && !isNaN(accountBalance)) {
+            await addAccount({ accountTitle, accountType, accountBalance });
+            document.getElementById("accountTitle").value = "";
+            document.getElementById("accountBalance").value = "";
+          }
+        });
+
+      // Update an Account Balance
+      document
+        .getElementById("updateAccountForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const accountId = document
+            .getElementById("updateAccountId")
+            .value.trim();
+          const accountBalance = parseFloat(
+            document.getElementById("updateAccountBalance").value,
+          );
+
+          // Ensure data is valid before sending the request
+          if (!isNaN(accountBalance)) {
+            try {
+              await updateAccount(accountId, { accountBalance });
+              alert("Account balance updated successfully!");
+            } catch (error) {
+              alert("Error updating account balance: " + error.message);
+            }
+          } else {
+            alert("Please enter a valid balance.");
+          }
+        });
+
+      // Archive an Account
+      document
+        .getElementById("archiveAccountForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const accountId = document
+            .getElementById("archiveAccountId")
+            .value.trim();
+          try {
+            await archiveAccount(accountId);
+            alert("Account archived successfully!");
+          } catch (error) {
+            alert("Error archiving account: " + error.message);
+          }
+        });
+
+      // Move Money Between Accounts
+      document
+        .getElementById("moveMoneyForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const fromAccountId = document
+            .getElementById("fromAccountId")
+            .value.trim();
+          const toAccountId = document
+            .getElementById("toAccountId")
+            .value.trim();
+          const amount = parseFloat(
+            document.getElementById("moveAmount").value,
+          );
+
+          if (!isNaN(amount)) {
+            try {
+              await moveMoneyBetweenAccounts(
+                fromAccountId,
+                toAccountId,
+                amount,
+              );
+              alert("Money moved successfully!");
+            } catch (error) {
+              alert("Error moving money: " + error.message);
+            }
+          } else {
+            alert("Please enter a valid amount.");
+          }
+        });
+
+      // TRANSACTIONS RELATED FUNCTIONS
+      // add transaction
+      document
+        .getElementById("addTransactionForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const transactionTitle = document
+            .getElementById("transactionTitle")
+            .value.trim();
+          const transactionType =
+            document.getElementById("transactionType").value;
+          const transactionAmount = parseFloat(
+            document.getElementById("transactionAmount").value,
+          );
+          const transactionCategory = document.getElementById(
+            "transactionCategory",
+          ).value;
+          const transactionAccount =
+            document.getElementById("transactionAccount").value;
+          if (
+            transactionTitle &&
+            transactionType &&
+            !isNaN(transactionAmount) &&
+            transactionCategory &&
+            transactionAccount
+          ) {
+            await createTransaction({
+              transactionTitle,
+              transactionType,
+              transactionAmount,
+              transactionCategory,
+              transactionAccount,
             });
+            document.getElementById("transactionTitle").value = "";
+            document.getElementById("transactionAmount").value = "";
+            document.getElementById("transactionCategory").value = "";
+            document.getElementById("transactionAccount").value = "";
+          }
+        });
+
+      // Delete a Transaction
+      document
+        .getElementById("deleteTransactionForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const transactionId = document
+            .getElementById("deleteTransactionId")
+            .value.trim();
+          if (transactionId) {
+            await deleteTransaction(transactionId);
+            document.getElementById("deleteTransactionId").value = ""; // Clear the input field after deletion
+            fetchAllTransactions(); // Refresh the transaction list
+          }
+        });
+
+      // Update a Transaction
+      document
+        .getElementById("updateTransactionForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const transactionId = document
+            .getElementById("updateTransactionId")
+            .value.trim();
+          const transactionTitle = document
+            .getElementById("updateTransactionTitle")
+            .value.trim();
+          const transactionType = document.getElementById(
+            "updateTransactionType",
+          ).value;
+          const transactionAmount = parseFloat(
+            document.getElementById("updateTransactionAmount").value,
+          );
+          const transactionCategory = document.getElementById(
+            "updateTransactionCategory",
+          ).value;
+
+          const updatedData = {};
+          if (transactionTitle) updatedData.transactionTitle = transactionTitle;
+          if (transactionType) updatedData.transactionType = transactionType;
+          if (!isNaN(transactionAmount))
+            updatedData.transactionAmount = transactionAmount;
+          if (transactionCategory)
+            updatedData.transactionCategory = transactionCategory;
+
+          if (
+            transactionId &&
+            (transactionTitle ||
+              transactionType ||
+              !isNaN(transactionAmount) ||
+              transactionCategory)
+          ) {
+            await updateTransaction(transactionId, updatedData);
+            document.getElementById("updateTransactionId").value = "";
+            document.getElementById("updateTransactionTitle").value = "";
+            document.getElementById("updateTransactionAmount").value = "";
+            document.getElementById("updateTransactionCategory").value = "";
+            fetchAllTransactions(); // Refresh the transaction list
+          }
+        });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        updateUI();
+      });
     </script>
   </body>
 </html>
