@@ -150,7 +150,7 @@
         placeholder="Category ID"
         required
       />
-      <select id="goalType">
+      <select id="goalType" onchange="toggleResetDayVisibility();">
         <option value="savings">Savings</option>
         <option value="spending">Spending</option>
       </select>
@@ -164,29 +164,35 @@
         type="number"
         id="goalResetDay"
         placeholder="Reset Day (1-31)"
-        required
+        style="display: none"
       />
       <button type="submit">Create Goal</button>
     </form>
 
+    <script>
+      function toggleResetDayVisibility() {
+        var goalType = document.getElementById("goalType").value;
+        var resetDayInput = document.getElementById("goalResetDay");
+        if (goalType === "spending") {
+          resetDayInput.style.display = "block";
+          resetDayInput.required = true;
+        } else {
+          resetDayInput.style.display = "none";
+          resetDayInput.required = false;
+          resetDayInput.value = ""; // Clear value when not required
+        }
+      }
+    </script>
+
+    <!-- Form to Update a Goal -->
     <!-- Form to Update a Goal -->
     <h3>Update Goal</h3>
     <form id="updateGoalForm">
       <input type="text" id="updateGoalId" placeholder="Goal ID" required />
-      <select id="updateGoalType">
-        <option value="savings">Savings</option>
-        <option value="spending">Spending</option>
-      </select>
       <input
         type="number"
         id="updateGoalTarget"
         placeholder="New Target Amount"
-        required
-      />
-      <input
-        type="number"
-        id="updateGoalResetDay"
-        placeholder="New Reset Day (1-31)"
         required
       />
       <button type="submit">Update Goal</button>
@@ -564,16 +570,12 @@
         .addEventListener("submit", async (event) => {
           event.preventDefault();
           const goalId = document.getElementById("updateGoalId").value.trim();
-          const goalType = document.getElementById("updateGoalType").value;
           const goalTarget = parseFloat(
             document.getElementById("updateGoalTarget").value,
           );
-          const goalResetDay = parseInt(
-            document.getElementById("updateGoalResetDay").value,
-            10,
-          );
+
           try {
-            await updateGoal(goalId, goalType, goalTarget, goalResetDay);
+            await updateGoal(goalId, { goalTarget }); // Updated to match new backend expectations
             alert("Goal updated successfully!");
           } catch (error) {
             alert("Error updating goal: " + error.message);

@@ -81,7 +81,7 @@ exports.createGoal = async (req, res) => {
 
 exports.updateGoal = async (req, res) => {
   const { id } = req.params;
-  const { goalType, goalTarget, goalResetDay } = req.body;
+  const { goalTarget } = req.body;  // Accept only goalTarget in the request
 
   try {
     const goal = await Goal.findById(id);
@@ -93,17 +93,10 @@ exports.updateGoal = async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized to update this goal' });
     }
 
-    // Always update goalType and goalTarget as they're required for both goal types
-    goal.goalType = goalType.toLowerCase();
+    // Update the goalTarget as it's the only allowed update
     goal.goalTarget = goalTarget;
 
-    // Conditionally update goalResetDay for 'spending' goals
-    if (goalType.toLowerCase() === 'spending') {
-      goal.goalResetDay = goalResetDay;
-    } else {
-      goal.goalResetDay = null;
-    }
-
+    // Save the goal and update the status accordingly
     await goal.save();
     await checkAndUpdateGoalStatus(id);
 

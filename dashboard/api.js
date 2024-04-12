@@ -485,9 +485,9 @@ async function createGoal(categoryId, goalType, goalTarget, goalResetDay) {
   }
 }
 
-async function updateGoal(goalId, goalType, goalTarget, goalResetDay) {
+async function updateGoal(goalId, goalTarget) {
   try {
-    const body = { goalType, goalTarget, goalResetDay };
+    const body = { goalTarget };
     const goal = await makeFetchRequest(`/goals/${goalId}`, {
       method: "PATCH",
       body: JSON.stringify(body),
