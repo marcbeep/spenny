@@ -1,7 +1,14 @@
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://spenny-6e54c38e0b23.herokuapp.com';
-// const API_URL = 'https://spenny-6e54c38e0b23.herokuapp.com';
 
 // Helper  functions
+
+function updateUI() {
+    fetchAllAccounts();
+    fetchUserCategories();
+    fetchAllTransactions();
+    fetchAllGoals();
+    fetchAndDisplayAnalytics();
+}
 
 function displayList(elementId, items, formatter) {
     const listElement = document.getElementById(elementId);
@@ -15,6 +22,12 @@ function displayList(elementId, items, formatter) {
         listItem.textContent = formatter(item); // Use formatter function to get display text
         listElement.appendChild(listItem);
     });
+}
+
+function createListItem(title, value) {
+    const listItem = document.createElement('li');
+    listItem.textContent = `${title}: ${value}`;
+    return listItem;
 }
 
 async function fetchAndDisplayAnalytics() {
@@ -42,26 +55,6 @@ async function fetchAndDisplayAnalytics() {
     } catch (error) {
         console.error('Error fetching all-time analytics:', error);
     }
-}
-
-function createListItem(title, value) {
-    const listItem = document.createElement('li');
-    listItem.textContent = `${title}: ${value}`;
-    return listItem;
-}
-
-function createListItem(title, value) {
-    const listItem = document.createElement('li');
-    listItem.textContent = `${title}: ${value}`;
-    return listItem;
-}
-
-function updateUI() {
-    fetchAllAccounts();
-    fetchUserCategories();
-    fetchAllTransactions();
-    fetchAllGoals();
-    fetchAndDisplayAnalytics();
 }
 
 async function makeFetchRequest(path, options = {}) {
@@ -282,6 +275,16 @@ async function calculateAllTimeAnalytics() {
 
 // Budget functions
 
+async function fetchReadyToAssign() {
+    try {
+        const result = await makeFetchRequest(`/budget/readyToAssign`, { method: 'GET' });
+        console.log('Ready to Assign:', result);
+        // Optionally: Display the Ready to Assign amount in the UI
+    } catch (error) {
+        console.error('Error fetching Ready to Assign amount:', error);
+    }
+}
+
 async function assignMoneyToCategory(categoryId, amount) {
     try {
         const result = await makeFetchRequest(`/budget/assignToCategory`, {
@@ -318,16 +321,6 @@ async function removeMoneyFromCategory(categoryId, amount) {
         // Optionally: Update UI to reflect the updated category balance
     } catch (error) {
         console.error('Error removing money from category:', error);
-    }
-}
-
-async function fetchReadyToAssign() {
-    try {
-        const result = await makeFetchRequest(`/budget/readyToAssign`, { method: 'GET' });
-        console.log('Ready to Assign:', result);
-        // Optionally: Display the Ready to Assign amount in the UI
-    } catch (error) {
-        console.error('Error fetching Ready to Assign amount:', error);
     }
 }
 
