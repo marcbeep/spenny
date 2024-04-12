@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Success</title>
+    <title>Dev Page</title>
     <script src="api.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Success!</h1>
+    <h1>Dev Page</h1>
     <p id="userEmail"></p>
     <button onclick="logoutUser()">Logout</button>
     <img id="userProfilePicture" src="" alt="Profile Picture" style="width:100px;height:100px;">
@@ -56,6 +56,35 @@
         </select>
         <input type="number" id="accountBalance" placeholder="Initial Balance" required>
         <button type="submit">Add Account</button>
+    </form>
+
+    <!-- Form to Update an Account -->
+    <h3>update account</h3>
+    <form id="updateAccountForm">
+        <input type="text" id="updateAccountId" placeholder="Account ID" required>
+        <input type="text" id="updateAccountTitle" placeholder="New Title">
+        <select id="updateAccountType">
+            <option value="spending">Spending</option>
+            <option value="tracking">Tracking</option>
+        </select>
+        <input type="number" id="updateAccountBalance" placeholder="New Balance">
+        <button type="submit">Update Account</button>
+    </form>
+
+    <!-- Form to Archive an Account -->
+    <h3>archive account</h3>
+    <form id="archiveAccountForm">
+        <input type="text" id="archiveAccountId" placeholder="Account ID" required>
+        <button type="submit">Archive Account</button>
+    </form>
+
+    <!-- Form to Move Money Between Accounts -->
+    <h3>move money between accounts</h3>
+    <form id="moveMoneyForm">
+        <input type="text" id="fromAccountId" placeholder="From Account ID" required>
+        <input type="text" id="toAccountId" placeholder="To Account ID" required>
+        <input type="number" id="moveAmount" placeholder="Amount" required>
+        <button type="submit">Move Money</button>
     </form>
 
     <h3>account list</h3>
@@ -159,7 +188,62 @@
                 document.getElementById('accountBalance').value = '';
             }
         });
-        
+
+        // Update an Account
+        document.getElementById('updateAccountForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const accountId = document.getElementById('updateAccountId').value.trim();
+            const accountTitle = document.getElementById('updateAccountTitle').value.trim();
+            const accountType = document.getElementById('updateAccountType').value;
+            const accountBalance = parseFloat(document.getElementById('updateAccountBalance').value);
+
+            const updatedData = {};
+            if (accountTitle) updatedData.accountTitle = accountTitle;
+            if (accountType) updatedData.accountType = accountType;
+            if (!isNaN(accountBalance)) updatedData.accountBalance = accountBalance;
+
+            try {
+                await updateAccount(accountId, updatedData);
+                alert('Account updated successfully!');
+                updateUI(); // Refresh account list
+            } catch (error) {
+                alert('Error updating account: ' + error.message);
+            }
+        });
+
+        // Archive an Account
+        document.getElementById('archiveAccountForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const accountId = document.getElementById('archiveAccountId').value.trim();
+            try {
+                await archiveAccount(accountId);
+                alert('Account archived successfully!');
+                updateUI(); // Refresh account list
+            } catch (error) {
+                alert('Error archiving account: ' + error.message);
+            }
+        });
+
+        // Move Money Between Accounts
+        document.getElementById('moveMoneyForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const fromAccountId = document.getElementById('fromAccountId').value.trim();
+            const toAccountId = document.getElementById('toAccountId').value.trim();
+            const amount = parseFloat(document.getElementById('moveAmount').value);
+
+            if (!isNaN(amount)) {
+                try {
+                    await moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount);
+                    alert('Money moved successfully!');
+                    updateUI(); // Refresh account balances
+                } catch (error) {
+                    alert('Error moving money: ' + error.message);
+                }
+            } else {
+                alert('Please enter a valid amount.');
+            }
+        });
+
         // add transaction
         document.getElementById('addTransactionForm').addEventListener('submit', async (event) => {
             event.preventDefault();
