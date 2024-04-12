@@ -408,7 +408,8 @@ async function fetchAllGoals() {
     try {
         const goals = await makeFetchRequest('/goals', { method: 'GET' });
         console.log('Goals fetched:', goals);
-        // Optionally: Update UI with fetched goals
+        displayList('goalsList', goals, goal => 
+            `${goal._id} / ${goal.goalTitle} / cat: £${goal.goalCategory} / type: £${goal.goalType} / target: £${goal.goalTarget} / status: £${goal.goalStatus} / reset: ${goal.goalResetDay}`);
     } catch (error) {
         console.error('Error fetching goals:', error);
     }
@@ -446,7 +447,7 @@ async function updateGoal(goalId, goalType, goalTarget, goalResetDay) {
             body: JSON.stringify(body)
         });
         console.log('Goal updated:', goal);
-        // Optionally: Refresh the UI to show the updated goal details
+        updateUI();
     } catch (error) {
         console.error('Error updating goal:', error);
     }
@@ -456,7 +457,7 @@ async function deleteGoal(goalId) {
     try {
         await makeFetchRequest(`/goals/${goalId}`, { method: 'DELETE' });
         console.log('Goal deleted successfully');
-        // Optionally: Update UI to remove the deleted goal
+        updateUI();
     } catch (error) {
         console.error('Error deleting goal:', error);
     }

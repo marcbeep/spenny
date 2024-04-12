@@ -85,6 +85,45 @@
     <h3>cat list</h3>
     <ul id="categoriesList"></ul>
 
+    <h1>Goals</h1>
+
+    <!-- Form to Create a Goal -->
+    <h3>Create Goal</h3>
+    <form id="createGoalForm">
+        <input type="text" id="goalCategoryId" placeholder="Category ID" required>
+        <select id="goalType">
+            <option value="savings">Savings</option>
+            <option value="spending">Spending</option>
+        </select>
+        <input type="number" id="goalTarget" placeholder="Target Amount" required>
+        <input type="number" id="goalResetDay" placeholder="Reset Day (1-31)" required>
+        <button type="submit">Create Goal</button>
+    </form>
+
+    <!-- Form to Update a Goal -->
+    <h3>Update Goal</h3>
+    <form id="updateGoalForm">
+        <input type="text" id="updateGoalId" placeholder="Goal ID" required>
+        <select id="updateGoalType">
+            <option value="savings">Savings</option>
+            <option value="spending">Spending</option>
+        </select>
+        <input type="number" id="updateGoalTarget" placeholder="New Target Amount" required>
+        <input type="number" id="updateGoalResetDay" placeholder="New Reset Day (1-31)" required>
+        <button type="submit">Update Goal</button>
+    </form>
+
+    <!-- Form to Delete a Goal -->
+    <h3>Delete Goal</h3>
+    <form id="deleteGoalForm">
+        <input type="text" id="deleteGoalId" placeholder="Goal ID" required>
+        <button type="submit">Delete Goal</button>
+    </form>
+
+    <!-- Display list of Goals -->
+    <h3>Goal List</h3>
+    <ul id="goalsList"></ul>
+
     <h1>accounts</h1>
     <h3>add account</h3>
     <form id="addAccountForm">
@@ -286,6 +325,65 @@
                 updateUI(); // Refresh UI to reflect changes
             } catch (error) {
                 alert('Error updating category: ' + error.message);
+            }
+        });
+
+        // GOALS RELATED FUNCTIONS
+                document.addEventListener('DOMContentLoaded', async () => {
+            updateUI(); // Call to update all UI components
+            await displayGoals(); // New function to display goals
+        });
+
+        async function displayGoals() {
+            try {
+                const goals = await fetchAllGoals();
+                displayList('goalsList', goals, goal => 
+                    `${goal._id} / ${goal.goalTitle} / cat: £${goal.goalCategory} / type: £${goal.goalType} / target: £${goal.goalTarget} / status: £${goal.goalStatus} / reset: ${goal.goalResetDay}`);
+            } catch (error) {
+                console.error('Failed to fetch goals:', error);
+                document.getElementById('goalsList').innerHTML = '<li>Error fetching goals.</li>';
+            }
+        }
+
+        document.getElementById('createGoalForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const categoryId = document.getElementById('goalCategoryId').value.trim();
+            const goalType = document.getElementById('goalType').value;
+            const goalTarget = parseFloat(document.getElementById('goalTarget').value);
+            const goalResetDay = parseInt(document.getElementById('goalResetDay').value, 10);
+            try {
+                await createGoal(categoryId, goalType, goalTarget, goalResetDay);
+                alert('Goal created successfully!');
+                updateUI();
+            } catch (error) {
+                alert('Error creating goal: ' + error.message);
+            }
+        });
+
+        document.getElementById('updateGoalForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const goalId = document.getElementById('updateGoalId').value.trim();
+            const goalType = document.getElementById('updateGoalType').value;
+            const goalTarget = parseFloat(document.getElementById('updateGoalTarget').value);
+            const goalResetDay = parseInt(document.getElementById('updateGoalResetDay').value, 10);
+            try {
+                await updateGoal(goalId, goalType, goalTarget, goalResetDay);
+                alert('Goal updated successfully!');
+                updateUI();
+            } catch (error) {
+                alert('Error updating goal: ' + error.message);
+            }
+        });
+
+        document.getElementById('deleteGoalForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const goalId = document.getElementById('deleteGoalId').value.trim();
+            try {
+                await deleteGoal(goalId);
+                alert('Goal deleted successfully!');
+                updateUI();
+            } catch (error) {
+                alert('Error deleting goal: ' + error.message);
             }
         });
 
