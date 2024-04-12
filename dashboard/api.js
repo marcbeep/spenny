@@ -3,11 +3,12 @@ const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:300
 // Helper  functions
 
 function updateUI() {
-    fetchAllAccounts();
-    fetchUserCategories();
-    fetchAllTransactions();
-    fetchAllGoals();
     fetchAndDisplayAnalytics();
+    fetchReadyToAssign();
+    fetchUserCategories();
+    fetchAllGoals();
+    fetchAllAccounts();
+    fetchAllTransactions();
 }
 
 function displayList(elementId, items, formatter) {
@@ -17,12 +18,18 @@ function displayList(elementId, items, formatter) {
         return;
     }
     listElement.innerHTML = ''; // Clear existing content
-    items.forEach(item => {
-        const listItem = document.createElement('li');
-        listItem.textContent = formatter(item); // Use formatter function to get display text
-        listElement.appendChild(listItem);
-    });
+
+    if (Array.isArray(items) && items.length > 0) {
+        items.forEach(item => {
+            const listItem = document.createElement('li');
+            listItem.textContent = formatter(item); // Use formatter function to get display text
+            listElement.appendChild(listItem);
+        });
+    } else {
+        listElement.innerHTML = '<li>Empty list</li>'; // Handle empty or incorrect items array
+    }
 }
+
 
 function createListItem(title, value) {
     const listItem = document.createElement('li');
@@ -141,7 +148,6 @@ async function fetchAllAccounts() {
     try {
         const accounts = await makeFetchRequest('/accounts');
         console.log('All Accounts:', accounts);
-        // Update UI with these accounts
         displayList('accountsList', accounts, account => 
             `${account._id} / ${account.accountTitle} / ${account.accountType} / ${account.accountStatus} / £${account.accountBalance}`);
     } catch (error) {
@@ -153,7 +159,6 @@ async function fetchSingleAccount(accountId) {
     try {
         const account = await makeFetchRequest(`/accounts/${accountId}`);
         console.log('Single Account:', account);
-        // Optionally: Display this account details in the UI
     } catch (error) {
         console.error('Error fetching single account:', error);
     }
@@ -178,7 +183,7 @@ async function archiveAccount(accountId) {
             method: 'POST' // Ensure the correct HTTP method based on your backend
         });
         console.log(`Account ${accountId} archived.`);
-        updateUI(); // Refresh the account list
+        updateUI();
     } catch (error) {
         alert('Error archiving account:', error.message);
     }
@@ -191,7 +196,7 @@ async function updateAccount(accountId, updatedData) {
             body: JSON.stringify(updatedData)
         });
         console.log('Account Updated:', updatedAccount);
-        updateUI(); // Refresh the account list
+        updateUI();
     } catch (error) {
         alert('Error updating account:', error.message);
     }
@@ -204,7 +209,7 @@ async function moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount) {
             body: JSON.stringify({ fromAccountId, toAccountId, amount })
         });
         console.log('Money moved successfully:', result);
-        updateUI(); // Optionally refresh both accounts to reflect the new balances
+        updateUI();
     } catch (error) {
         alert('Error moving money between accounts:', error.message);
     }
@@ -216,7 +221,6 @@ async function calculateTotalSpend() {
     try {
         const result = await makeFetchRequest('/analytics/totalSpend', { method: 'GET' });
         console.log('Total Spend:', result);
-        // Optionally: Update UI with total spend data
     } catch (error) {
         console.error('Error calculating total spend:', error);
     }
@@ -226,7 +230,6 @@ async function calculateSpendingByCategory() {
     try {
         const result = await makeFetchRequest('/analytics/spendByCategory', { method: 'GET' });
         console.log('Spending by Category:', result);
-        // Optionally: Update UI with spending by category data
     } catch (error) {
         console.error('Error calculating spending by category:', error);
     }
@@ -236,7 +239,6 @@ async function calculateNetWorth() {
     try {
         const result = await makeFetchRequest('/analytics/networth', { method: 'GET' });
         console.log('Net Worth:', result);
-        // Optionally: Display net worth in the UI
     } catch (error) {
         console.error('Error calculating net worth:', error);
     }
@@ -246,7 +248,6 @@ async function calculateIncomeVsExpenses() {
     try {
         const result = await makeFetchRequest('/analytics/incomeVsExpenses', { method: 'GET' });
         console.log('Income vs. Expenses:', result);
-        // Optionally: Display income vs. expenses data in the UI
     } catch (error) {
         console.error('Error calculating income vs. expenses:', error);
     }
@@ -256,7 +257,6 @@ async function calculateSavingsRate() {
     try {
         const result = await makeFetchRequest('/analytics/savingsRate', { method: 'GET' });
         console.log('Savings Rate:', result);
-        // Optionally: Update UI with savings rate data
     } catch (error) {
         console.error('Error calculating savings rate:', error);
     }
@@ -279,10 +279,10 @@ async function fetchReadyToAssign() {
     try {
         const response = await makeFetchRequest(`/budget/readyToAssign`, { method: 'GET' });
         console.log('Ready to Assign:', response);
-        return response;  // Make sure to return the response
+        return response;  
     } catch (error) {
         console.error('Error fetching Ready to Assign amount:', error);
-        throw error;  // Re-throw the error to handle it in the calling function
+        throw error;
     }
 }
 
@@ -293,7 +293,7 @@ async function assignMoneyToCategory(categoryId, amount) {
             body: JSON.stringify({ categoryId, amount })
         });
         console.log('Money assigned:', result);
-        // Optionally: Update UI with new category and budget details
+        updateUI();
     } catch (error) {
         console.error('Error assigning money to category:', error);
     }
@@ -306,7 +306,7 @@ async function moveMoneyBetweenCategories(fromCategoryId, toCategoryId, amount) 
             body: JSON.stringify({ fromCategoryId, toCategoryId, amount })
         });
         console.log('Money moved between categories:', result);
-        // Optionally: Refresh categories to reflect new balances
+        updateUI();
     } catch (error) {
         console.error('Error moving money between categories:', error);
     }
@@ -319,7 +319,7 @@ async function removeMoneyFromCategory(categoryId, amount) {
             body: JSON.stringify({ categoryId, amount })
         });
         console.log('Money removed from category:', result);
-        // Optionally: Update UI to reflect the updated category balance
+        updateUI();
     } catch (error) {
         console.error('Error removing money from category:', error);
     }
@@ -332,7 +332,7 @@ async function moveToReadyToAssign(categoryId, amount) {
             body: JSON.stringify({ categoryId, amount })
         });
         console.log('Money moved to Ready to Assign:', result);
-        // Optionally: Update UI to show the updated Ready to Assign and category balances
+        updateUI();
     } catch (error) {
         console.error('Error moving money to Ready to Assign:', error);
     }
@@ -343,6 +343,7 @@ async function moveToReadyToAssign(categoryId, amount) {
 async function fetchUserCategories() {
     try {
         const categories = await makeFetchRequest('/categories');
+        console.log('User Categories:', categories);
         displayList('categoriesList', categories, category => 
             `${category._id} / ${category.categoryTitle} / activity: £${category.categoryActivity} / assigned: £${category.categoryAssigned} / available: £${category.categoryAvailable}`);
     } catch (error) {
@@ -356,9 +357,7 @@ async function addCategory(categoryTitle) {
             method: 'POST',
             body: JSON.stringify({ title: categoryTitle }),
         });
-
         console.log('New Category Added:', newCategory);
-
         updateUI();
     } catch (error) {
         alert(error.message);
@@ -382,7 +381,7 @@ async function updateCategory(categoryId, newTitle) {
         });
 
         console.log('Updated Category:', updatedCategory);
-        updateUI(); // Optionally refresh the categories list to reflect the update
+        updateUI();
     } catch (error) {
         alert(error.message);
     }
@@ -396,7 +395,7 @@ async function deleteCategory(categoryId, newCategoryId) {
         });
 
         console.log(`Category ${categoryId} deleted.`);
-        updateUI(); // Refresh categories list to reflect the deletion
+        updateUI(); 
     } catch (error) {
         alert(error.message);
     }
@@ -409,7 +408,7 @@ async function fetchAllGoals() {
         const goals = await makeFetchRequest('/goals', { method: 'GET' });
         console.log('Goals fetched:', goals);
         displayList('goalsList', goals, goal => 
-            `${goal._id} / ${goal.goalTitle} / cat: £${goal.goalCategory} / type: £${goal.goalType} / target: £${goal.goalTarget} / status: £${goal.goalStatus} / reset: ${goal.goalResetDay}`);
+            `${goal._id} / ${goal.goalCategory.categoryTitle} / type: ${goal.goalType} / target: £${goal.goalTarget} / status: ${goal.goalStatus} / reset: ${goal.goalResetDay}`);
     } catch (error) {
         console.error('Error fetching goals:', error);
     }
@@ -419,7 +418,6 @@ async function fetchSingleGoal(goalId) {
     try {
         const goal = await makeFetchRequest(`/goals/${goalId}`, { method: 'GET' });
         console.log('Goal fetched:', goal);
-        // Optionally: Display the goal details in the UI
     } catch (error) {
         console.error('Error fetching goal:', error);
     }
@@ -469,7 +467,6 @@ async function fetchAllTransactions() {
     try {
         const transactions = await makeFetchRequest('/transactions');
         console.log('All Transactions:', transactions);
-        // Update UI with these transactions
         displayList('transactionsList', transactions, transaction => 
             `${transaction._id} / ${transaction.transactionTitle} / ${transaction.transactionType} / £${transaction.transactionAmount}`);
     } catch (error) {
@@ -481,7 +478,6 @@ async function fetchSingleTransaction(transactionId) {
     try {
         const transaction = await makeFetchRequest(`/transactions/${transactionId}`);
         console.log('Single Transaction:', transaction);
-        // Optionally: Display this transaction details in the UI
     } catch (error) {
         console.error('Error fetching single transaction:', error);
     }

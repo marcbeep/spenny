@@ -209,7 +209,7 @@
         const userProfilePicture = sessionStorage.getItem('userProfilePicture');
     
         if (!userEmail || !userProfilePicture) {
-            window.location.href = 'index.html'; // Redirect if no user data found
+            window.location.href = 'index.html';
         } else {
             document.getElementById('userEmail').textContent = `Email: ${userEmail}`;
             document.getElementById('userProfilePicture').src = userProfilePicture;
@@ -217,9 +217,8 @@
 
         // BUDGET RELATED FUNCTIONS
         document.addEventListener('DOMContentLoaded', async () => {
-            updateUI();  // Existing call to update UI
             try {
-                await displayReadyToAssign();  // Try to display the ready to assign value
+                await displayReadyToAssign();  
             } catch (error) {
                 console.error('Failed to fetch Ready to Assign:', error);
                 document.getElementById('readyToAssignValue').textContent = 'Error fetching data';
@@ -242,7 +241,6 @@
             try {
                 await assignMoneyToCategory(categoryId, amount);
                 alert('Money assigned successfully!');
-                updateUI(); // Refresh UI
             } catch (error) {
                 alert('Error assigning money: ' + error.message);
             }
@@ -256,7 +254,6 @@
             try {
                 await moveMoneyBetweenCategories(fromCategoryId, toCategoryId, amount);
                 alert('Money moved between categories successfully!');
-                updateUI(); // Refresh UI
             } catch (error) {
                 alert('Error moving money between categories: ' + error.message);
             }
@@ -269,7 +266,6 @@
             try {
                 await removeMoneyFromCategory(categoryId, amount);
                 alert('Money removed from category successfully!');
-                updateUI(); // Refresh UI
             } catch (error) {
                 alert('Error removing money from category: ' + error.message);
             }
@@ -282,7 +278,6 @@
             try {
                 await moveToReadyToAssign(categoryId, amount);
                 alert('Money moved to Ready to Assign successfully!');
-                updateUI(); // Refresh UI
             } catch (error) {
                 alert('Error moving money to Ready to Assign: ' + error.message);
             }
@@ -307,7 +302,6 @@
             try {
                 await deleteCategory(categoryId);
                 alert('Category deleted successfully!');
-                updateUI(); // Refresh UI to reflect changes
             } catch (error) {
                 alert('Error deleting category: ' + error.message);
             }
@@ -322,7 +316,6 @@
             try {
                 await updateCategory(categoryId, newTitle);
                 alert('Category updated successfully!');
-                updateUI(); // Refresh UI to reflect changes
             } catch (error) {
                 alert('Error updating category: ' + error.message);
             }
@@ -330,7 +323,6 @@
 
         // GOALS RELATED FUNCTIONS
                 document.addEventListener('DOMContentLoaded', async () => {
-            updateUI(); // Call to update all UI components
             await displayGoals(); // New function to display goals
         });
 
@@ -354,7 +346,6 @@
             try {
                 await createGoal(categoryId, goalType, goalTarget, goalResetDay);
                 alert('Goal created successfully!');
-                updateUI();
             } catch (error) {
                 alert('Error creating goal: ' + error.message);
             }
@@ -369,7 +360,6 @@
             try {
                 await updateGoal(goalId, goalType, goalTarget, goalResetDay);
                 alert('Goal updated successfully!');
-                updateUI();
             } catch (error) {
                 alert('Error updating goal: ' + error.message);
             }
@@ -381,7 +371,6 @@
             try {
                 await deleteGoal(goalId);
                 alert('Goal deleted successfully!');
-                updateUI();
             } catch (error) {
                 alert('Error deleting goal: ' + error.message);
             }
@@ -417,7 +406,6 @@
             try {
                 await updateAccount(accountId, updatedData);
                 alert('Account updated successfully!');
-                updateUI(); // Refresh account list
             } catch (error) {
                 alert('Error updating account: ' + error.message);
             }
@@ -430,7 +418,6 @@
             try {
                 await archiveAccount(accountId);
                 alert('Account archived successfully!');
-                updateUI(); // Refresh account list
             } catch (error) {
                 alert('Error archiving account: ' + error.message);
             }
@@ -447,7 +434,6 @@
                 try {
                     await moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount);
                     alert('Money moved successfully!');
-                    updateUI(); // Refresh account balances
                 } catch (error) {
                     alert('Error moving money: ' + error.message);
                 }
