@@ -585,16 +585,14 @@ async function deleteTransaction(transactionId) {
 
 async function updateTransaction(transactionId, updatedData) {
   try {
-    const updatedTransaction = await makeFetchRequest(
-      `/transactions/${transactionId}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify(updatedData),
-      },
-    );
+    const updatedTransaction = await makeFetchRequest(`/transactions/${transactionId}`, {
+      method: "PATCH",
+      body: JSON.stringify(updatedData),
+    });
     console.log("Transaction Updated:", updatedTransaction);
-    updateUI();
+    updateUI(); // Update UI to reflect changes
   } catch (error) {
     alert("Error updating transaction:", error.message);
   }
 }
+

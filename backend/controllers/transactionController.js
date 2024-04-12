@@ -226,86 +226,131 @@ exports.deleteSingleTransaction = async (req, res) => {
   }
 };
 
+// exports.updateSingleTransaction = async (req, res) => {
+//   const { id } = req.params;
+//   const {
+//     transactionTitle,
+//     transactionType,
+//     transactionAmount,
+//     transactionCategory,
+//     transactionAccount,
+//   } = req.body;
+
+//   const account = await Account.findById(transactionAccount);
+//   if (account.accountStatus === 'archived') {
+//     return res.status(403).json({
+//       error: 'Transaction cannot be edited as it is associated with an archived account.',
+//     });
+//   }
+
+//   const formattedAmount = formatAmount(transactionAmount);
+
+//   if (!mongoose.Types.ObjectId.isValid(id)) return handleNoTransactionFound(res);
+
+//   try {
+//     const transactionToUpdate = await Transaction.findById(id);
+//     if (!transactionToUpdate) return handleNoTransactionFound(res);
+
+//     if (!checkOwnership(transactionToUpdate, req.user._id)) {
+//       return res.status(403).json({ error: 'Unauthorized to modify this transaction' });
+//     }
+
+//     const originalCategory = transactionToUpdate.transactionCategory
+//       ? transactionToUpdate.transactionCategory.toString()
+//       : null;
+//     const newCategory = transactionCategory === '' ? null : transactionCategory;
+
+//     const wasAffectingReadyToAssign = !originalCategory;
+
+//     const originalAmountChange =
+//       transactionToUpdate.transactionType === 'debit'
+//         ? -transactionToUpdate.transactionAmount
+//         : transactionToUpdate.transactionAmount;
+//     const newAmountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
+
+//     if (wasAffectingReadyToAssign) {
+//       await updateUserBudgetForTransaction(req.user._id, -originalAmountChange, true);
+//     } else {
+//       await updateBalances({
+//         categoryId: originalCategory,
+//         accountId: transactionToUpdate.transactionAccount,
+//         amount: originalAmountChange,
+//         transactionType: transactionToUpdate.transactionType,
+//         revert: true,
+//       });
+//     }
+
+//     if (newCategory) {
+//       await updateBalances({
+//         categoryId: newCategory,
+//         accountId: transactionAccount,
+//         amount: newAmountChange,
+//         transactionType,
+//       });
+//     } else {
+//       await updateUserBudgetForTransaction(req.user._id, newAmountChange, true);
+//     }
+
+//     transactionToUpdate.transactionTitle = transactionTitle;
+//     transactionToUpdate.transactionType = transactionType;
+//     transactionToUpdate.transactionAmount = formattedAmount;
+//     transactionToUpdate.transactionCategory = newCategory;
+//     transactionToUpdate.transactionAccount = transactionAccount;
+//     await transactionToUpdate.save();
+
+//     if (originalCategory) {
+//       await checkAndUpdateGoalStatus(null, originalCategory);
+//     }
+//     if (newCategory && newCategory !== originalCategory) {
+//       await checkAndUpdateGoalStatus(null, newCategory);
+//     }
+
+//     res.status(200).json(transactionToUpdate);
+//   } catch (error) {
+//     console.error('Error updating transaction:', error);
+//     res.status(400).json({ error: 'Failed to update transaction' });
+//   }
+// };
+
 exports.updateSingleTransaction = async (req, res) => {
   const { id } = req.params;
-  const {
-    transactionTitle,
-    transactionType,
-    transactionAmount,
-    transactionCategory,
-    transactionAccount,
-  } = req.body;
-
-  const account = await Account.findById(transactionAccount);
-  if (account.accountStatus === 'archived') {
-    return res.status(403).json({
-      error: 'Transaction cannot be edited as it is associated with an archived account.',
-    });
-  }
-
-  const formattedAmount = formatAmount(transactionAmount);
-
-  if (!mongoose.Types.ObjectId.isValid(id)) return handleNoTransactionFound(res);
+  const { transactionAmount } = req.body; // Only allow transactionAmount to be updated
 
   try {
     const transactionToUpdate = await Transaction.findById(id);
-    if (!transactionToUpdate) return handleNoTransactionFound(res);
+    if (!transactionToUpdate) return res.status(404).json({ error: 'Transaction not found' });
 
     if (!checkOwnership(transactionToUpdate, req.user._id)) {
       return res.status(403).json({ error: 'Unauthorized to modify this transaction' });
     }
 
-    const originalCategory = transactionToUpdate.transactionCategory
-      ? transactionToUpdate.transactionCategory.toString()
-      : null;
-    const newCategory = transactionCategory === '' ? null : transactionCategory;
+    if (transactionToUpdate.transactionAccount.accountStatus === 'archived') {
+      return res.status(403).json({ error: 'Transaction cannot be edited as it is associated with an archived account.' });
+    }
 
-    const wasAffectingReadyToAssign = !originalCategory;
+    const formattedAmount = formatAmount(transactionAmount);
 
-    const originalAmountChange =
-      transactionToUpdate.transactionType === 'debit'
-        ? -transactionToUpdate.transactionAmount
-        : transactionToUpdate.transactionAmount;
-    const newAmountChange = transactionType === 'debit' ? -formattedAmount : formattedAmount;
+    // Calculate the amount change and update balances accordingly
+    const originalAmountChange = transactionToUpdate.transactionType === 'debit' ? -transactionToUpdate.transactionAmount : transactionToUpdate.transactionAmount;
+    const newAmountChange = transactionToUpdate.transactionType === 'debit' ? -formattedAmount : formattedAmount;
+    const amountChange = newAmountChange - originalAmountChange;
 
-    if (wasAffectingReadyToAssign) {
-      await updateUserBudgetForTransaction(req.user._id, -originalAmountChange, true);
-    } else {
+    if (transactionToUpdate.transactionCategory) {
       await updateBalances({
-        categoryId: originalCategory,
+        categoryId: transactionToUpdate.transactionCategory,
         accountId: transactionToUpdate.transactionAccount,
-        amount: originalAmountChange,
-        transactionType: transactionToUpdate.transactionType,
-        revert: true,
-      });
-    }
-
-    if (newCategory) {
-      await updateBalances({
-        categoryId: newCategory,
-        accountId: transactionAccount,
-        amount: newAmountChange,
-        transactionType,
+        amount: amountChange,
+        transactionType: transactionToUpdate.transactionType
       });
     } else {
-      await updateUserBudgetForTransaction(req.user._id, newAmountChange, true);
+      await updateUserBudgetForTransaction(req.user._id, amountChange, true);
     }
 
-    transactionToUpdate.transactionTitle = transactionTitle;
-    transactionToUpdate.transactionType = transactionType;
+    // Only update the transaction amount
     transactionToUpdate.transactionAmount = formattedAmount;
-    transactionToUpdate.transactionCategory = newCategory;
-    transactionToUpdate.transactionAccount = transactionAccount;
     await transactionToUpdate.save();
 
-    if (originalCategory) {
-      await checkAndUpdateGoalStatus(null, originalCategory);
-    }
-    if (newCategory && newCategory !== originalCategory) {
-      await checkAndUpdateGoalStatus(null, newCategory);
-    }
-
-    res.status(200).json(transactionToUpdate);
+    res.status(200).json({ message: 'Transaction updated successfully', transaction: transactionToUpdate });
   } catch (error) {
     console.error('Error updating transaction:', error);
     res.status(400).json({ error: 'Failed to update transaction' });

@@ -331,31 +331,13 @@
       <button type="submit">Delete Transaction</button>
     </form>
 
-    <h3>update trans</h3>
-    <form id="updateTransactionForm">
-      <input
-        type="text"
-        id="updateTransactionId"
-        placeholder="Transaction ID"
-        required
-      />
-      <input type="text" id="updateTransactionTitle" placeholder="New Title" />
-      <select id="updateTransactionType">
-        <option value="debit">Debit</option>
-        <option value="credit">Credit</option>
-      </select>
-      <input
-        type="number"
-        id="updateTransactionAmount"
-        placeholder="New Amount"
-      />
-      <input
-        type="text"
-        id="updateTransactionCategory"
-        placeholder="New Category ID"
-      />
-      <button type="submit">Update Transaction</button>
-    </form>
+    <h3>Update Transaction Amount</h3>
+<form id="updateTransactionForm">
+  <input type="text" id="updateTransactionId" placeholder="Transaction ID" required />
+  <input type="number" id="updateTransactionAmount" placeholder="New Amount" required />
+  <button type="submit">Update Amount</button>
+</form>
+
 
     <h3>trans list</h3>
     <ul id="transactionsList"></ul>
@@ -756,50 +738,27 @@
           }
         });
 
-      // Update a Transaction
-      document
-        .getElementById("updateTransactionForm")
-        .addEventListener("submit", async (event) => {
-          event.preventDefault();
-          const transactionId = document
-            .getElementById("updateTransactionId")
-            .value.trim();
-          const transactionTitle = document
-            .getElementById("updateTransactionTitle")
-            .value.trim();
-          const transactionType = document.getElementById(
-            "updateTransactionType",
-          ).value;
-          const transactionAmount = parseFloat(
-            document.getElementById("updateTransactionAmount").value,
-          );
-          const transactionCategory = document.getElementById(
-            "updateTransactionCategory",
-          ).value;
+      // Update a Transaction Amount
+document.getElementById("updateTransactionForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const transactionId = document.getElementById("updateTransactionId").value.trim();
+  const transactionAmount = parseFloat(document.getElementById("updateTransactionAmount").value);
 
-          const updatedData = {};
-          if (transactionTitle) updatedData.transactionTitle = transactionTitle;
-          if (transactionType) updatedData.transactionType = transactionType;
-          if (!isNaN(transactionAmount))
-            updatedData.transactionAmount = transactionAmount;
-          if (transactionCategory)
-            updatedData.transactionCategory = transactionCategory;
+  if (!transactionId || isNaN(transactionAmount)) {
+    alert("Please provide a valid Transaction ID and Amount.");
+    return;
+  }
 
-          if (
-            transactionId &&
-            (transactionTitle ||
-              transactionType ||
-              !isNaN(transactionAmount) ||
-              transactionCategory)
-          ) {
-            await updateTransaction(transactionId, updatedData);
-            document.getElementById("updateTransactionId").value = "";
-            document.getElementById("updateTransactionTitle").value = "";
-            document.getElementById("updateTransactionAmount").value = "";
-            document.getElementById("updateTransactionCategory").value = "";
-            fetchAllTransactions(); // Refresh the transaction list
-          }
-        });
+  try {
+    await updateTransaction(transactionId, { transactionAmount });
+    alert("Transaction amount updated successfully!");
+    document.getElementById("updateTransactionId").value = "";
+    document.getElementById("updateTransactionAmount").value = "";
+    updateUI(); // Assuming this function refreshes the UI including transaction list
+  } catch (error) {
+    alert("Error updating transaction amount: " + error.message);
+  }
+});
 
       document.addEventListener("DOMContentLoaded", () => {
         updateUI();
