@@ -238,64 +238,35 @@ async function moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount) {
 
 // Analytics functions
 
-async function calculateTotalSpend() {
+async function fetchOutgoingsPastWeek() {
   try {
-    const result = await makeFetchRequest("/analytics/totalSpend", {
+    const response = await makeFetchRequest("/analytics/outgoingsPastWeek", {
       method: "GET",
     });
-    console.log("Total Spend:", result);
+    console.log("All-Time Analytics:", response);
+    return response;
   } catch (error) {
-    console.error("Error calculating total spend:", error);
+    console.error("Error calculating all-time analytics:", error);
+    return null;
   }
 }
 
-async function calculateSpendingByCategory() {
+async function fetchSpendByCategoryPastWeek() {
   try {
-    const result = await makeFetchRequest("/analytics/spendByCategory", {
+    const response = await makeFetchRequest("/analytics/spendByCategoryPastWeek", {
       method: "GET",
     });
-    console.log("Spending by Category:", result);
+    console.log("All-Time Analytics:", response);
+    return response;
   } catch (error) {
-    console.error("Error calculating spending by category:", error);
+    console.error("Error calculating all-time analytics:", error);
+    return null;
   }
 }
 
-async function calculateNetWorth() {
+async function fetchAllTimeAnalytics() {
   try {
-    const result = await makeFetchRequest("/analytics/networth", {
-      method: "GET",
-    });
-    console.log("Net Worth:", result);
-  } catch (error) {
-    console.error("Error calculating net worth:", error);
-  }
-}
-
-async function calculateIncomeVsExpenses() {
-  try {
-    const result = await makeFetchRequest("/analytics/incomeVsExpenses", {
-      method: "GET",
-    });
-    console.log("Income vs. Expenses:", result);
-  } catch (error) {
-    console.error("Error calculating income vs. expenses:", error);
-  }
-}
-
-async function calculateSavingsRate() {
-  try {
-    const result = await makeFetchRequest("/analytics/savingsRate", {
-      method: "GET",
-    });
-    console.log("Savings Rate:", result);
-  } catch (error) {
-    console.error("Error calculating savings rate:", error);
-  }
-}
-
-async function calculateAllTimeAnalytics() {
-  try {
-    const response = await makeFetchRequest("/analytics/alltime", {
+    const response = await makeFetchRequest("/analytics/allTimeAnalytics", {
       method: "GET",
     });
     console.log("All-Time Analytics:", response);
