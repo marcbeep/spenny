@@ -42,7 +42,7 @@ function createListItem(title, value) {
 async function fetchAndDisplayAnalytics() {
   try {
     // Fetch all-time analytics data
-    const allTimeAnalyticsResult = await calculateAllTimeAnalytics();
+    const allTimeAnalyticsResult = await fetchAllTimeAnalytics();
 
     // Access the analytics list in the DOM
     const analyticsList = document.getElementById("analyticsList");
