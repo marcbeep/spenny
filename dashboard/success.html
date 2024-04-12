@@ -545,6 +545,7 @@
         .getElementById("createGoalForm")
         .addEventListener("submit", async (event) => {
           event.preventDefault();
+
           const categoryId = document
             .getElementById("goalCategoryId")
             .value.trim();
@@ -552,12 +553,25 @@
           const goalTarget = parseFloat(
             document.getElementById("goalTarget").value,
           );
-          const goalResetDay = parseInt(
-            document.getElementById("goalResetDay").value,
-            10,
-          );
+          let goalResetDay = document.getElementById("goalResetDay").value;
+
+          // Prepare the body with mandatory fields
+          const body = { categoryId, goalType, goalTarget };
+
+          // Only add goalResetDay if the goal type is 'spending' and it's not empty
+          if (goalType === "spending" && goalResetDay !== "") {
+            body.goalResetDay = goalResetDay;
+          } else {
+            body.goalResetDay = null; // Ensure goalResetDay is null if not applicable
+          }
+
           try {
-            await createGoal(categoryId, goalType, goalTarget, goalResetDay);
+            await createGoal(
+              categoryId,
+              goalType,
+              goalTarget,
+              body.goalResetDay,
+            );
             alert("Goal created successfully!");
           } catch (error) {
             alert("Error creating goal: " + error.message);
@@ -572,7 +586,7 @@
           const goalTarget = parseFloat(
             document.getElementById("updateGoalTarget").value,
           );
-
+          console.log(goalId, goalTarget);
           try {
             await updateGoal(goalId, { goalTarget }); // Updated to match new backend expectations
             alert("Goal updated successfully!");

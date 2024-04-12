@@ -475,11 +475,23 @@ async function fetchSingleGoal(goalId) {
 
 async function createGoal(categoryId, goalType, goalTarget, goalResetDay) {
   try {
-    const body = { categoryId, goalType, goalTarget, goalResetDay };
+    // Start with the basic body object
+    const body = {
+      categoryId,
+      goalType,
+      goalTarget,
+    };
+
+    // Add goalResetDay only if it's a 'spending' type and the day is valid
+    if (goalType === "spending" && goalResetDay) {
+      body.goalResetDay = goalResetDay;
+    }
+
     const goal = await makeFetchRequest("/goals", {
       method: "POST",
       body: JSON.stringify(body),
     });
+
     console.log("Goal created:", goal);
     updateUI();
   } catch (error) {
@@ -490,6 +502,7 @@ async function createGoal(categoryId, goalType, goalTarget, goalResetDay) {
 async function updateGoal(goalId, goalTarget) {
   try {
     const body = { goalTarget };
+    console.log(body);
     const goal = await makeFetchRequest(`/goals/${goalId}`, {
       method: "PATCH",
       body: JSON.stringify(body),
