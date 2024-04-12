@@ -208,16 +208,18 @@ async function archiveAccount(accountId) {
   }
 }
 
-async function updateAccount(accountId, updatedData) {
+async function updateAccount(accountId, accountBalance) {
   try {
-    const updatedAccount = await makeFetchRequest(`/accounts/${accountId}`, {
+    const body = { accountBalance };
+    const account = await makeFetchRequest(`/accounts/${accountId}`, {
       method: "PATCH",
-      body: JSON.stringify(updatedData),
+      body: JSON.stringify(body),
     });
-    console.log("Account Updated:", updatedAccount);
+    console.log("Account updated:", account);
     updateUI();
   } catch (error) {
-    alert("Error updating account:", error.message);
+    console.error("Error updating account:", error);
+    alert("Error updating account: " + error.message);
   }
 }
 
