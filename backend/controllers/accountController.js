@@ -209,7 +209,9 @@ exports.updateAccount = async (req, res) => {
     }
 
     if (!checkOwnership(accountToUpdate, req.user._id)) {
-      return res.status(403).json({ error: 'User does not have permission to update this account' });
+      return res
+        .status(403)
+        .json({ error: 'User does not have permission to update this account' });
     }
 
     if (typeof accountBalance !== 'number') {

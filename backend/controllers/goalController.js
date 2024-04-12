@@ -81,7 +81,7 @@ exports.createGoal = async (req, res) => {
 
 exports.updateGoal = async (req, res) => {
   const { id } = req.params;
-  const { goalTarget } = req.body;  // Accept only goalTarget in the request
+  const { goalTarget } = req.body; // Accept only goalTarget in the request
 
   try {
     const goal = await Goal.findById(id);

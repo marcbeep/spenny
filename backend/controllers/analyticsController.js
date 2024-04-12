@@ -6,73 +6,148 @@ const Category = require('../models/categoryModel');
 
 const moment = require('moment');
 
-function getCurrentWeekStartEnd() {
-  const startOfWeek = moment().startOf('week').toDate();
-  const endOfWeek = moment().endOf('week').toDate();
-  return { startOfWeek, endOfWeek };
-}
+// Networth (Past week)
 
-async function calculateTotalSpendForUserId(userId) {
-  const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
+async function calculateNetWorthPerDayForLastWeek(userId) {
+  const now = moment().endOf('day');
+  const sevenDaysAgo = moment().subtract(6, 'days').startOf('day');
 
-  const transactions = await Transaction.find({
-    user: userId,
-    transactionType: 'debit',
-    createdAt: { $gte: startOfWeek, $lte: endOfWeek },
-  });
+  // Fetch all accounts with their balances and creation dates
+  const accounts = await Account.find({ user: userId }, 'accountBalance createdAt');
 
-  const totalSpend = transactions.reduce(
-    (acc, transaction) => acc + transaction.transactionAmount,
-    0,
-  );
-
-  const analytics = await Analytics.findOne({
-    user: userId,
-    analyticsType: 'totalSpend',
-    periodStart: startOfWeek,
-    periodEnd: endOfWeek,
-  });
-
-  if (analytics) {
-    analytics.analyticsData = totalSpend;
-    await analytics.save();
-  } else {
-    await Analytics.create({
-      user: userId,
-      analyticsType: 'totalSpend',
-      period: 'weekly',
-      periodStart: startOfWeek,
-      periodEnd: endOfWeek,
-      analyticsData: totalSpend,
-      analyticsLastCalculated: new Date(),
-    });
-  }
-
-  return totalSpend;
-}
-
-exports.calculateTotalSpend = async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    const totalSpend = await calculateTotalSpendForUserId(userId);
-    res.status(200).json({ message: 'Total spend calculated successfully.', totalSpend });
-  } catch (error) {
-    console.error('Error calculating total spend:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-async function calculateSpendingByCategoryForUserId(userId) {
-  const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
-
-  // Attempt to aggregate transactions by category within the specified period
+  // Fetch all transactions that might have affected the accounts in the last week
   const transactions = await Transaction.aggregate([
     {
       $match: {
-        user: userId,
+        user: new mongoose.Types.ObjectId(userId),
+        createdAt: { $gte: sevenDaysAgo.toDate(), $lte: now.toDate() },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+        transactions: { $push: { amount: '$transactionAmount', account: '$transactionAccount' } },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  let dailyNetWorth = new Array(7).fill(0);
+  accounts.forEach((account) => {
+    let accountCreationDay = moment(account.createdAt).startOf('day');
+    let accountStartDay = Math.max(0, accountCreationDay.diff(sevenDaysAgo, 'days'));
+
+    // Initialize the daily net worth with the account balance if the account was existing at the start of the period
+    for (let i = accountStartDay; i < 7; i++) {
+      dailyNetWorth[i] += account.accountBalance;
+    }
+  });
+
+  transactions.forEach((day) => {
+    let dayIndex = moment(day._id).diff(sevenDaysAgo, 'days');
+    day.transactions.forEach((transaction) => {
+      // Check if the transaction's account was created before the transaction date
+      let account = accounts.find((a) => a._id.equals(transaction.account));
+      if (account && moment(account.createdAt).startOf('day') <= moment(day._id)) {
+        dailyNetWorth[dayIndex] += transaction.amount;
+      }
+    });
+  });
+
+  // Accumulate the net worth day by day
+  for (let i = 1; i < 7; i++) {
+    dailyNetWorth[i] += dailyNetWorth[i - 1];
+  }
+
+  return dailyNetWorth;
+}
+
+exports.networthPastWeek = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const netWorthPerDay = await calculateNetWorthPerDayForLastWeek(userId);
+    res.status(200).json({
+      message: 'Net worth per day calculated successfully.',
+      netWorthPerDay,
+    });
+  } catch (error) {
+    console.error('Error calculating net worth per day:', error);
+    res.status(500).json({ error: 'Failed to calculate net worth per day.' });
+  }
+};
+
+// Outgoings (Past week)
+
+const calculateDailyOutgoingsForLastWeek = async (userId) => {
+  const endOfToday = moment().endOf('day'); // Get the end of today to include all of today's transactions
+  const startOfSevenDaysAgo = moment().subtract(6, 'days').startOf('day'); // Start from the beginning of the day, 6 days ago
+
+  console.log(`Calculating from ${startOfSevenDaysAgo.toDate()} to ${endOfToday.toDate()}`);
+
+  const aggregation = await Transaction.aggregate([
+    {
+      $match: {
+        user: new mongoose.Types.ObjectId(userId),
         transactionType: 'debit',
-        createdAt: { $gte: startOfWeek, $lte: endOfWeek },
+        createdAt: { $gte: startOfSevenDaysAgo.toDate(), $lte: endOfToday.toDate() },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+        totalAmount: { $sum: '$transactionAmount' },
+      },
+    },
+    { $sort: { _id: 1 } }, // Ensure results are sorted by date ascending
+  ]);
+
+  console.log(`Aggregation Results: ${JSON.stringify(aggregation)}`);
+
+  // Initialize an array for the 7 days with zeros
+  let totals = new Array(7).fill(0);
+
+  // Map each aggregation result to the correct day in the totals array
+  aggregation.forEach((item) => {
+    let dayIndex = moment(item._id).diff(startOfSevenDaysAgo, 'days'); // Calculate the index based on the difference in days
+    if (dayIndex >= 0 && dayIndex < 7) {
+      totals[dayIndex] = item.totalAmount; // Set the total amount for the corresponding day
+    }
+  });
+
+  return totals;
+};
+
+exports.outgoingsPastWeek = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const dailyOutgoings = await calculateDailyOutgoingsForLastWeek(userId);
+    res.status(200).json({
+      message: 'Daily outgoings calculated successfully.',
+      dailyOutgoings,
+    });
+  } catch (error) {
+    console.error('Error calculating daily outgoings:', error);
+    res.status(500).json({ error: 'Failed to calculate daily outgoings.' });
+  }
+};
+
+// Spend by Category (Past week)
+
+async function calculateSpendingByCategoryForUserId(userId) {
+  // Use moment.js to get the exact current time and calculate 7 days back
+  const now = moment().endOf('day'); // Consider up to the end of today
+  const sevenDaysAgo = moment().subtract(6, 'days').startOf('day'); // Go back 6 days, start of that day
+
+  console.log(`Calculating spending from ${sevenDaysAgo.toDate()} to ${now.toDate()}`);
+
+  // Aggregate transactions by category within this time frame
+  const transactions = await Transaction.aggregate([
+    {
+      $match: {
+        user: new mongoose.Types.ObjectId(userId),
+        transactionType: 'debit',
+        createdAt: { $gte: sevenDaysAgo.toDate(), $lte: now.toDate() },
       },
     },
     {
@@ -83,210 +158,45 @@ async function calculateSpendingByCategoryForUserId(userId) {
     },
   ]);
 
-  const categories = await Category.find({ user: userId });
+  // Fetch all categories for this user, sorted alphabetically by title
+  const categories = await Category.find({ user: userId }).sort('categoryTitle');
 
-  let analyticsData;
-  if (transactions.length > 0) {
-    const transactionsMap = transactions.reduce(
-      (acc, { _id, totalAmount }) => ({
-        ...acc,
-        [_id.toString()]: totalAmount,
-      }),
-      {},
-    );
-
-    // Map categories to include totalAmount from transactions or default to 0
-    analyticsData = categories.map(({ _id, categoryTitle }) => ({
-      categoryId: _id,
-      categoryTitle,
-      totalAmount: transactionsMap[_id.toString()] || 0,
-    }));
-  } else {
-    // If no transactions, all categories have a totalAmount of 0
-    analyticsData = categories.map(({ _id, categoryTitle }) => ({
-      categoryId: _id,
-      categoryTitle,
-      totalAmount: 0,
-    }));
-  }
-
-  let analytics = await Analytics.findOneAndUpdate(
-    {
-      user: userId,
-      analyticsType: 'spendingByCategory',
-      periodStart: { $gte: startOfWeek },
-      periodEnd: { $lte: endOfWeek },
-    },
-    {
-      $set: {
-        analyticsData,
-        analyticsLastCalculated: new Date(),
-      },
-    },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+  // Prepare arrays for categories and their corresponding total spend
+  let categoriesArray = [];
+  let totalSpendArray = [];
+  const transactionsMap = transactions.reduce(
+    (acc, { _id, totalAmount }) => ({
+      ...acc,
+      [_id.toString()]: totalAmount,
+    }),
+    {},
   );
 
-  return analyticsData;
+  categories.forEach(({ _id, categoryTitle }) => {
+    categoriesArray.push(categoryTitle);
+    totalSpendArray.push(transactionsMap[_id.toString()] || 0);
+  });
+
+  return { categories: categoriesArray, total_spend: totalSpendArray };
 }
 
-exports.calculateSpendingByCategory = async (req, res) => {
+exports.spendByCategoryPastWeek = async (req, res) => {
   const userId = req.user._id;
 
   try {
-    const analyticsData = await calculateSpendingByCategoryForUserId(userId);
-    res
-      .status(200)
-      .json({ message: 'Spending by category analytics updated successfully.', analyticsData });
+    const { categories, total_spend } = await calculateSpendingByCategoryForUserId(userId);
+    res.status(200).json({
+      message: 'Spending by category analytics updated successfully.',
+      categories,
+      total_spend,
+    });
   } catch (error) {
     console.error('Error calculating spending by category:', error);
     res.status(500).json({ error: 'Failed to calculate spending by category.' });
   }
 };
 
-async function calculateNetWorthForUserId(userId) {
-  const accounts = await Account.find({ user: userId });
-  const netWorth = accounts.reduce((acc, account) => acc + account.accountBalance, 0);
-
-  await Analytics.findOneAndUpdate(
-    { user: userId, analyticsType: 'netWorth' },
-    {
-      user: userId,
-      analyticsType: 'netWorth',
-      period: 'weekly',
-      analyticsData: netWorth,
-      analyticsLastCalculated: new Date(),
-    },
-    { upsert: true },
-  );
-
-  return netWorth;
-}
-
-exports.calculateNetWorth = async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    const netWorth = await calculateNetWorthForUserId(userId);
-    res.status(200).json({ message: 'Net worth calculated successfully.', netWorth });
-  } catch (error) {
-    console.error('Error calculating net worth:', error);
-    res.status(500).json({ error: 'Failed to calculate net worth.' });
-  }
-};
-
-async function calculateIncomeVsExpensesForUserId(userId) {
-  const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
-  const results = await Transaction.aggregate([
-    {
-      $match: {
-        user: userId,
-        createdAt: { $gte: startOfWeek, $lte: endOfWeek },
-      },
-    },
-    {
-      $group: {
-        _id: '$transactionType',
-        total: { $sum: '$transactionAmount' },
-      },
-    },
-  ]);
-
-  let income = 0,
-    expenses = 0;
-  results.forEach((result) => {
-    if (result._id === 'credit') {
-      income = result.total;
-    } else if (result._id === 'debit') {
-      expenses = result.total;
-    }
-  });
-
-  const analytics = await Analytics.findOneAndUpdate(
-    { user: userId, analyticsType: 'incomeVsExpenses' },
-    {
-      user: userId,
-      analyticsType: 'incomeVsExpenses',
-      period: 'weekly',
-      analyticsData: { income, expenses },
-      analyticsLastCalculated: new Date(),
-    },
-    { upsert: true },
-  );
-
-  return { income, expenses };
-}
-
-exports.calculateIncomeVsExpenses = async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    const { income, expenses } = await calculateIncomeVsExpensesForUserId(userId);
-    res
-      .status(200)
-      .json({ message: 'Income vs. expenses calculated successfully.', income, expenses });
-  } catch (error) {
-    console.error('Error calculating income vs. expenses:', error);
-    res.status(500).json({ error: 'Failed to calculate income vs. expenses.' });
-  }
-};
-
-async function calculateSavingsRateForUserId(userId) {
-  const { startOfWeek, endOfWeek } = getCurrentWeekStartEnd();
-  const results = await Transaction.aggregate([
-    {
-      $match: {
-        user: userId,
-        createdAt: { $gte: startOfWeek, $lte: endOfWeek },
-      },
-    },
-    {
-      $group: {
-        _id: '$transactionType',
-        total: { $sum: '$transactionAmount' },
-      },
-    },
-  ]);
-
-  let income = 0,
-    expenses = 0;
-  results.forEach((result) => {
-    if (result._id === 'credit') {
-      income += result.total;
-    } else if (result._id === 'debit') {
-      expenses += result.total;
-    }
-  });
-
-  let savingsRate = income > 0 ? ((income - expenses) / income) * 100 : 0;
-
-  await Analytics.findOneAndUpdate(
-    { user: userId, analyticsType: 'savingsRate' },
-    {
-      $set: {
-        analyticsData: savingsRate,
-        analyticsLastCalculated: new Date(),
-        period: 'weekly',
-        periodStart: startOfWeek,
-        periodEnd: endOfWeek,
-      },
-    },
-    { upsert: true },
-  );
-
-  return savingsRate;
-}
-
-exports.calculateSavingsRate = async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    const savingsRate = await calculateSavingsRateForUserId(userId);
-    res.status(200).json({ message: 'Savings rate calculated successfully.', savingsRate });
-  } catch (error) {
-    console.error('Error calculating savings rate:', error);
-    res.status(500).json({ error: 'Failed to calculate savings rate.' });
-  }
-};
+// All time analytics
 
 async function calculateAllTimeAnalyticsForUserId(userId) {
   try {
@@ -324,7 +234,7 @@ async function calculateAllTimeAnalyticsForUserId(userId) {
   }
 }
 
-exports.calculateAllTimeAnalytics = async (req, res) => {
+exports.allTimeAnalytics = async (req, res) => {
   const userId = req.user._id;
 
   try {

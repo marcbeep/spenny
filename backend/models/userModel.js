@@ -64,12 +64,13 @@ userSchema.statics.signup = async function (userEmail, userPassword, userProfile
   } catch (error) {
     let errorMessage = 'Signup failed due to an unexpected error.';
     if (error.errors) {
-      errorMessage = Object.values(error.errors).map(val => val.message).join(', ');
+      errorMessage = Object.values(error.errors)
+        .map((val) => val.message)
+        .join(', ');
     }
     throw new Error(errorMessage);
   }
 };
-
 
 userSchema.statics.login = async function (userEmail, userPassword) {
   const user = await this.findOne({ userEmail });

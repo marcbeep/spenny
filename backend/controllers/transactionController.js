@@ -24,12 +24,7 @@ const updateUserBudgetForTransaction = async (userId, amount, addToReadyToAssign
   await budget.save();
 };
 
-const updateBalances = async ({
-  categoryId,
-  accountId,
-  amount,
-  transactionType
-}) => {
+const updateBalances = async ({ categoryId, accountId, amount, transactionType }) => {
   // Calculate the amount change based on the transaction type: subtract for debit, add for credit
   const amountChange = transactionType === 'debit' ? -amount : amount;
 
@@ -43,7 +38,7 @@ const updateBalances = async ({
     await Category.findByIdAndUpdate(categoryId, {
       $inc: {
         categoryActivity: Math.abs(amount), // Increment activity by the absolute transaction amount
-        categoryAvailable: amountChange    // Update available funds based on the transaction type
+        categoryAvailable: amountChange, // Update available funds based on the transaction type
       },
     });
   }
@@ -52,11 +47,10 @@ const updateBalances = async ({
   const account = await Account.findById(accountId);
   if (account) {
     let newBalance = account.accountBalance + amountChange; // Compute the new balance
-    account.accountBalance = formatAmount(newBalance);      // Format the new balance for consistency
-    await account.save();                                   // Save the updated account
+    account.accountBalance = formatAmount(newBalance); // Format the new balance for consistency
+    await account.save(); // Save the updated account
   }
 };
-
 
 async function verifyCategoryId(userId, categoryId) {
   const category = await Category.findOne({ _id: categoryId, user: userId });
@@ -325,14 +319,20 @@ exports.updateSingleTransaction = async (req, res) => {
     }
 
     if (transactionToUpdate.transactionAccount.accountStatus === 'archived') {
-      return res.status(403).json({ error: 'Transaction cannot be edited as it is associated with an archived account.' });
+      return res.status(403).json({
+        error: 'Transaction cannot be edited as it is associated with an archived account.',
+      });
     }
 
     const formattedAmount = formatAmount(transactionAmount);
 
     // Calculate the amount change and update balances accordingly
-    const originalAmountChange = transactionToUpdate.transactionType === 'debit' ? -transactionToUpdate.transactionAmount : transactionToUpdate.transactionAmount;
-    const newAmountChange = transactionToUpdate.transactionType === 'debit' ? -formattedAmount : formattedAmount;
+    const originalAmountChange =
+      transactionToUpdate.transactionType === 'debit'
+        ? -transactionToUpdate.transactionAmount
+        : transactionToUpdate.transactionAmount;
+    const newAmountChange =
+      transactionToUpdate.transactionType === 'debit' ? -formattedAmount : formattedAmount;
     const amountChange = newAmountChange - originalAmountChange;
 
     if (transactionToUpdate.transactionCategory) {
@@ -340,7 +340,7 @@ exports.updateSingleTransaction = async (req, res) => {
         categoryId: transactionToUpdate.transactionCategory,
         accountId: transactionToUpdate.transactionAccount,
         amount: amountChange,
-        transactionType: transactionToUpdate.transactionType
+        transactionType: transactionToUpdate.transactionType,
       });
     } else {
       await updateUserBudgetForTransaction(req.user._id, amountChange, true);
@@ -350,7 +350,9 @@ exports.updateSingleTransaction = async (req, res) => {
     transactionToUpdate.transactionAmount = formattedAmount;
     await transactionToUpdate.save();
 
-    res.status(200).json({ message: 'Transaction updated successfully', transaction: transactionToUpdate });
+    res
+      .status(200)
+      .json({ message: 'Transaction updated successfully', transaction: transactionToUpdate });
   } catch (error) {
     console.error('Error updating transaction:', error);
     res.status(400).json({ error: 'Failed to update transaction' });

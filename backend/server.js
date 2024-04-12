@@ -37,15 +37,16 @@ const app = express();
 //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
 // }));
 
-app.use(cors({
-  origin: '*',  // Allow all origins
-  credentials: true,
-  allowedHeaders: 'Content-Type,Authorization',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
-}));
+app.use(
+  cors({
+    origin: '*', // Allow all origins
+    credentials: true,
+    allowedHeaders: 'Content-Type,Authorization',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  }),
+);
 
 app.use(express.json());
-
 
 app.use((req, res, next) => {
   next();

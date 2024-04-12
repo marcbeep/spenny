@@ -1,22 +1,18 @@
 const express = require('express');
 const {
-  calculateTotalSpend,
-  calculateSpendingByCategory,
-  calculateNetWorth,
-  calculateIncomeVsExpenses,
-  calculateSavingsRate,
-  calculateAllTimeAnalytics,
+  networthPastWeek,
+  outgoingsPastWeek,
+  spendByCategoryPastWeek,
+  allTimeAnalytics,
 } = require('../controllers/analyticsController');
 const requireAuth = require('../middleware/requireAuth');
 
 const router = express.Router();
 router.use(requireAuth);
 
-router.get('/totalSpend', calculateTotalSpend);
-router.get('/spendByCategory', calculateSpendingByCategory);
-router.get('/networth', calculateNetWorth);
-router.get('/incomeVsExpenses', calculateIncomeVsExpenses);
-router.get('/savingsRate', calculateSavingsRate);
-router.get('/alltime', calculateAllTimeAnalytics);
+router.get('/networthPastWeek', networthPastWeek);
+router.get('/outgoingsPastWeek', outgoingsPastWeek);
+router.get('/spendByCategoryPastWeek', spendByCategoryPastWeek);
+router.get('/allTimeAnalytics', allTimeAnalytics);
 
 module.exports = router;
