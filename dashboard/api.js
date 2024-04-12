@@ -178,7 +178,7 @@ async function archiveAccount(accountId) {
             method: 'POST' // Ensure the correct HTTP method based on your backend
         });
         console.log(`Account ${accountId} archived.`);
-        fetchAllAccounts(); // Refresh the account list
+        updateUI(); // Refresh the account list
     } catch (error) {
         alert('Error archiving account:', error.message);
     }
@@ -191,7 +191,7 @@ async function updateAccount(accountId, updatedData) {
             body: JSON.stringify(updatedData)
         });
         console.log('Account Updated:', updatedAccount);
-        fetchAllAccounts(); // Refresh the account list
+        updateUI(); // Refresh the account list
     } catch (error) {
         alert('Error updating account:', error.message);
     }
@@ -204,7 +204,7 @@ async function moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount) {
             body: JSON.stringify({ fromAccountId, toAccountId, amount })
         });
         console.log('Money moved successfully:', result);
-        fetchAllAccounts(); // Optionally refresh both accounts to reflect the new balances
+        updateUI(); // Optionally refresh both accounts to reflect the new balances
     } catch (error) {
         alert('Error moving money between accounts:', error.message);
     }
@@ -381,7 +381,7 @@ async function updateCategory(categoryId, newTitle) {
         });
 
         console.log('Updated Category:', updatedCategory);
-        fetchUserCategories(); // Optionally refresh the categories list to reflect the update
+        updateUI(); // Optionally refresh the categories list to reflect the update
     } catch (error) {
         alert(error.message);
     }
@@ -395,7 +395,7 @@ async function deleteCategory(categoryId, newCategoryId) {
         });
 
         console.log(`Category ${categoryId} deleted.`);
-        fetchUserCategories(); // Refresh categories list to reflect the deletion
+        updateUI(); // Refresh categories list to reflect the deletion
     } catch (error) {
         alert(error.message);
     }

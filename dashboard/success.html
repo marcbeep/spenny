@@ -14,16 +14,40 @@
 
     <ul id="analyticsList"></ul>
 
-    <h2>Add a New Category</h2>
+    <h1>categories</h1>
+
+    <h3>add new cat</h3>
     <form id="addCategoryForm">
         <input type="text" id="newCategoryTitle" placeholder="Category Title" required>
         <button type="submit">Add Category</button>
     </form>
 
-    <h2>Your Categories</h2>
+    <!-- Form to Delete a Category -->
+    <h3>delete cat</h3>
+    <form id="deleteCategoryForm">
+        <label for="deleteCategoryId">Category ID:</label>
+        <input type="text" id="deleteCategoryId" name="deleteCategoryId" required>
+        <button type="submit">Delete Category</button>
+    </form>
+
+    <!-- Form to Update a Category -->
+    <h3>update cat</h3>
+    <form id="updateCategoryForm">
+        <label for="updateCategoryId">Category ID:</label>
+        <input type="text" id="updateCategoryId" name="updateCategoryId" required>
+
+        <label for="newCategoryTitle">New Title:</label>
+        <input type="text" id="newCategoryTitle" name="newCategoryTitle" required>
+
+        <button type="submit">Update Category</button>
+    </form>
+
+
+    <h3>cat list</h3>
     <ul id="categoriesList"></ul>
 
-    <h2>Add a New Account</h2>
+    <h1>accounts</h1>
+    <h3>add account</h3>
     <form id="addAccountForm">
         <input type="text" id="accountTitle" placeholder="Account Title" required>
         <select id="accountType">
@@ -34,10 +58,11 @@
         <button type="submit">Add Account</button>
     </form>
 
-    <h2>Your Accounts</h2>
+    <h3>account list</h3>
     <ul id="accountsList"></ul>
 
-    <h2>Add a New Transaction</h2>
+    <h1>transactions</h1>
+    <h3>add new trans</h3>
     <form id="addTransactionForm">
         <input type="text" id="transactionTitle" placeholder="Transaction Title" required>
         <select id="transactionType">
@@ -50,13 +75,13 @@
         <button type="submit">Add Transaction</button>
     </form>
 
-    <h2>Delete a Transaction</h2>
+    <h3>delete trans</h3>
     <form id="deleteTransactionForm">
         <input type="text" id="deleteTransactionId" placeholder="Transaction ID" required>
         <button type="submit">Delete Transaction</button>
     </form>
 
-    <h2>Update a Transaction</h2>
+    <h3>update trans</h3>
     <form id="updateTransactionForm">
         <input type="text" id="updateTransactionId" placeholder="Transaction ID" required>
         <input type="text" id="updateTransactionTitle" placeholder="New Title">
@@ -69,7 +94,7 @@
         <button type="submit">Update Transaction</button>
     </form>
 
-    <h2>Your Transactions</h2>
+    <h3>trans list</h3>
     <ul id="transactionsList"></ul>
 
     <script>
@@ -82,7 +107,47 @@
             document.getElementById('userEmail').textContent = `Email: ${userEmail}`;
             document.getElementById('userProfilePicture').src = userProfilePicture;
         }
-    
+
+        // add category
+        document.getElementById('addCategoryForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const categoryTitle = document.getElementById('newCategoryTitle').value.trim();
+            if (categoryTitle) {
+                await addCategory(categoryTitle); 
+                document.getElementById('newCategoryTitle').value = ''; // Clear the input field
+            }
+        });
+
+        // delete category
+        document.getElementById('deleteCategoryForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const categoryId = document.getElementById('deleteCategoryId').value;
+
+            try {
+                await deleteCategory(categoryId);
+                alert('Category deleted successfully!');
+                updateUI(); // Refresh UI to reflect changes
+            } catch (error) {
+                alert('Error deleting category: ' + error.message);
+            }
+        });
+
+        // update category
+        document.getElementById('updateCategoryForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const categoryId = document.getElementById('updateCategoryId').value;
+            const newTitle = document.getElementById('newCategoryTitle').value;
+
+            try {
+                await updateCategory(categoryId, newTitle);
+                alert('Category updated successfully!');
+                updateUI(); // Refresh UI to reflect changes
+            } catch (error) {
+                alert('Error updating category: ' + error.message);
+            }
+        });
+
+        // add account
         document.getElementById('addAccountForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const accountTitle = document.getElementById('accountTitle').value.trim();
@@ -94,7 +159,8 @@
                 document.getElementById('accountBalance').value = '';
             }
         });
-    
+        
+        // add transaction
         document.getElementById('addTransactionForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const transactionTitle = document.getElementById('transactionTitle').value.trim();
@@ -114,15 +180,6 @@
                 document.getElementById('transactionAmount').value = '';
                 document.getElementById('transactionCategory').value = '';
                 document.getElementById('transactionAccount').value = '';
-            }
-        });
-    
-        document.getElementById('addCategoryForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const categoryTitle = document.getElementById('newCategoryTitle').value.trim();
-            if (categoryTitle) {
-                await addCategory(categoryTitle); 
-                document.getElementById('newCategoryTitle').value = ''; // Clear the input field
             }
         });
     
@@ -146,7 +203,6 @@
             const transactionAmount = parseFloat(document.getElementById('updateTransactionAmount').value);
             const transactionCategory = document.getElementById('updateTransactionCategory').value;
     
-            // Build the updatedData object with only the fields that are provided
             const updatedData = {};
             if (transactionTitle) updatedData.transactionTitle = transactionTitle;
             if (transactionType) updatedData.transactionType = transactionType;
