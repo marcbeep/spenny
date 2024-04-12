@@ -2,17 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dev Page</title>
+    <title>Success</title>
     <script src="api.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Dev Page</h1>
+    <h1>Success!</h1>
     <p id="userEmail"></p>
     <button onclick="logoutUser()">Logout</button>
     <img id="userProfilePicture" src="" alt="Profile Picture" style="width:100px;height:100px;">
 
     <ul id="analyticsList"></ul>
+
+    <h1>Budget</h1>
+
+    <!-- Display Ready to Assign -->
+    <h3>Ready to Assign:</h3>
+    <p id="readyToAssignValue">Loading...</p>
+
+    <!-- Form to Assign Money to a Category -->
+    <h3>Assign Money to Category</h3>
+    <form id="assignMoneyForm">
+        <input type="text" id="assignCategoryId" placeholder="Category ID" required>
+        <input type="number" id="assignAmount" placeholder="Amount" required>
+        <button type="submit">Assign Money</button>
+    </form>
+
+    <!-- Form to Move Money Between Categories -->
+    <h3>Move Money Between Categories</h3>
+    <form id="moveMoneyBetweenCategoriesForm">
+        <input type="text" id="fromCategoryId" placeholder="From Category ID" required>
+        <input type="text" id="toCategoryId" placeholder="To Category ID" required>
+        <input type="number" id="moveCatAmount" placeholder="Amount" required>
+        <button type="submit">Move Money</button>
+    </form>
+
+    <!-- Form to Remove Money from Category -->
+    <h3>Remove Money from Category</h3>
+    <form id="removeMoneyForm">
+        <input type="text" id="removeCategoryId" placeholder="Category ID" required>
+        <input type="number" id="removeAmount" placeholder="Amount" required>
+        <button type="submit">Remove Money</button>
+    </form>
+
+    <!-- Form to Move Money to Ready to Assign -->
+    <h3>Move Money to Ready to Assign</h3>
+    <form id="moveToReadyToAssignForm">
+        <input type="text" id="moveToReadyCategoryId" placeholder="Category ID" required>
+        <input type="number" id="moveToReadyAmount" placeholder="Amount" required>
+        <button type="submit">Move Money</button>
+    </form>
 
     <h1>categories</h1>
 
@@ -137,6 +176,80 @@
             document.getElementById('userProfilePicture').src = userProfilePicture;
         }
 
+        // BUDGET RELATED FUNCTIONS
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateUI();  // Existing call to update UI
+            try {
+                await displayReadyToAssign();  // Try to display the ready to assign value
+            } catch (error) {
+                console.error('Failed to fetch Ready to Assign:', error);
+                document.getElementById('readyToAssignValue').textContent = 'Error fetching data';
+            }
+        });
+
+        async function displayReadyToAssign() {
+            const result = await fetchReadyToAssign();
+            if (result && result.readyToAssign !== undefined) {
+                document.getElementById('readyToAssignValue').textContent = `£${result.readyToAssign}`;
+            } else {
+                throw new Error('Ready to Assign data is not available');
+            }
+        }
+
+        document.getElementById('assignMoneyForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const categoryId = document.getElementById('assignCategoryId').value.trim();
+            const amount = parseFloat(document.getElementById('assignAmount').value);
+            try {
+                await assignMoneyToCategory(categoryId, amount);
+                alert('Money assigned successfully!');
+                updateUI(); // Refresh UI
+            } catch (error) {
+                alert('Error assigning money: ' + error.message);
+            }
+        });
+
+        document.getElementById('moveMoneyBetweenCategoriesForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const fromCategoryId = document.getElementById('fromCategoryId').value.trim();
+            const toCategoryId = document.getElementById('toCategoryId').value.trim();
+            const amount = parseFloat(document.getElementById('moveCatAmount').value);
+            try {
+                await moveMoneyBetweenCategories(fromCategoryId, toCategoryId, amount);
+                alert('Money moved between categories successfully!');
+                updateUI(); // Refresh UI
+            } catch (error) {
+                alert('Error moving money between categories: ' + error.message);
+            }
+        });
+
+        document.getElementById('removeMoneyForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const categoryId = document.getElementById('removeCategoryId').value.trim();
+            const amount = parseFloat(document.getElementById('removeAmount').value);
+            try {
+                await removeMoneyFromCategory(categoryId, amount);
+                alert('Money removed from category successfully!');
+                updateUI(); // Refresh UI
+            } catch (error) {
+                alert('Error removing money from category: ' + error.message);
+            }
+        });
+
+        document.getElementById('moveToReadyToAssignForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const categoryId = document.getElementById('moveToReadyCategoryId').value.trim();
+            const amount = parseFloat(document.getElementById('moveToReadyAmount').value);
+            try {
+                await moveToReadyToAssign(categoryId, amount);
+                alert('Money moved to Ready to Assign successfully!');
+                updateUI(); // Refresh UI
+            } catch (error) {
+                alert('Error moving money to Ready to Assign: ' + error.message);
+            }
+        });
+
+        // CATEGORIES RELATED FUNCTIONS
         // add category
         document.getElementById('addCategoryForm').addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -176,6 +289,7 @@
             }
         });
 
+        // ACCOUNTS RELATED FUNCTIONS
         // add account
         document.getElementById('addAccountForm').addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -244,6 +358,7 @@
             }
         });
 
+        // TRANSACTIONS RELATED FUNCTIONS
         // add transaction
         document.getElementById('addTransactionForm').addEventListener('submit', async (event) => {
             event.preventDefault();

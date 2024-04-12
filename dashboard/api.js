@@ -277,11 +277,12 @@ async function calculateAllTimeAnalytics() {
 
 async function fetchReadyToAssign() {
     try {
-        const result = await makeFetchRequest(`/budget/readyToAssign`, { method: 'GET' });
-        console.log('Ready to Assign:', result);
-        // Optionally: Display the Ready to Assign amount in the UI
+        const response = await makeFetchRequest(`/budget/readyToAssign`, { method: 'GET' });
+        console.log('Ready to Assign:', response);
+        return response;  // Make sure to return the response
     } catch (error) {
         console.error('Error fetching Ready to Assign amount:', error);
+        throw error;  // Re-throw the error to handle it in the calling function
     }
 }
 
