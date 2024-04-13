@@ -209,17 +209,39 @@ exports.updateAccount = async (req, res) => {
     }
 
     if (!checkOwnership(accountToUpdate, req.user._id)) {
-      return res
-        .status(403)
-        .json({ error: 'User does not have permission to update this account' });
+      return res.status(403).json({ error: 'User does not have permission to update this account' });
     }
 
     if (typeof accountBalance !== 'number') {
       return res.status(400).json({ error: 'Invalid balance value provided' });
     }
 
-    accountToUpdate.accountBalance = formatAmount(accountBalance);
-    await accountToUpdate.save();
+    const currentBalance = accountToUpdate.accountBalance;
+    const newBalance = formatAmount(accountBalance);
+    const balanceDifference = newBalance - currentBalance;
+
+    // Only proceed with updates if there is a balance difference
+    if (balanceDifference !== 0) {
+      accountToUpdate.accountBalance = newBalance;
+
+      // Create a reconciliation transaction
+      const transactionType = balanceDifference > 0 ? 'credit' : 'debit';
+      const reconciliationTitle = balanceDifference > 0 ? 'Balance increase reconciliation' : 'Balance decrease reconciliation';
+      await Transaction.create({
+        user: req.user._id,
+        transactionAccount: accountToUpdate._id,
+        transactionType: transactionType,
+        transactionTitle: `[${accountToUpdate.accountTitle}] ${reconciliationTitle}`,
+        transactionAmount: Math.abs(balanceDifference),
+      });
+
+      // Update the user's budget if it's a spending account
+      if (accountToUpdate.accountType === 'spending') {
+        await updateUserBudget(req.user._id, balanceDifference);
+      }
+
+      await accountToUpdate.save();
+    }
 
     res.status(200).json(accountToUpdate);
   } catch (err) {
