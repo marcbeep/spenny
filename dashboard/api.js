@@ -358,7 +358,7 @@ async function fetchUserCategories() {
       "categoriesList",
       categories,
       (category) =>
-        `${category._id} / ${category.categoryTitle} / activity: £${category.categoryActivity} / assigned: £${category.categoryAssigned} / available: £${category.categoryAvailable}`,
+        `${category._id} / ${category.categoryTitle} / activity: £${category.categoryActivity} / available: £${category.categoryAvailable}`,
     );
   } catch (error) {
     console.error("Error fetching categories:", error);

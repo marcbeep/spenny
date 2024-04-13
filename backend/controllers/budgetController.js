@@ -49,7 +49,7 @@ exports.assignMoneyToCategory = async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized to modify this category' });
     }
 
-    category.categoryAssigned += numericAmount;
+    // category.categoryAssigned += numericAmount;
     category.categoryAvailable += numericAmount;
     await category.save();
 
@@ -186,14 +186,14 @@ exports.moveToReadyToAssign = async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized to modify this category' });
     }
 
-    if (category.categoryAssigned < numericAmount) {
-      return res.status(400).json({ error: 'Insufficient assigned funds in the category.' });
-    }
+    // if (category.categoryAssigned < numericAmount) {
+    //   return res.status(400).json({ error: 'Insufficient assigned funds in the category.' });
+    // }
 
     // Decrease category's assigned funds
-    category.categoryAssigned -= numericAmount;
+    //category.categoryAssigned -= numericAmount;
     // Optionally, adjust categoryAvailable if necessary
-    // category.categoryAvailable -= numericAmount;
+    category.categoryAvailable -= numericAmount;
 
     await category.save();
 
@@ -207,8 +207,8 @@ exports.moveToReadyToAssign = async (req, res) => {
       category: {
         _id: category._id,
         title: category.categoryTitle,
-        assigned: category.categoryAssigned,
-        // available: category.categoryAvailable,
+        // assigned: category.categoryAssigned,
+        available: category.categoryAvailable,
       },
     });
   } catch (error) {

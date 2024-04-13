@@ -14,7 +14,7 @@ exports.addCategory = async (req, res) => {
     const category = await Category.create({
       user: req.user._id,
       categoryTitle: title.toLowerCase(),
-      categoryAssigned: 0,
+      // categoryAssigned: 0,
       categoryAvailable: 0,
       categoryActivity: 0,
     });
