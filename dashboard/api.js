@@ -390,6 +390,7 @@ async function fetchSingleCategory(categoryId) {
 async function updateCategory(categoryId, newTitle) {
   try {
     const body = { title: newTitle }; // Correctly structure the body object
+    console.log(body)
     const updatedCategory = await makeFetchRequest(
       `/categories/${categoryId}`,
       {

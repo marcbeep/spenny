@@ -484,20 +484,29 @@ document.getElementById("deleteCategoryForm").addEventListener("submit", async f
   }
 });
 
-      // update category
-      document
-        .getElementById("updateCategoryForm")
-        .addEventListener("submit", async function (event) {
-          event.preventDefault();
-          const categoryId = document.getElementById("updateCategoryId").value;
-          const newTitle = document.getElementById("newCategoryTitle").value;
+// update category
+document.getElementById("updateCategoryForm").addEventListener("submit", async function (event) {
+  event.preventDefault();
+  const categoryIdElement = document.getElementById("updateCategoryId");
+  const newTitleElement = document.getElementById("newCategoryTitle");
 
-          try {
-            await updateCategory(categoryId, newTitle);
-          } catch (error) {
-            alert("Error updating category: " + error.message);
-          }
-        });
+  console.log("Category ID Element:", categoryIdElement);
+  console.log("New Title Element:", newTitleElement);
+
+  const categoryId = categoryIdElement.value.trim();
+  const newTitle = newTitleElement.value.trim();
+
+  console.log("Category ID:", categoryId);
+  console.log("New Title:", newTitle);
+
+  try {
+    await updateCategory(categoryId, newTitle);
+  } catch (error) {
+    console.error("Error updating category:", error);
+    alert("Error updating category: " + error.message);
+  }
+});
+
 
       // GOALS RELATED FUNCTIONS
       document.addEventListener("DOMContentLoaded", async () => {
