@@ -209,7 +209,9 @@ exports.updateAccount = async (req, res) => {
     }
 
     if (!checkOwnership(accountToUpdate, req.user._id)) {
-      return res.status(403).json({ error: 'User does not have permission to update this account' });
+      return res
+        .status(403)
+        .json({ error: 'User does not have permission to update this account' });
     }
 
     if (typeof accountBalance !== 'number') {
@@ -226,7 +228,10 @@ exports.updateAccount = async (req, res) => {
 
       // Create a reconciliation transaction
       const transactionType = balanceDifference > 0 ? 'credit' : 'debit';
-      const reconciliationTitle = balanceDifference > 0 ? 'Balance increase reconciliation' : 'Balance decrease reconciliation';
+      const reconciliationTitle =
+        balanceDifference > 0
+          ? 'Balance increase reconciliation'
+          : 'Balance decrease reconciliation';
       await Transaction.create({
         user: req.user._id,
         transactionAccount: accountToUpdate._id,
