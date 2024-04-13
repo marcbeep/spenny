@@ -389,7 +389,6 @@
           );
           try {
             await assignMoneyToCategory(categoryId, amount);
-            alert("Money assigned successfully!");
           } catch (error) {
             alert("Error assigning money: " + error.message);
           }
@@ -414,7 +413,6 @@
               toCategoryId,
               amount,
             );
-            alert("Money moved between categories successfully!");
           } catch (error) {
             alert("Error moving money between categories: " + error.message);
           }
@@ -432,7 +430,6 @@
           );
           try {
             await removeMoneyFromCategory(categoryId, amount);
-            alert("Money removed from category successfully!");
           } catch (error) {
             alert("Error removing money from category: " + error.message);
           }
@@ -450,7 +447,6 @@
           );
           try {
             await moveToReadyToAssign(categoryId, amount);
-            alert("Money moved to Ready to Assign successfully!");
           } catch (error) {
             alert("Error moving money to Ready to Assign: " + error.message);
           }
@@ -480,7 +476,6 @@
 
           try {
             await deleteCategory(categoryId);
-            alert("Category deleted successfully!");
           } catch (error) {
             alert("Error deleting category: " + error.message);
           }
@@ -496,7 +491,6 @@
 
           try {
             await updateCategory(categoryId, newTitle);
-            alert("Category updated successfully!");
           } catch (error) {
             alert("Error updating category: " + error.message);
           }
@@ -555,7 +549,6 @@
               goalTarget,
               body.goalResetDay,
             );
-            alert("Goal created successfully!");
           } catch (error) {
             alert("Error creating goal: " + error.message);
           }
@@ -572,7 +565,6 @@
           console.log(goalId, goalTarget);
           try {
             await updateGoal(goalId, { goalTarget }); // Updated to match new backend expectations
-            alert("Goal updated successfully!");
           } catch (error) {
             alert("Error updating goal: " + error.message);
           }
@@ -585,7 +577,6 @@
           const goalId = document.getElementById("deleteGoalId").value.trim();
           try {
             await deleteGoal(goalId);
-            alert("Goal deleted successfully!");
           } catch (error) {
             alert("Error deleting goal: " + error.message);
           }
@@ -628,7 +619,6 @@
             try {
               console.log(typeof accountBalance, accountBalance);
               await updateAccount(accountId, accountBalance);
-              alert("Account balance updated successfully!");
             } catch (error) {
               alert("Error updating account balance: " + error.message);
             }
@@ -647,7 +637,6 @@
             .value.trim();
           try {
             await archiveAccount(accountId);
-            alert("Account archived successfully!");
           } catch (error) {
             alert("Error archiving account: " + error.message);
           }
@@ -675,7 +664,6 @@
                 toAccountId,
                 amount,
               );
-              alert("Money moved successfully!");
             } catch (error) {
               alert("Error moving money: " + error.message);
             }
@@ -752,7 +740,6 @@ document.getElementById("updateTransactionForm").addEventListener("submit", asyn
 
   try {
     await updateTransaction(transactionId, { transactionAmount });
-    alert("Transaction amount updated successfully!");
     document.getElementById("updateTransactionId").value = "";
     document.getElementById("updateTransactionAmount").value = "";
     updateUI(); // Assuming this function refreshes the UI including transaction list
