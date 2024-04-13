@@ -65,26 +65,57 @@
         <!-- /header -->
 
         <!-- MAIN PAGE CONTENT HERE-->
-        <!-- Centering the daisyUI component -->
-        <div class="col-span-12 flex justify-center pt-10">
-          <div class="stats bg-primary text-primary-content">
+        <!-- Ready to assign -->
+        <div class="col-span-12 flex justify-center pt-8">
+          <div class="stats">
             <div class="stat">
-              <div class="stat-title">Account balance</div>
-              <div class="stat-value">$89,400</div>
+              <div class="stat-title">Accounts</div>
+              <div class="stat-value">£15,000</div>
               <div class="stat-actions">
-                <button class="btn btn-sm btn-success">Add funds</button>
+                <button class="btn btn-sm">Add funds</button>
               </div>
             </div>
             <div class="stat">
-              <div class="stat-title">Current balance</div>
-              <div class="stat-value">$89,400</div>
+              <div class="stat-title">Ready to Assign</div>
+              <div class="stat-value text-success">£0</div>
               <div class="stat-actions">
-                <button class="btn btn-sm">Withdrawal</button>
-                <button class="btn btn-sm">Deposit</button>
+                <button class="btn btn-sm">Assign Funds</button>
               </div>
             </div>
           </div>
         </div>
+		<!-- /Ready to assign-->
+
+		<!--ENVELOPES/CATEGORIES-->
+		<!-- Categories/Envelopes Cards -->
+<div class="col-span-12 grid grid-cols-2 gap-4 p-4 lg:grid-cols-3">
+	<!-- Example Card 1 -->
+	<div class="card bg-base-100 shadow-xl">
+	  <div class="card-body">
+		<h2 class="card-title text-5xl font-bold">£500</h2>
+		<p>Groceries</p>
+		<div class="badge badge-success">Funded</div>
+	  </div>
+	</div>
+	<!-- Example Card 2 -->
+	<div class="card bg-base-100 shadow-xl">
+	  <div class="card-body">
+		<h2 class="card-title text-5xl font-bold">£200</h2>
+		<p>Utilities</p>
+		<div class="badge badge-error">Underfunded</div>
+	  </div>
+	</div>
+	<!-- Example Card 3 -->
+	<div class="card bg-base-100 shadow-xl">
+	  <div class="card-body">
+		<h2 class="card-title text-5xl font-bold">£150</h2>
+		<p>Entertainment</p>
+		<div class="badge badge-success">Funded</div>
+	  </div>
+	</div>
+  </div>
+  <!-- End of Categories/Envelopes Cards -->
+  <!-- /ENVELOPES/CATEGORIES-->  
       </div>
     </main>
     <!-- /content -->
