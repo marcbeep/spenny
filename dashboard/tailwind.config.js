@@ -3,7 +3,7 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ["Inter", "sans"],
+				sans: ["Inter", "sans-serif"],
 			},
 			fontWeight: {
 				light: 200,
