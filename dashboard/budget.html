@@ -77,7 +77,7 @@
             </div>
             <div class="stat">
               <div class="stat-title">Ready to Assign</div>
-              <div class="stat-value text-success">£0</div>
+              <div class="stat-value">£0</div>
               <div class="stat-actions">
                 <button class="btn btn-sm">Assign Funds</button>
               </div>
@@ -86,36 +86,53 @@
         </div>
 		<!-- /Ready to assign-->
 
-		<!--ENVELOPES/CATEGORIES-->
-		<!-- Categories/Envelopes Cards -->
-<div class="col-span-12 grid grid-cols-2 gap-4 p-4 lg:grid-cols-3">
-	<!-- Example Card 1 -->
-	<div class="card bg-base-100 shadow-xl">
+		<!-- Categories/Envelopes Table Card -->
+<div class="col-span-12 flex justify-center">
+	<div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
 	  <div class="card-body">
-		<h2 class="card-title text-5xl font-bold">£500</h2>
-		<p>Groceries</p>
-		<div class="badge badge-success">Funded</div>
-	  </div>
-	</div>
-	<!-- Example Card 2 -->
-	<div class="card bg-base-100 shadow-xl">
-	  <div class="card-body">
-		<h2 class="card-title text-5xl font-bold">£200</h2>
-		<p>Utilities</p>
-		<div class="badge badge-error">Underfunded</div>
-	  </div>
-	</div>
-	<!-- Example Card 3 -->
-	<div class="card bg-base-100 shadow-xl">
-	  <div class="card-body">
-		<h2 class="card-title text-5xl font-bold">£150</h2>
-		<p>Entertainment</p>
-		<div class="badge badge-success">Funded</div>
+		<div class="flex justify-between">
+		  <h2 class="card-title">Categories/Envelopes</h2>
+		  <button class="btn">Add Goal</button>
+		</div>
+		<div class="overflow-x-auto">
+		  <table class="table w-full">
+			<!-- Table Headings -->
+			<thead>
+			  <tr>
+				<th>Name</th>
+				<th>Available</th>
+				<th>Status</th>
+				<th>Goal</th>
+			  </tr>
+			</thead>
+			<!-- Table Body -->
+			<tbody>
+			  <tr>
+				<td>Groceries</td>
+				<td>£500</td>
+				<td><div class="badge badge-success">Funded</div></td>
+				<td><u>£10</u></td>
+			  </tr>
+			  <tr>
+				<td>Utilities</td>
+				<td>£200</td>
+				<td><div class="badge badge-error">Underfunded</div></td>
+				<td><u>£250</u></td>
+			  </tr>
+			  <tr>
+				<td>Entertainment</td>
+				<td>£150</td>
+				<td><div class="badge badge-success">Funded</div></td>
+				<td><u>£50</u></td>
+			  </tr>
+			</tbody>
+		  </table>
+		</div>
 	  </div>
 	</div>
   </div>
-  <!-- End of Categories/Envelopes Cards -->
-  <!-- /ENVELOPES/CATEGORIES-->  
+  <!-- End Categories/Envelopes Table Card -->
+  
       </div>
     </main>
     <!-- /content -->
