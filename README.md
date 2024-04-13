@@ -355,3 +355,19 @@ This controller file interacts with the `User`, `Account`, `Category`, `Budget`,
 6. **404 Not Found**: Indicates that the requested resource could not be found at the specified URL. For example, in `handleNotFound` and `handleNoTransactionFound` helper functions, and various endpoints when resources like categories, transactions, or goals are not found.
 
 7. **500 Internal Server Error**: Indicates that the server encountered an unexpected condition that prevented it from fulfilling the request. For example, in catch blocks of various endpoints when an unexpected error occurs during data processing or database operations.
+
+---
+
+Terms
+
+Category Activity:
+
+This refers to the total amount of spending and transactions that have occurred in a specific budget category within a given period.
+It includes all the expenses logged against that category.
+If you spend money or move money from one category to another, these transactions will be reflected in the category activity.
+It helps you track how much of your allocated funds have been used up during the period.
+
+Category Available:
+
+This indicates the amount of money currently available in a budget category to spend or save, after accounting for all activities (expenses and transfers). This figure is critical as it shows you at a glance how much more you can afford to spend in that category without exceeding your budget.
+If the category available is negative, it indicates that you've overspent in that category.
