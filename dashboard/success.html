@@ -123,11 +123,11 @@
         required
       />
 
-      <label for="newCategoryTitle">New Title:</label>
+      <label for="updatedCategoryTitle">New Title:</label>
       <input
         type="text"
-        id="newCategoryTitle"
-        name="newCategoryTitle"
+        id="updatedCategoryTitle"
+        name="updatedCategoryTitle"
         required
       />
 
@@ -488,7 +488,7 @@ document.getElementById("deleteCategoryForm").addEventListener("submit", async f
 document.getElementById("updateCategoryForm").addEventListener("submit", async function (event) {
   event.preventDefault();
   const categoryIdElement = document.getElementById("updateCategoryId");
-  const newTitleElement = document.getElementById("newCategoryTitle");
+  const newTitleElement = document.getElementById("updatedCategoryTitle");
 
   console.log("Category ID Element:", categoryIdElement);
   console.log("New Title Element:", newTitleElement);
