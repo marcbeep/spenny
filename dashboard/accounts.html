@@ -2,9 +2,10 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<title>Dashboard - Spenny</title>
+		<title>Accounts - Spenny</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link href="output.css" rel="stylesheet" />
+		<script src="https://kit.fontawesome.com/77a0651d35.js" crossorigin="anonymous"></script>
 		<!-- chart library -->
 		<script
 			type="module"
@@ -27,84 +28,11 @@
 						<svg data-src="https://unpkg.com/heroicons/20/solid/bars-3.svg" class="h-5 w-5"></svg>
 					</label>
 					<div class="grow">
-						<h1 class="lg:text-2xl font-semibold">Dashboard</h1>
+						<h1 class="lg:text-2xl font-semibold">Accounts</h1>
 					</div>
 					<div>
-						<input
-							type="text"
-							placeholder="Search"
-							class="input input-sm rounded-full max-sm:w-24" />
+						<h2>m@example.com</h2>
 					</div>
-					<!-- dropdown -->
-					<div class="dropdown dropdown-end z-10">
-						<div tabindex="0" class="btn btn-circle btn-ghost">
-							<div class="indicator">
-								<span class="badge indicator-item badge-error badge-xs"></span>
-								<svg data-src="https://unpkg.com/heroicons/20/solid/bell.svg" class="h-5 w-5"></svg>
-							</div>
-						</div>
-						<ul
-							tabindex="0"
-							class="menu dropdown-content mt-3 w-80 rounded-box bg-base-100 p-2 shadow-2xl">
-							<li>
-								<a class="gap-4">
-									<div class="avatar">
-										<div class="w-8 rounded-full">
-											<img src="https://picsum.photos/80/80?1" />
-										</div>
-									</div>
-									<span>
-										<b>New message</b>
-										<br />
-										Alice: Hi, did you get my files?
-									</span>
-								</a>
-							</li>
-							<li>
-								<a class="gap-4">
-									<div class="avatar">
-										<div class="w-8 rounded-full">
-											<img src="https://picsum.photos/80/80?2" />
-										</div>
-									</div>
-									<span>
-										<b>Reminder</b>
-										<br />
-										Your meeting is at 10am
-									</span>
-								</a>
-							</li>
-							<li>
-								<a class="gap-4">
-									<div class="avatar">
-										<div class="w-8 rounded-full">
-											<img src="https://picsum.photos/80/80?3" />
-										</div>
-									</div>
-									<span>
-										<b>New payment</b>
-										<br />
-										Received $2500 from John Doe
-									</span>
-								</a>
-							</li>
-							<li>
-								<a class="gap-4">
-									<div class="avatar">
-										<div class="w-8 rounded-full">
-											<img src="https://picsum.photos/80/80?4" />
-										</div>
-									</div>
-									<span>
-										<b>New payment</b>
-										<br />
-										Received $1900 from Alice
-									</span>
-								</a>
-							</li>
-						</ul>
-					</div>
-					<!-- /dropdown -->
 					<!-- dropdown -->
 					<div class="dropdown-end dropdown z-10">
 						<div tabindex="0" class="avatar btn btn-circle btn-ghost">
@@ -115,16 +43,6 @@
 						<ul
 							tabindex="0"
 							class="menu dropdown-content mt-3 w-52 rounded-box bg-base-100 p-2 shadow-2xl">
-							<li>
-								<a>Profile</a>
-							</li>
-							<li>
-								<a>
-									Inbox
-									<span class="badge badge-success">12</span>
-								</a>
-							</li>
-							<li><a>Settings</a></li>
 							<li><a>Logout</a></li>
 						</ul>
 					</div>
@@ -135,27 +53,27 @@
 				<!-- stats -->
 				<section class="stats stats-vertical col-span-12 w-full shadow-sm xl:stats-horizontal">
 					<div class="stat">
-						<div class="stat-title">Total Page Views</div>
-						<div class="stat-value">89,400</div>
-						<div class="stat-desc">21% more than last month</div>
+						<div class="stat-title">Networth</div>
+						<div class="stat-value">£15,000</div>
+						<div class="stat-desc">All time</div>
 					</div>
 
 					<div class="stat">
-						<div class="stat-title">Total Page Views</div>
-						<div class="stat-value">89,400</div>
-						<div class="stat-desc">21% more than last month</div>
+						<div class="stat-title">Savings Rate</div>
+						<div class="stat-value">33%</div>
+						<div class="stat-desc">All time</div>
 					</div>
 
 					<div class="stat">
-						<div class="stat-title">Total Page Views</div>
-						<div class="stat-value">89,400</div>
-						<div class="stat-desc">21% more than last month</div>
+						<div class="stat-title">Goals Funded</div>
+						<div class="stat-value">4/5</div>
+						<div class="stat-desc">Past week</div>
 					</div>
 
 					<div class="stat">
-						<div class="stat-title">Total Page Views</div>
-						<div class="stat-value">89,400</div>
-						<div class="stat-desc">21% more than last month</div>
+						<div class="stat-title">Average Daily Spend</div>
+						<div class="stat-value">£15</div>
+						<div class="stat-desc">Past week</div>
 					</div>
 				</section>
 				<!-- /stats -->
@@ -163,70 +81,50 @@
 				<section class="card col-span-12 overflow-hidden bg-base-100 shadow-sm xl:col-span-6">
 					<div class="card-body grow-0">
 						<h2 class="card-title">
-							<a class="link-hover link">Transactions</a>
+							<a class="link-hover link">Last 5 Transactions</a>
 						</h2>
 					</div>
 					<div class="overflow-x-auto">
 						<table class="table table-zebra">
 							<tbody>
 								<tr>
-									<td>Cy Ganderton</td>
-									<td>Feb 2nd</td>
-									<td>
-										<svg
-											data-src="https://unpkg.com/heroicons/20/solid/arrow-up-right.svg"
-											class="inline-block h-5 w-5 text-success"></svg>
-										180 USD
+									<td>Career Studio Salary</td>
+									<td>Apr 13</td>
+									<td class="text-success">
+										<i class="fa-solid fa-plus"></i>
+										500
 									</td>
 								</tr>
 								<tr>
-									<td>Hart Hagerty</td>
-									<td>Sep 2nd</td>
-									<td>
-										<svg
-											data-src="https://unpkg.com/heroicons/20/solid/arrow-up-right.svg"
-											class="inline-block h-5 w-5 text-success"></svg>
-										250 USD
+									<td>KFC</td>
+									<td>Apr 10</td>
+									<td class="text-error">
+										<i class="fa-solid fa-minus"></i>
+										10
 									</td>
 								</tr>
 								<tr>
-									<td>Jim Hagerty</td>
-									<td>Sep 2nd</td>
-									<td>
-										<svg
-											data-src="https://unpkg.com/heroicons/20/solid/arrow-up-right.svg"
-											class="inline-block h-5 w-5 text-success"></svg>
-										250 USD
+									<td>Burger King</td>
+									<td>Apr 9</td>
+									<td class="text-error">
+										<i class="fa-solid fa-minus"></i>
+										10
 									</td>
 								</tr>
 								<tr>
-									<td>Hart Hagerty</td>
-									<td>Sep 2nd</td>
-									<td>
-										<svg
-											data-src="https://unpkg.com/heroicons/20/solid/arrow-down-right.svg"
-											class="inline-block h-5 w-5 text-error"></svg>
-										250 USD
+									<td>Cinema</td>
+									<td>Apr 8</td>
+									<td class="text-error">
+										<i class="fa-solid fa-minus"></i>
+										25
 									</td>
 								</tr>
 								<tr>
-									<td>Hart Hagerty</td>
-									<td>Sep 2nd</td>
-									<td>
-										<svg
-											data-src="https://unpkg.com/heroicons/20/solid/arrow-down-right.svg"
-											class="inline-block h-5 w-5 text-error"></svg>
-										250 USD
-									</td>
-								</tr>
-								<tr>
-									<td>Brice Swyre</td>
-									<td>Jul 2nd</td>
-									<td>
-										<svg
-											data-src="https://unpkg.com/heroicons/20/solid/arrow-up-right.svg"
-											class="inline-block h-5 w-5 text-success"></svg>
-										320 USD
+									<td>Shoes</td>
+									<td>Apr 8</td>
+									<td class="text-error">
+										<i class="fa-solid fa-minus"></i>
+										100
 									</td>
 								</tr>
 							</tbody>
@@ -237,12 +135,12 @@
 				<!-- card -->
 				<section class="card col-span-12 bg-primary text-primary-content shadow-sm xl:col-span-6">
 					<div class="card-body pb-0">
-						<h2 class="card-title">21,500 USD</h2>
-						<a class="link-hover link text-xs">Revenue report →</a>
+						<h2 class="card-title">Daily spend for last week</h2>
+						<a class="link-hover link text-xs">View all transactions →</a>
 					</div>
 					<tc-column
 						class="h-full w-full p-4 pt-0 [--shape-color:oklch(var(--pc))]"
-						values="[12,10,12,4,13,16,14,10,12,11,17,18,16,17,20,14,15,13,12,14]"
+						values="[12,10,12,4,13,16,14]"
 						min="0"
 						shape-radius="4"
 						shape-gap="4"></tc-column>
@@ -251,24 +149,24 @@
 				<!-- card -->
 				<section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
 					<div class="card-body">
-						<h2 class="card-title">Sources</h2>
+						<h2 class="card-title">Spend by Category</h2>
 						<div class="flex items-center gap-10">
 							<div class="grow">
 								<div class="flex items-center gap-2">
 									<span class="badge badge-xs bg-[#19D6BF]"></span>
-									Direct
+									Groceries
 								</div>
 								<div class="flex items-center gap-2">
 									<span class="badge badge-xs bg-[#A838FF]"></span>
-									Social
+									Eating Out
 								</div>
 								<div class="flex items-center gap-2">
 									<span class="badge badge-xs bg-[#3C37FF]"></span>
-									Search
+									Fun Money
 								</div>
 								<div class="flex items-center gap-2">
 									<span class="badge badge-xs bg-[#FFBD3C]"></span>
-									Email
+									Charity
 								</div>
 							</div>
 							<tc-pie
@@ -282,6 +180,70 @@
 				<!-- /card -->
 				<!-- card -->
 				<section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
+					<div class="card-body">
+						<h2 class="card-title">Available to spend</h2>
+						<div class="flex items-center gap-10">
+							<div class="grow">
+								<div class="flex items-center gap-2">
+									<span class="badge badge-xs bg-[#19D6BF]"></span>
+									Groceries
+								</div>
+								<div class="flex items-center gap-2">
+									<span class="badge badge-xs bg-[#A838FF]"></span>
+									Eating Out
+								</div>
+								<div class="flex items-center gap-2">
+									<span class="badge badge-xs bg-[#3C37FF]"></span>
+									Fun Money
+								</div>
+								<div class="flex items-center gap-2">
+									<span class="badge badge-xs bg-[#FFBD3C]"></span>
+									Charity
+								</div>
+							</div>
+							<tc-pie
+								class="h-32 w-32 shrink-0 [--shape-color-1:#A838FF] [--shape-color-2:#19D6BF] [--shape-color-3:#3C37FF] [--shape-color-4:#FFBD3C]"
+								values="[35,68,22,16]"
+								shape-size="30"
+								shape-gap="6"></tc-pie>
+						</div>
+					</div>
+				</section>
+				<!-- /card -->
+				<section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
+					<div class="card-body">
+						<h2 class="card-title">Account balances</h2>
+						<div class="flex items-center gap-10">
+							<div class="grow">
+								<div class="flex items-center gap-2">
+									<span class="badge badge-xs bg-[#19D6BF]"></span>
+									Lloyds
+								</div>
+								<div class="flex items-center gap-2">
+									<span class="badge badge-xs bg-[#A838FF]"></span>
+									Santander
+								</div>
+								<div class="flex items-center gap-2">
+									<span class="badge badge-xs bg-[#3C37FF]"></span>
+									Vanguard
+								</div>
+								<div class="flex items-center gap-2">
+									<span class="badge badge-xs bg-[#FFBD3C]"></span>
+									Natwest
+								</div>
+							</div>
+							<tc-pie
+								class="h-32 w-32 shrink-0 [--shape-color-1:#A838FF] [--shape-color-2:#19D6BF] [--shape-color-3:#3C37FF] [--shape-color-4:#FFBD3C]"
+								values="[35,68,22,16]"
+								shape-size="30"
+								shape-gap="6"></tc-pie>
+						</div>
+					</div>
+				</section>
+				<!-- card -->
+				<!-- /card-->
+				<!-- card -->
+				<!-- <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
 					<div class="card-body pb-0">
 						<h2 class="card-title">19,000</h2>
 						<p>Downloads</p>
@@ -290,10 +252,10 @@
 						class="h-full w-full rounded-box [--area-opacity:.2] [--shape-color:#19D6BF]"
 						values="[6,5,2,11,13,16,14,14,14,15,18,16,18,15,19,16,20,18,12,14]"
 						min="0"></tc-line>
-				</section>
+				</section> -->
 				<!-- /card -->
 				<!-- card -->
-				<section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
+				<!-- <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
 					<div class="card-body pb-0">
 						<h2 class="card-title">32,800</h2>
 						<p>Unique visitors</p>
@@ -302,7 +264,7 @@
 						class="h-full w-full rounded-box [--area-opacity:.2] [--shape-color:#A838FF]"
 						values="[12,10,12,4,13,16,14,10,12,11,17,18,16,17,20,14,15,13,12,14]"
 						min="0"></tc-line>
-				</section>
+				</section> -->
 				<!-- /card -->
 				<!-- header -->
 				<header class="col-span-12 flex items-center gap-2 lg:gap-4">
@@ -993,125 +955,33 @@
 			<!-- sidebar menu -->
 			<nav class="flex min-h-screen w-72 flex-col gap-2 overflow-y-auto bg-base-100 px-6 py-10">
 				<div class="mx-4 flex items-center gap-2 font-black">
-					<svg
-						width="32"
-						height="32"
-						viewBox="0 0 1024 1024"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg">
-						<rect x="256" y="670.72" width="512" height="256" rx="128" class="fill-base-content" />
-						<circle cx="512" cy="353.28" r="256" class="fill-base-content" />
-						<circle
-							cx="512"
-							cy="353.28"
-							r="261"
-							stroke="black"
-							stroke-opacity="0.2"
-							stroke-width="10" />
-						<circle cx="512" cy="353.28" r="114.688" class="fill-base-100" />
-					</svg>
-					Daisy Corp
+					<i class="fa-solid fa-piggy-bank"></i>
+					Spenny
 				</div>
 				<ul class="menu">
 					<li>
-						<a class="active">
-							<svg data-src="https://unpkg.com/heroicons/20/solid/home.svg" class="h-5 w-5"></svg>
+						<a href="dashboard.html">
+							<i class="fa-solid fa-house"></i>
 							Dashboard
 						</a>
 					</li>
 					<li>
-						<a>
-							<svg data-src="https://unpkg.com/heroicons/20/solid/user.svg" class="h-5 w-5"></svg>
-							Users
+						<a href="budget.html">
+							<i class="fa-solid fa-money-bill-wave"></i>
+							Budget
 						</a>
 					</li>
 					<li>
-						<details>
-							<summary>
-								<svg
-									data-src="https://unpkg.com/heroicons/20/solid/squares-2x2.svg"
-									class="h-5 w-5"></svg>
-								Products
-							</summary>
-							<ul>
-								<li><a>All Products</a></li>
-								<li><a>Add New</a></li>
-								<li><a>Categories</a></li>
-								<li><a>Tags</a></li>
-								<li><a>Reports</a></li>
-								<li><a>Archive</a></li>
-							</ul>
-						</details>
-					</li>
-					<li>
-						<details>
-							<summary>
-								<svg
-									data-src="https://unpkg.com/heroicons/20/solid/credit-card.svg"
-									class="h-5 w-5"></svg>
-								Transactions
-							</summary>
-							<ul>
-								<li><a>All Transactions</a></li>
-								<li><a>Failed Transactions</a></li>
-								<li><a>Successful Transactions</a></li>
-							</ul>
-						</details>
-					</li>
-					<li>
-						<a>
-							<svg
-								data-src="https://unpkg.com/heroicons/20/solid/chart-pie.svg"
-								class="h-5 w-5"></svg>
-							Stats
+						<a href="transactions.html">
+							<i class="fa-solid fa-arrow-right-arrow-left"></i>
+							Transactions
 						</a>
 					</li>
 					<li>
-						<a>
-							<svg
-								data-src="https://unpkg.com/heroicons/20/solid/document-text.svg"
-								class="h-5 w-5"></svg>
-							Logs
+						<a class="active">
+							<i class="fa-solid fa-money-check"></i>
+							Accounts
 						</a>
-					</li>
-					<li>
-						<a>
-							<svg data-src="https://unpkg.com/heroicons/20/solid/inbox.svg" class="h-5 w-5"></svg>
-							Messages
-							<span class="badge badge-info badge-sm">12</span>
-						</a>
-					</li>
-					<li>
-						<details>
-							<summary>
-								<svg
-									data-src="https://unpkg.com/heroicons/20/solid/adjustments-vertical.svg"
-									class="h-5 w-5"></svg>
-								Settings
-							</summary>
-							<ul>
-								<li><a>General</a></li>
-								<li><a>Themes</a></li>
-								<li><a>Routes</a></li>
-								<li><a>Comments</a></li>
-								<li><a>Media</a></li>
-								<li><a>Roles</a></li>
-								<li><a>Merchants</a></li>
-								<li>
-									<a>Tools</a>
-									<ul>
-										<li><a>Files</a></li>
-										<li><a>Scripts</a></li>
-										<li><a>Suggestions</a></li>
-									</ul>
-								</li>
-								<li><a>Databases</a></li>
-								<li><a>Gateways</a></li>
-								<li><a>Plugins</a></li>
-								<li><a>API</a></li>
-								<li><a>Support</a></li>
-							</ul>
-						</details>
 					</li>
 				</ul>
 			</nav>
