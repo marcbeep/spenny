@@ -393,7 +393,7 @@ async function updateCategory(categoryId, newTitle) {
       `/categories/${categoryId}`,
       {
         method: "PATCH",
-        body: JSON.stringify({ title: newTitle }),
+        body: JSON.stringify(newTitle),
       },
     );
 
