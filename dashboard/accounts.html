@@ -65,96 +65,106 @@
         <!-- /header -->
 
         <!-- Account Actions Cards -->
-<div class="col-span-12 grid grid-cols-3 gap-4 p-4">
-  <!-- Add Account Card -->
-  <div class="card bg-base-100 shadow-xl max-w-md mx-auto">
-    <div class="card-body">
-      <h2 class="card-title">Add Account</h2>
-      <form>
-        <input type="text" placeholder="Title" class="input input-bordered w-full mb-4">
-        <input type="text" placeholder="Balance" class="input input-bordered w-full mb-4">
-        <button type="submit" class="btn w-full">Submit</button>
-      </form>
-    </div>
-  </div>
+        <div class="flex flex-wrap justify-center gap-4 p-4">
+          <!-- Add Account Card -->
+          <div class="card bg-base-100 shadow-xl max-w-md">
+            <div class="card-body">
+              <h2 class="card-title">Add Account</h2>
+              <form>
+                <input
+                  type="text"
+                  placeholder="Title"
+                  class="input input-bordered w-full mb-4"
+                />
+                <input
+                  type="text"
+                  placeholder="Balance"
+                  class="input input-bordered w-full mb-4"
+                />
+                <button type="submit" class="btn w-full">Submit</button>
+              </form>
+            </div>
+          </div>
 
-  <!-- Archive Account Card -->
-  <div class="card bg-base-100 shadow-xl max-w-md mx-auto">
-    <div class="card-body">
-      <h2 class="card-title">Archive Account</h2>
-      <form>
-        <select class="select select-bordered w-full mb-4">
-          <option disabled selected>Select Account</option>
-          <option>Account 1</option>
-          <option>Account 2</option>
-        </select>
-        <button type="submit" class="btn w-full">Submit</button>
-      </form>
-    </div>
-  </div>
+          <!-- Archive Account Card -->
+          <div class="card bg-base-100 shadow-xl max-w-md">
+            <div class="card-body">
+              <h2 class="card-title">Archive Account</h2>
+              <form>
+                <select class="select select-bordered w-full mb-4">
+                  <option disabled selected>Select Account</option>
+                  <option>Account 1</option>
+                  <option>Account 2</option>
+                </select>
+                <button type="submit" class="btn w-full">Submit</button>
+              </form>
+            </div>
+          </div>
 
-  <!-- Reconcile Account Card -->
-  <div class="card bg-base-100 shadow-xl max-w-md mx-auto">
-    <div class="card-body">
-      <h2 class="card-title">Reconcile Account</h2>
-      <form>
-        <select class="select select-bordered w-full mb-4">
-          <option disabled selected>Select Account</option>
-          <option>Account 1</option>
-          <option>Account 2</option>
-        </select>
-        <input type="text" placeholder="New Balance" class="input input-bordered w-full mb-4">
-        <button type="submit" class="btn w-full">Submit</button>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- End Account Actions Cards -->
+          <!-- Reconcile Account Card -->
+          <div class="card bg-base-100 shadow-xl max-w-md">
+            <div class="card-body">
+              <h2 class="card-title">Reconcile Account</h2>
+              <form>
+                <select class="select select-bordered w-full mb-4">
+                  <option disabled selected>Select Account</option>
+                  <option>Account 1</option>
+                  <option>Account 2</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="New Balance"
+                  class="input input-bordered w-full mb-4"
+                />
+                <button type="submit" class="btn w-full">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- End Account Actions Cards -->
 
-        
         <!-- Accounts Card -->
-<div class="col-span-12 flex flex-col items-center">
-  <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
-    <div class="card-body">
-      <div class="overflow-x-auto">
-        <table class="table w-full">
-          <!-- Table Headings -->
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Balance</th>
-            </tr>
-          </thead>
-          <!-- Table Body -->
-          <tbody>
-            <tr>
-              <td>Lloyds</td>
-              <td>Spending</td>
-              <td>Active</td>
-              <td><u>£50</u></td>
-            </tr>
-            <tr>
-              <td>Vanguard</td>
-              <td>Tracking</td>
-              <td>Archived</td>
-              <td><u>£75</u></td>
-            </tr>
-            <tr>
-              <td>Barclays</td>
-              <td>Spending</td>
-              <td>Active</td>
-              <td><u>£200</u></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- End Accounts Card -->
-
+        <div class="col-span-12 flex flex-col items-center">
+          <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
+            <div class="card-body">
+              <div class="overflow-x-auto">
+                <table class="table w-full">
+                  <!-- Table Headings -->
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Type</th>
+                      <th>Status</th>
+                      <th>Balance</th>
+                    </tr>
+                  </thead>
+                  <!-- Table Body -->
+                  <tbody>
+                    <tr>
+                      <td>Lloyds</td>
+                      <td>Spending</td>
+                      <td>Active</td>
+                      <td><u>£50</u></td>
+                    </tr>
+                    <tr>
+                      <td>Vanguard</td>
+                      <td>Tracking</td>
+                      <td>Archived</td>
+                      <td><u>£75</u></td>
+                    </tr>
+                    <tr>
+                      <td>Barclays</td>
+                      <td>Spending</td>
+                      <td>Active</td>
+                      <td><u>£200</u></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Accounts Card -->
       </div>
     </main>
     <!-- /content -->

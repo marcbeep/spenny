@@ -65,92 +65,108 @@
         <!-- /header -->
 
         <!-- MAIN PAGE CONTENT -->
-<!-- Add Transaction Form Card -->
-<div class="col-span-12 flex justify-center">
-  <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
-    <div class="card-body">
-      <h2 class="card-title">Add Transaction</h2>
-      <form class="form-control">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <input type="text" placeholder="Transaction Title" class="input input-bordered w-full col-span-1 md:col-span-1" />
-          <select class="select select-bordered w-full col-span-1 md:col-span-1">
-            <option disabled selected>Category</option>
-            <option>Groceries</option>
-            <option>Utilities</option>
-            <option>Entertainment</option>
-          </select>
-          <select class="select select-bordered w-full col-span-1 md:col-span-1">
-            <option disabled selected>Account</option>
-            <option>Checking</option>
-            <option>Savings</option>
-          </select>
-          <div class="form-control w-full col-span-1 md:col-span-1">
-            <label class="label cursor-pointer justify-between">
-              <span class="label-text">Debit/Credit</span>
-              <input type="checkbox" class="toggle toggle-primary" checked />
-            </label>
+        <!-- Add Transaction Form Card -->
+        <div class="col-span-12 flex justify-center">
+          <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title">Add Transaction</h2>
+              <form class="form-control">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Transaction Title"
+                    class="input input-bordered w-full col-span-1 md:col-span-1"
+                  />
+                  <select
+                    class="select select-bordered w-full col-span-1 md:col-span-1"
+                  >
+                    <option disabled selected>Category</option>
+                    <option>Groceries</option>
+                    <option>Utilities</option>
+                    <option>Entertainment</option>
+                  </select>
+                  <select
+                    class="select select-bordered w-full col-span-1 md:col-span-1"
+                  >
+                    <option disabled selected>Account</option>
+                    <option>Checking</option>
+                    <option>Savings</option>
+                  </select>
+                  <div class="form-control w-full col-span-1 md:col-span-1">
+                    <label class="label cursor-pointer justify-between">
+                      <span class="label-text">Debit/Credit</span>
+                      <input
+                        type="checkbox"
+                        class="toggle toggle-primary"
+                        checked
+                      />
+                    </label>
+                  </div>
+                </div>
+                <div class="flex flex-col items-center gap-4 mt-4">
+                  <button type="submit" class="btn btn-primary w-full max-w-xs">
+                    Submit
+                  </button>
+                  <label class="btn btn-black w-full max-w-xs">
+                    <i class="fa-solid fa-robot"></i>Upload Receipt and Analyse
+                    with AI
+                    <input
+                      type="file"
+                      class="file-input hidden"
+                      accept="image/*"
+                    />
+                  </label>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-        <div class="flex flex-col items-center gap-4 mt-4">
-          <button type="submit" class="btn btn-primary w-full max-w-xs">Submit</button>
-          <label class="btn btn-black w-full max-w-xs">
-            <i class="fa-solid fa-robot"></i>Upload Receipt and Analyse with AI
-            <input type="file" class="file-input hidden" accept="image/*" />
-          </label>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- End Add Transaction Form Card -->
-
+        <!-- End Add Transaction Form Card -->
 
         <!-- Transactions Card -->
-<div class="col-span-12 flex flex-col items-center">
-  <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
-    <div class="card-body">
-      <div class="overflow-x-auto">
-        <table class="table w-full">
-          <!-- Table Headings -->
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Type</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <!-- Table Body -->
-          <tbody>
-            <tr>
-              <td>Example Transaction 1</td>
-              <td>Groceries</td>
-              <td>Credit</td>
-              <td><u>£50</u></td>
-            </tr>
-            <tr>
-              <td>Example Transaction 2</td>
-              <td>Utilities</td>
-              <td>Debit</td>
-              <td><u>£75</u></td>
-            </tr>
-            <tr>
-              <td>Example Transaction 3</td>
-              <td>Entertainment</td>
-              <td>Credit</td>
-              <td><u>£200</u></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- End Transactions Card -->
-
+        <div class="col-span-12 flex flex-col items-center">
+          <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
+            <div class="card-body">
+              <div class="overflow-x-auto">
+                <table class="table w-full">
+                  <!-- Table Headings -->
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Category</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <!-- Table Body -->
+                  <tbody>
+                    <tr>
+                      <td>Example Transaction 1</td>
+                      <td>Groceries</td>
+                      <td>Credit</td>
+                      <td><u>£50</u></td>
+                    </tr>
+                    <tr>
+                      <td>Example Transaction 2</td>
+                      <td>Utilities</td>
+                      <td>Debit</td>
+                      <td><u>£75</u></td>
+                    </tr>
+                    <tr>
+                      <td>Example Transaction 3</td>
+                      <td>Entertainment</td>
+                      <td>Credit</td>
+                      <td><u>£200</u></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Transactions Card -->
 
         <!-- /MAIN PAGE CONTENT-->
-
       </div>
     </main>
     <!-- /content -->
