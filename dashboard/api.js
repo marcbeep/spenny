@@ -389,18 +389,23 @@ async function fetchSingleCategory(categoryId) {
 
 async function updateCategory(categoryId, newTitle) {
   try {
+    const body = { title: newTitle }; // Correctly structure the body object
     const updatedCategory = await makeFetchRequest(
       `/categories/${categoryId}`,
       {
         method: "PATCH",
-        body: JSON.stringify(newTitle),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       },
     );
 
     console.log("Updated Category:", updatedCategory);
     updateUI();
   } catch (error) {
-    alert(error.message);
+    console.error("Error updating category:", error);
+    alert("Error updating category: " + error.message);
   }
 }
 

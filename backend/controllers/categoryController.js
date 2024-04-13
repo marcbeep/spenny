@@ -110,7 +110,7 @@ exports.updateCategory = async (req, res) => {
 
     if (!updatedCategory) return handleNoCategoryFound(res);
 
-    if (!checkOwnership(category, req.user._id)) {
+    if (!checkOwnership(updatedCategory, req.user._id)) { // Make sure to check using updatedCategory
       return res.status(403).json({ error: 'Unauthorized to modify this category' });
     }
 
@@ -125,3 +125,4 @@ exports.updateCategory = async (req, res) => {
     res.status(400).json({ error: 'Failed to update category' });
   }
 };
+
