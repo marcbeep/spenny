@@ -65,59 +65,67 @@
         <!-- /header -->
 
         <!-- Account Actions Cards -->
-        <div class="flex flex-wrap justify-center gap-4 p-4">
-          <!-- Add Account Card -->
-          <div class="card bg-base-100 shadow-xl max-w-md">
-            <div class="card-body">
-              <h2 class="card-title">Add Account</h2>
-              <form>
-                <input
-                  type="text"
-                  placeholder="Title"
-                  class="input input-bordered w-full mb-4"
-                />
-                <input
-                  type="text"
-                  placeholder="Balance"
-                  class="input input-bordered w-full mb-4"
-                />
-                <button type="submit" class="btn w-full">Submit</button>
-              </form>
+        <div class="col-span-12 flex flex-col items-center">
+          <div class="flex flex-wrap justify-center gap-4 w-full lg:w-3/4 mb-8">
+            <!-- Add Account Card -->
+            <div
+              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs"
+            >
+              <div class="card-body">
+                <h2 class="card-title">Add Account</h2>
+                <form>
+                  <input
+                    type="text"
+                    placeholder="Title"
+                    class="input input-bordered w-full mb-4"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Balance"
+                    class="input input-bordered w-full mb-4"
+                  />
+                  <button type="submit" class="btn w-full">Submit</button>
+                </form>
+              </div>
             </div>
-          </div>
 
-          <!-- Archive Account Card -->
-          <div class="card bg-base-100 shadow-xl max-w-md">
-            <div class="card-body">
-              <h2 class="card-title">Archive Account</h2>
-              <form>
-                <select class="select select-bordered w-full mb-4">
-                  <option disabled selected>Select Account</option>
-                  <option>Account 1</option>
-                  <option>Account 2</option>
-                </select>
-                <button type="submit" class="btn w-full">Submit</button>
-              </form>
+            <!-- Archive Account Card -->
+            <div
+              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs"
+            >
+              <div class="card-body">
+                <h2 class="card-title">Archive Account</h2>
+                <form>
+                  <select class="select select-bordered w-full mb-4">
+                    <option disabled selected>Select Account</option>
+                    <option>Account 1</option>
+                    <option>Account 2</option>
+                  </select>
+                  <button type="submit" class="btn w-full">Submit</button>
+                </form>
+              </div>
             </div>
-          </div>
 
-          <!-- Reconcile Account Card -->
-          <div class="card bg-base-100 shadow-xl max-w-md">
-            <div class="card-body">
-              <h2 class="card-title">Reconcile Account</h2>
-              <form>
-                <select class="select select-bordered w-full mb-4">
-                  <option disabled selected>Select Account</option>
-                  <option>Account 1</option>
-                  <option>Account 2</option>
-                </select>
-                <input
-                  type="text"
-                  placeholder="New Balance"
-                  class="input input-bordered w-full mb-4"
-                />
-                <button type="submit" class="btn w-full">Submit</button>
-              </form>
+            <!-- Reconcile Account Card -->
+            <div
+              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs"
+            >
+              <div class="card-body">
+                <h2 class="card-title">Reconcile Account</h2>
+                <form>
+                  <select class="select select-bordered w-full mb-4">
+                    <option disabled selected>Select Account</option>
+                    <option>Account 1</option>
+                    <option>Account 2</option>
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="New Balance"
+                    class="input input-bordered w-full mb-4"
+                  />
+                  <button type="submit" class="btn w-full">Submit</button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
