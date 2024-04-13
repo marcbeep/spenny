@@ -101,18 +101,16 @@
       <button type="submit">Add Category</button>
     </form>
 
-    <!-- Form to Delete a Category -->
-    <h3>delete cat</h3>
-    <form id="deleteCategoryForm">
-      <label for="deleteCategoryId">Category ID:</label>
-      <input
-        type="text"
-        id="deleteCategoryId"
-        name="deleteCategoryId"
-        required
-      />
-      <button type="submit">Delete Category</button>
-    </form>
+<!-- Form to Delete a Category -->
+<h3>Delete Category</h3>
+<form id="deleteCategoryForm">
+  <label for="deleteCategoryId">Category ID:</label>
+  <input type="text" id="deleteCategoryId" name="deleteCategoryId" required />
+  <label for="newCategoryId">New Category ID (for reassignment):</label>
+  <input type="text" id="newCategoryId" name="newCategoryId" required />
+  <button type="submit">Delete Category</button>
+</form>
+
 
     <!-- Form to Update a Category -->
     <h3>update cat</h3>
@@ -467,19 +465,24 @@
           }
         });
 
-      // delete category
-      document
-        .getElementById("deleteCategoryForm")
-        .addEventListener("submit", async function (event) {
-          event.preventDefault();
-          const categoryId = document.getElementById("deleteCategoryId").value;
+      // Delete category
+document.getElementById("deleteCategoryForm").addEventListener("submit", async function (event) {
+  event.preventDefault();
+  const categoryId = document.getElementById("deleteCategoryId").value.trim();
+  const newCategoryId = document.getElementById("newCategoryId").value.trim();
 
-          try {
-            await deleteCategory(categoryId);
-          } catch (error) {
-            alert("Error deleting category: " + error.message);
-          }
-        });
+  if (!categoryId || !newCategoryId) {
+    alert("Both Category ID and New Category ID are required.");
+    return;
+  }
+
+  try {
+    await deleteCategory(categoryId, newCategoryId);
+    alert(`Category ${categoryId} deleted and reassigned to ${newCategoryId}.`);
+  } catch (error) {
+    alert("Error deleting category: " + error.message);
+  }
+});
 
       // update category
       document

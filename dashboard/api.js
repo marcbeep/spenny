@@ -406,17 +406,24 @@ async function updateCategory(categoryId, newTitle) {
 
 async function deleteCategory(categoryId, newCategoryId) {
   try {
-    await makeFetchRequest(`/categories/${categoryId}`, {
+    const response = await makeFetchRequest(`/categories/${categoryId}`, {
       method: "DELETE",
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ newCategoryId }),
     });
 
-    console.log(`Category ${categoryId} deleted.`);
+    console.log(`Category ${categoryId} deleted and reassigned to ${newCategoryId}.`);
     updateUI();
+    return response;
   } catch (error) {
-    alert(error.message);
+    console.error("Error deleting category:", error);
+    alert("Error deleting category: " + error.message);
+    throw error;
   }
 }
+
 
 // Goal functions
 
