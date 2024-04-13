@@ -626,7 +626,8 @@
           // Ensure data is valid before sending the request
           if (!isNaN(accountBalance)) {
             try {
-              await updateAccount(accountId, { accountBalance });
+              console.log(typeof accountBalance, accountBalance);
+              await updateAccount(accountId, accountBalance);
               alert("Account balance updated successfully!");
             } catch (error) {
               alert("Error updating account balance: " + error.message);
