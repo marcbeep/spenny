@@ -52,7 +52,7 @@ const initializeUserData = async (userId) => {
         Category.create({
           user: userId,
           categoryTitle,
-          categoryAssigned: 0.0,
+          // categoryAssigned: 0.0,
           categoryAvailable: 0.0,
           categoryActivity: 0.0,
         }),
