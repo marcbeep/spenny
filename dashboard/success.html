@@ -100,16 +100,20 @@
       <button type="submit">Add Category</button>
     </form>
 
-<!-- Form to Delete a Category -->
-<h3>Delete Category</h3>
-<form id="deleteCategoryForm">
-  <label for="deleteCategoryId">Category ID:</label>
-  <input type="text" id="deleteCategoryId" name="deleteCategoryId" required />
-  <label for="newCategoryId">New Category ID (for reassignment):</label>
-  <input type="text" id="newCategoryId" name="newCategoryId" required />
-  <button type="submit">Delete Category</button>
-</form>
-
+    <!-- Form to Delete a Category -->
+    <h3>Delete Category</h3>
+    <form id="deleteCategoryForm">
+      <label for="deleteCategoryId">Category ID:</label>
+      <input
+        type="text"
+        id="deleteCategoryId"
+        name="deleteCategoryId"
+        required
+      />
+      <label for="newCategoryId">New Category ID (for reassignment):</label>
+      <input type="text" id="newCategoryId" name="newCategoryId" required />
+      <button type="submit">Delete Category</button>
+    </form>
 
     <!-- Form to Update a Category -->
     <h3>update cat</h3>
@@ -329,12 +333,21 @@
     </form>
 
     <h3>Update Transaction Amount</h3>
-<form id="updateTransactionForm">
-  <input type="text" id="updateTransactionId" placeholder="Transaction ID" required />
-  <input type="number" id="updateTransactionAmount" placeholder="New Amount" required />
-  <button type="submit">Update Amount</button>
-</form>
-
+    <form id="updateTransactionForm">
+      <input
+        type="text"
+        id="updateTransactionId"
+        placeholder="Transaction ID"
+        required
+      />
+      <input
+        type="number"
+        id="updateTransactionAmount"
+        placeholder="New Amount"
+        required
+      />
+      <button type="submit">Update Amount</button>
+    </form>
 
     <h3>trans list</h3>
     <ul id="transactionsList"></ul>
@@ -465,47 +478,58 @@
         });
 
       // Delete category
-document.getElementById("deleteCategoryForm").addEventListener("submit", async function (event) {
-  event.preventDefault();
-  const categoryId = document.getElementById("deleteCategoryId").value.trim();
-  const newCategoryId = document.getElementById("newCategoryId").value.trim();
+      document
+        .getElementById("deleteCategoryForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const categoryId = document
+            .getElementById("deleteCategoryId")
+            .value.trim();
+          const newCategoryId = document
+            .getElementById("newCategoryId")
+            .value.trim();
 
-  if (!categoryId || !newCategoryId) {
-    alert("Both Category ID and New Category ID are required.");
-    return;
-  }
+          if (!categoryId || !newCategoryId) {
+            alert("Both Category ID and New Category ID are required.");
+            return;
+          }
 
-  try {
-    await deleteCategory(categoryId, newCategoryId);
-    alert(`Category ${categoryId} deleted and reassigned to ${newCategoryId}.`);
-  } catch (error) {
-    alert("Error deleting category: " + error.message);
-  }
-});
+          try {
+            await deleteCategory(categoryId, newCategoryId);
+            alert(
+              `Category ${categoryId} deleted and reassigned to ${newCategoryId}.`,
+            );
+          } catch (error) {
+            alert("Error deleting category: " + error.message);
+          }
+        });
 
-// update category
-document.getElementById("updateCategoryForm").addEventListener("submit", async function (event) {
-  event.preventDefault();
-  const categoryIdElement = document.getElementById("updateCategoryId");
-  const newTitleElement = document.getElementById("updatedCategoryTitle");
+      // update category
+      document
+        .getElementById("updateCategoryForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const categoryIdElement = document.getElementById("updateCategoryId");
+          const newTitleElement = document.getElementById(
+            "updatedCategoryTitle",
+          );
 
-  console.log("Category ID Element:", categoryIdElement);
-  console.log("New Title Element:", newTitleElement);
+          console.log("Category ID Element:", categoryIdElement);
+          console.log("New Title Element:", newTitleElement);
 
-  const categoryId = categoryIdElement.value.trim();
-  const newTitle = newTitleElement.value.trim();
+          const categoryId = categoryIdElement.value.trim();
+          const newTitle = newTitleElement.value.trim();
 
-  console.log("Category ID:", categoryId);
-  console.log("New Title:", newTitle);
+          console.log("Category ID:", categoryId);
+          console.log("New Title:", newTitle);
 
-  try {
-    await updateCategory(categoryId, newTitle);
-  } catch (error) {
-    console.error("Error updating category:", error);
-    alert("Error updating category: " + error.message);
-  }
-});
-
+          try {
+            await updateCategory(categoryId, newTitle);
+          } catch (error) {
+            console.error("Error updating category:", error);
+            alert("Error updating category: " + error.message);
+          }
+        });
 
       // GOALS RELATED FUNCTIONS
       document.addEventListener("DOMContentLoaded", async () => {
@@ -739,25 +763,31 @@ document.getElementById("updateCategoryForm").addEventListener("submit", async f
         });
 
       // Update a Transaction Amount
-document.getElementById("updateTransactionForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const transactionId = document.getElementById("updateTransactionId").value.trim();
-  const transactionAmount = parseFloat(document.getElementById("updateTransactionAmount").value);
+      document
+        .getElementById("updateTransactionForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const transactionId = document
+            .getElementById("updateTransactionId")
+            .value.trim();
+          const transactionAmount = parseFloat(
+            document.getElementById("updateTransactionAmount").value,
+          );
 
-  if (!transactionId || isNaN(transactionAmount)) {
-    alert("Please provide a valid Transaction ID and Amount.");
-    return;
-  }
+          if (!transactionId || isNaN(transactionAmount)) {
+            alert("Please provide a valid Transaction ID and Amount.");
+            return;
+          }
 
-  try {
-    await updateTransaction(transactionId, { transactionAmount });
-    document.getElementById("updateTransactionId").value = "";
-    document.getElementById("updateTransactionAmount").value = "";
-    updateUI(); // Assuming this function refreshes the UI including transaction list
-  } catch (error) {
-    alert("Error updating transaction amount: " + error.message);
-  }
-});
+          try {
+            await updateTransaction(transactionId, { transactionAmount });
+            document.getElementById("updateTransactionId").value = "";
+            document.getElementById("updateTransactionAmount").value = "";
+            updateUI(); // Assuming this function refreshes the UI including transaction list
+          } catch (error) {
+            alert("Error updating transaction amount: " + error.message);
+          }
+        });
 
       document.addEventListener("DOMContentLoaded", () => {
         updateUI();

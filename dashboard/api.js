@@ -118,8 +118,8 @@ async function loginUser(event) {
   try {
     const data = await makeFetchRequest("/users/login", {
       method: "POST",
-      headers: {'Content-Type': 'application/json'},  // Ensure correct content type
-      body: JSON.stringify({ email, password })
+      headers: { "Content-Type": "application/json" }, // Ensure correct content type
+      body: JSON.stringify({ email, password }),
     });
 
     sessionStorage.setItem("userEmail", data.email);
@@ -152,7 +152,9 @@ async function signupUser(event) {
 
     window.location.href = "success.html";
   } catch (error) {
-    alert("Error signing up. Ensure email hasn't been used and password is 8 characters long.");
+    alert(
+      "Error signing up. Ensure email hasn't been used and password is 8 characters long.",
+    );
     console.error("Signup failed:", error);
   }
 }
@@ -258,9 +260,12 @@ async function fetchOutgoingsPastWeek() {
 
 async function fetchSpendByCategoryPastWeek() {
   try {
-    const response = await makeFetchRequest("/analytics/spendByCategoryPastWeek", {
-      method: "GET",
-    });
+    const response = await makeFetchRequest(
+      "/analytics/spendByCategoryPastWeek",
+      {
+        method: "GET",
+      },
+    );
     console.log("All-Time Analytics:", response);
     return response;
   } catch (error) {
@@ -395,13 +400,13 @@ async function fetchSingleCategory(categoryId) {
 async function updateCategory(categoryId, newTitle) {
   try {
     const body = { title: newTitle }; // Correctly structure the body object
-    console.log(body)
+    console.log(body);
     const updatedCategory = await makeFetchRequest(
       `/categories/${categoryId}`,
       {
         method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
       },
@@ -420,12 +425,14 @@ async function deleteCategory(categoryId, newCategoryId) {
     const response = await makeFetchRequest(`/categories/${categoryId}`, {
       method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ newCategoryId }),
     });
 
-    console.log(`Category ${categoryId} deleted and reassigned to ${newCategoryId}.`);
+    console.log(
+      `Category ${categoryId} deleted and reassigned to ${newCategoryId}.`,
+    );
     updateUI();
     return response;
   } catch (error) {
@@ -434,7 +441,6 @@ async function deleteCategory(categoryId, newCategoryId) {
     throw error;
   }
 }
-
 
 // Goal functions
 
@@ -574,14 +580,16 @@ async function deleteTransaction(transactionId) {
 
 async function updateTransaction(transactionId, updatedData) {
   try {
-    const updatedTransaction = await makeFetchRequest(`/transactions/${transactionId}`, {
-      method: "PATCH",
-      body: JSON.stringify(updatedData),
-    });
+    const updatedTransaction = await makeFetchRequest(
+      `/transactions/${transactionId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(updatedData),
+      },
+    );
     console.log("Transaction Updated:", updatedTransaction);
     updateUI(); // Update UI to reflect changes
   } catch (error) {
     alert("Error updating transaction:", error.message);
   }
 }
-
