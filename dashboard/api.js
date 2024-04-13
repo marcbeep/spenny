@@ -118,16 +118,20 @@ async function loginUser(event) {
   try {
     const data = await makeFetchRequest("/users/login", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      headers: {'Content-Type': 'application/json'},  // Ensure correct content type
+      body: JSON.stringify({ email, password })
     });
 
     sessionStorage.setItem("userEmail", data.email);
     sessionStorage.setItem("userProfilePicture", data.profilePicture);
     sessionStorage.setItem("token", data.token);
 
+    // Redirect on successful login
     window.location.href = "success.html";
   } catch (error) {
-    alert(error.message);
+    // Show an alert message on login failure
+    alert("Error logging in. Try again.");
+    console.error("Login failed:", error);
   }
 }
 
@@ -148,7 +152,8 @@ async function signupUser(event) {
 
     window.location.href = "success.html";
   } catch (error) {
-    alert(error.message);
+    alert("Error signing up. Ensure email hasn't been used and password is 8 characters long.");
+    console.error("Signup failed:", error);
   }
 }
 
