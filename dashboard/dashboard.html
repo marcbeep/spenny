@@ -332,8 +332,8 @@
             labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
             datasets: [{
                 label: "Daily Spend (£)",
-                // data: dailyOutgoingsData.dailyOutgoings,
-                data: placeholderData.dailyOutgoings,
+                data: dailyOutgoingsData.dailyOutgoings,
+                // data: placeholderData.dailyOutgoings,
                 backgroundColor: "rgba(227, 232, 250)"
             }]
         },
@@ -383,12 +383,12 @@ function updateSpendByCategoryChart(spendData) {
     ctx.chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            // labels: spendData.categories,
-            labels: placeholderLabels,
+            labels: spendData.categories,
+            // labels: placeholderLabels,
             datasets: [{
                 label: 'Spend by Category',
-                // data: spendData.percentages,
-                data: placeholderPercentages,
+                data: spendData.percentages,
+                // data: placeholderPercentages,
                 backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
                 borderColor: ['#fff'],
                 borderWidth: 2
@@ -411,8 +411,14 @@ function updateAvailableToSpendChart(availableToSpend) {
     const ctx = document.getElementById('availableToSpendChart').getContext('2d');
     const placeholderData = {
         labels: ["Groceries", "Eating Out", "Fun Money", "Charity", "Bills"],
-        values: [100, 200, 300, , 500]
+        values: [0, 0, 0, 0, 0]
     };
+
+    // Check if all values are 0
+    if (availableToSpend.values.every(value => value === 0)) {
+        // Replace with array of ones
+        availableToSpend.values = Array(availableToSpend.values.length).fill(1);
+    }
 
     // Destroy existing chart instance if it exists
     if (ctx.chart) {
@@ -425,11 +431,11 @@ function updateAvailableToSpendChart(availableToSpend) {
     ctx.chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            // labels: availableToSpend.categories,
-            labels: placeholderData.labels,
+            labels: availableToSpend.categories,
+            // labels: placeholderData.labels,
             datasets: [{
-                // data: availableToSpend.availableToSpend,
-                data: placeholderData.values,
+                data: availableToSpend.availableToSpend,
+                // data: placeholderData.values,
                 backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
                 borderColor: ['#ffffff'],
                 borderWidth: 1
@@ -466,11 +472,10 @@ function updateAccountBalancesChart(accountBalances) {
     ctx.chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            // labels: accountBalances.accounts,
-            labels: accountBalances.balances,
+            labels: accountBalances.accounts,
             datasets: [{
-                // data: data.balances,
-                data: placeholderData.balances,
+                data: accountBalances.balances,
+                // data: placeholderData.balances,
                 backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
                 borderColor: ['#ffffff'],
                 borderWidth: 1

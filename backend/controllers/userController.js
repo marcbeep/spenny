@@ -2,47 +2,127 @@ const User = require('../models/userModel');
 const Account = require('../models/accountModel');
 const Category = require('../models/categoryModel');
 const Budget = require('../models/budgetModel');
-const jwt = require('jsonwebtoken');
+const Goal = require('../models/goalModel'); 
+const Transaction = require('../models/transactionModel');
 const moment = require('moment');
+const jwt = require('jsonwebtoken');
+
 
 const createToken = (_id) => jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
 
 const initializeUserData = async (userId) => {
   try {
-    const genericCategories = ['groceries', 'rent', 'eating out', 'fun money', 'savings'];
+    // Create accounts
+    const accountsData = [
+      { accountTitle: 'Lloyds', accountType: 'spending', accountBalance: 30 },
+      { accountTitle: 'Monzo', accountType: 'spending', accountBalance: 30 },
+      { accountTitle: 'Vanguard Index Funds', accountType: 'tracking', accountBalance: 100 },
+    ];
+    
+    const accounts = await Promise.all(
+      accountsData.map(accountData => Account.create({
+        user: userId,
+        ...accountData,
+      }))
+    );
 
-    const genericAccountTitle = 'example spending account';
-    const genericAccount = await Account.create({
-      user: userId,
-      accountTitle: genericAccountTitle,
-      accountType: 'spending',
-      accountBalance: 0.0,
-    });
-
-    await Promise.all(
-      genericCategories.map((categoryTitle) =>
+    // Create categories
+    const genericCategories = ['groceries', 'transport', 'eating out', 'fun money', 'savings',];
+    const categories = await Promise.all(
+      genericCategories.map(categoryTitle =>
         Category.create({
           user: userId,
           categoryTitle,
-          // categoryAssigned: 0.0,
-          categoryAvailable: 0.0,
+          categoryAvailable: 10.0,
           categoryActivity: 0.0,
-        }),
-      ),
+        })
+      )
     );
 
+    // Create a budget
     await Budget.create({
       user: userId,
       budgetTotalAvailable: 0.0,
       budgetTotalAssigned: 0.0,
-      budgetReadyToAssign: 0.0,
+      budgetReadyToAssign: 10.0,
     });
+
+    // Create example transactions
+    await createExampleTransactions(userId, categories, accounts);
+
     return { success: true };
   } catch (err) {
     console.error('Error initializing data for user:', err);
     return { error: err.message || 'Failed to initialize user data' };
   }
 };
+
+// Example Transactions Creation Function
+const createExampleTransactions = async (userId, categories, accounts) => {
+  // Select spending accounts
+  const spendingAccounts = accounts.filter(account => account.accountType === 'spending');
+
+  // Example transaction details
+  const transactionsData = [
+    {
+      transactionTitle: 'asda shopping',
+      transactionType: 'debit',
+      transactionAmount: 5.00,
+      transactionDate: moment().subtract(1, 'days').toDate(),
+      transactionCategory: categories.find(c => c.categoryTitle === 'groceries'),
+      transactionAccount: spendingAccounts[0]
+    },
+    {
+      transactionTitle: 'drinks at spoons',
+      transactionType: 'debit',
+      transactionAmount: 6.00,
+      transactionDate: moment().subtract(2, 'days').toDate(),
+      transactionCategory: categories.find(c => c.categoryTitle === 'fun money'),
+      transactionAccount: spendingAccounts[0]
+    },
+    {
+      transactionTitle: 'transfer from liam for uber',
+      transactionType: 'credit',
+      transactionAmount: 2,
+      transactionDate: moment().toDate(),
+      transactionCategory: categories.find(c => c.categoryTitle === 'transport'), 
+      transactionAccount: spendingAccounts[1]
+    },
+    {
+      transactionTitle: 'kfc dinner',
+      transactionType: 'debit',
+      transactionAmount: 10.00,
+      transactionDate: moment().subtract(3, 'days').toDate(),
+      transactionCategory: categories.find(c => c.categoryTitle === 'eating out'),
+      transactionAccount: spendingAccounts[0]
+    },
+    {
+      transactionTitle: 'rainy day fund deposit',
+      transactionType: 'credit',
+      transactionAmount: 5.00,
+      transactionDate: moment().subtract(4, 'days').toDate(),
+      transactionCategory: categories.find(c => c.categoryTitle === 'eating out'), // This might not have a specific category
+      transactionAccount: spendingAccounts[1]
+    }
+  ];
+
+  // Create transaction records
+  await Promise.all(
+    transactionsData.map(transaction =>
+      Transaction.create({
+        user: userId,
+        transactionCategory: transaction.transactionCategory ? transaction.transactionCategory._id : null,
+        transactionAccount: transaction.transactionAccount._id,
+        transactionType: transaction.transactionType,
+        transactionTitle: transaction.transactionTitle,
+        transactionAmount: transaction.transactionAmount,
+        createdAt: transaction.transactionDate,
+        updatedAt: transaction.transactionDate,
+      })
+    )
+  );
+};
+
 
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
