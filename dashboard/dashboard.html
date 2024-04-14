@@ -369,8 +369,6 @@
 
 function updateSpendByCategoryChart(spendData) {
     const ctx = document.getElementById('spendByCategoryChart').getContext('2d');
-    const placeholderLabels = ["Groceries", "Eating Out", "Fun Money", "Charity", "Bills"];
-    const placeholderPercentages = [68, 35, 22, 16, 10];
 
     // Destroy existing chart instance if it exists
     if (ctx.chart) {
@@ -384,11 +382,9 @@ function updateSpendByCategoryChart(spendData) {
         type: 'doughnut',
         data: {
             labels: spendData.categories,
-            // labels: placeholderLabels,
             datasets: [{
                 label: 'Spend by Category',
                 data: spendData.percentages,
-                // data: placeholderPercentages,
                 backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
                 borderColor: ['#fff'],
                 borderWidth: 2
@@ -409,15 +405,11 @@ function updateSpendByCategoryChart(spendData) {
 
 function updateAvailableToSpendChart(availableToSpend) {
     const ctx = document.getElementById('availableToSpendChart').getContext('2d');
-    const placeholderData = {
-        labels: ["Groceries", "Eating Out", "Fun Money", "Charity", "Bills"],
-        values: [0, 0, 0, 0, 0]
-    };
 
     // Check if all values are 0
-    if (availableToSpend.values.every(value => value === 0)) {
+    if (availableToSpend.availableToSpend.every(value => value === 0)) {
         // Replace with array of ones
-        availableToSpend.values = Array(availableToSpend.values.length).fill(1);
+        availableToSpend.availableToSpend = Array(availableToSpend.availableToSpend.length).fill(1);
     }
 
     // Destroy existing chart instance if it exists
@@ -432,10 +424,8 @@ function updateAvailableToSpendChart(availableToSpend) {
         type: 'doughnut',
         data: {
             labels: availableToSpend.categories,
-            // labels: placeholderData.labels,
             datasets: [{
                 data: availableToSpend.availableToSpend,
-                // data: placeholderData.values,
                 backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
                 borderColor: ['#ffffff'],
                 borderWidth: 1
@@ -456,10 +446,6 @@ function updateAvailableToSpendChart(availableToSpend) {
 
 function updateAccountBalancesChart(accountBalances) {
     const ctx = document.getElementById('accountBalancesChart').getContext('2d');
-    const placeholderData = {
-        accountNames: ["Lloyds", "Monzo", "Revolut", "Barclays"],
-        balances: [1000, 2000, 3000, 4000]
-    };
 
     // Destroy existing chart instance if it exists
     if (ctx.chart) {
@@ -475,7 +461,6 @@ function updateAccountBalancesChart(accountBalances) {
             labels: accountBalances.accounts,
             datasets: [{
                 data: accountBalances.balances,
-                // data: placeholderData.balances,
                 backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
                 borderColor: ['#ffffff'],
                 borderWidth: 1
