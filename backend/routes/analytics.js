@@ -2,7 +2,7 @@ const express = require('express');
 const {
   outgoingsPastWeek,
   spendByCategoryPastWeek,
-  allTimeAnalytics,
+  statCards,
 } = require('../controllers/analyticsController');
 const requireAuth = require('../middleware/requireAuth');
 
@@ -11,6 +11,6 @@ router.use(requireAuth);
 
 router.get('/outgoingsPastWeek', outgoingsPastWeek);
 router.get('/spendByCategoryPastWeek', spendByCategoryPastWeek);
-router.get('/allTimeAnalytics', allTimeAnalytics);
+router.get('/statCards', statCards);
 
 module.exports = router;

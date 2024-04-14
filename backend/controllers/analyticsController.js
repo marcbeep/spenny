@@ -3,8 +3,84 @@ const Transaction = require('../models/transactionModel');
 const Analytics = require('../models/analyticsModel');
 const Account = require('../models/accountModel');
 const Category = require('../models/categoryModel');
+const Goal = require('../models/goalModel');
 
 const moment = require('moment');
+
+// Stat cards
+
+exports.statCards = async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+        // Calculate all-time net worth
+        const accounts = await Account.find({ user: userId });
+        const netWorth = accounts.reduce((acc, account) => acc + account.accountBalance, 0);
+
+        // Calculate all-time savings rate
+        const transactions = await Transaction.aggregate([
+            { $match: { user: userId } },
+            {
+                $group: {
+                    _id: '$type',
+                    total: { $sum: '$amount' },
+                },
+            },
+        ]);
+
+        let totalIncome = 0, totalExpenditure = 0;
+        transactions.forEach(transaction => {
+            if (transaction._id === 'credit') totalIncome += transaction.total;
+            if (transaction._id === 'debit') totalExpenditure += transaction.total;
+        });
+        const savingsRate = totalIncome ? ((totalIncome - totalExpenditure) / totalIncome * 100).toFixed(2) : '0.00';
+
+        // Calculate goals funded
+        const goals = await Goal.find({ user: userId });
+        const goalsFunded = goals.length ? goals.filter(goal => goal.goalStatus === 'funded').length : 0;
+
+        // Calculate average daily spend for the last week
+        const endOfToday = moment().endOf('day');
+        const startOfSevenDaysAgo = moment().subtract(6, 'days').startOf('day');
+        const outgoings = await Transaction.aggregate([
+            {
+                $match: {
+                    user: userId,
+                    type: 'debit',
+                    createdAt: { $gte: startOfSevenDaysAgo.toDate(), $lte: endOfToday.toDate() },
+                },
+            },
+            {
+                $group: {
+                    _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+                    total: { $sum: '$amount' },
+                },
+            },
+        ]);
+
+        let totalSpendLastWeek = outgoings.reduce((acc, cur) => acc + cur.total, 0);
+        const averageDailySpend = totalSpendLastWeek ? (totalSpendLastWeek / 7).toFixed(2) : '0.00';
+
+        // Compile response data
+        const response = {
+            netWorth: `${netWorth.toFixed(2)}`,
+            savingsRate: `${savingsRate}`,
+            goalsFunded: `${goalsFunded} / ${goals.length}`,
+            averageDailySpend: `${averageDailySpend}`
+        };
+
+        res.status(200).json({
+            message: 'Statistics for dashboard cards generated successfully.',
+            data: response
+        });
+    } catch (error) {
+        console.error('Error generating statistics for dashboard cards:', error);
+        res.status(500).json({
+            error: 'Failed to generate statistics for dashboard cards.',
+            details: error.message
+        });
+    }
+};
 
 // Outgoings (Past week)
 
@@ -126,69 +202,3 @@ exports.spendByCategoryPastWeek = async (req, res) => {
   }
 };
 
-// All time analytics
-
-async function calculateAllTimeAnalyticsForUserId(userId) {
-  try {
-    const accounts = await Account.find({ user: userId });
-    const netWorth = accounts.reduce((acc, account) => acc + account.accountBalance, 0);
-
-    const transactionAggregation = await Transaction.aggregate([
-      { $match: { user: userId } },
-      {
-        $group: {
-          _id: '$transactionType',
-          total: { $sum: '$transactionAmount' },
-        },
-      },
-    ]);
-
-    let totalIncome = 0;
-    let totalExpenditure = 0;
-    transactionAggregation.forEach((group) => {
-      if (group._id === 'credit') totalIncome = group.total;
-      if (group._id === 'debit') totalExpenditure = group.total;
-    });
-
-    let savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenditure) / totalIncome) * 100 : 0;
-
-    return {
-      netWorth,
-      totalIncome,
-      totalExpenditure,
-      savingsRate,
-    };
-  } catch (error) {
-    console.error('Error calculating all-time analytics for user:', error);
-    throw error;
-  }
-}
-
-exports.allTimeAnalytics = async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    const analyticsData = await calculateAllTimeAnalyticsForUserId(userId);
-
-    await Analytics.findOneAndUpdate(
-      { user: userId, analyticsType: 'allTime' },
-      {
-        $set: {
-          analyticsData: analyticsData,
-          analyticsLastCalculated: new Date(),
-        },
-      },
-      { upsert: true },
-    );
-
-    res.status(200).json({
-      message: 'All-time analytics calculated successfully.',
-      data: analyticsData,
-    });
-  } catch (error) {
-    console.error('Error calculating all-time analytics:', error);
-    res.status(500).json({
-      error: 'Failed to calculate all-time analytics.',
-    });
-  }
-};
