@@ -9,6 +9,8 @@
       src="https://kit.fontawesome.com/77a0651d35.js"
       crossorigin="anonymous"
     ></script>
+    <!--chartjs-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- chart library -->
     <script
       type="module"
@@ -57,14 +59,16 @@
               tabindex="0"
               class="menu dropdown-content mt-3 w-52 rounded-box bg-base-100 p-2 shadow-2xl"
             >
-              <li><a>Logout</a></li>
+              <li>
+                <a>Logout</a>
+              </li>
             </ul>
           </div>
           <!-- /dropdown -->
         </header>
         <!-- /header -->
 
-        <!-- stats -->
+        <!-- header stat cards -->
         <section
           class="stats stats-vertical col-span-12 w-full shadow-sm xl:stats-horizontal"
         >
@@ -92,8 +96,9 @@
             <div class="stat-desc">Past week</div>
           </div>
         </section>
-        <!-- /stats -->
-        <!-- card -->
+        <!-- /header stat cards -->
+
+        <!-- last 5 trans -->
         <section
           class="card col-span-12 overflow-hidden bg-base-100 shadow-sm xl:col-span-6"
         >
@@ -149,8 +154,9 @@
             </table>
           </div>
         </section>
-        <!-- /card -->
-        <!-- card -->
+        <!-- last 5 trans -->
+
+        <!-- daily spend bar chat-->
         <section
           class="card col-span-12 bg-primary text-primary-content shadow-sm xl:col-span-6"
         >
@@ -158,138 +164,49 @@
             <h2 class="card-title">Daily spend for last week</h2>
             <a class="link-hover link text-xs">View all transactions →</a>
           </div>
-          <tc-column
-            class="h-full w-full p-4 pt-0 [--shape-color:oklch(var(--pc))]"
-            values="[12,10,12,4,13,16,14]"
-            min="0"
-            shape-radius="4"
-            shape-gap="4"
-          ></tc-column>
+          <canvas id="dailySpendChart" class="p-4"></canvas>
+          <!-- Canvas for Chart.js -->
         </section>
-        <!-- /card -->
-        <!-- card -->
+        <!-- /daily spend bar chart-->
+
+        <!-- spend by cat chart -->
         <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
           <div class="card-body">
             <h2 class="card-title">Spend by Category</h2>
-            <div class="flex items-center gap-10">
-              <div class="grow">
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#19D6BF]"></span>
-                  Groceries
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#A838FF]"></span>
-                  Eating Out
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#3C37FF]"></span>
-                  Fun Money
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#FFBD3C]"></span>
-                  Charity
-                </div>
-              </div>
-              <tc-pie
-                class="h-32 w-32 shrink-0 [--shape-color-1:#A838FF] [--shape-color-2:#19D6BF] [--shape-color-3:#3C37FF] [--shape-color-4:#FFBD3C]"
-                values="[35,68,22,16]"
-                shape-size="30"
-                shape-gap="6"
-              ></tc-pie>
-            </div>
+            <canvas
+              id="spendByCategoryChart"
+              class="h-32 w-32 shrink-0"
+            ></canvas>
+            <!-- Canvas for Chart.js -->
           </div>
         </section>
-        <!-- /card -->
-        <!-- card -->
+        <!-- /spend by cat chart -->
+
+        <!-- available to spend chart -->
         <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
           <div class="card-body">
-            <h2 class="card-title">Available to spend</h2>
-            <div class="flex items-center gap-10">
-              <div class="grow">
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#19D6BF]"></span>
-                  Groceries
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#A838FF]"></span>
-                  Eating Out
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#3C37FF]"></span>
-                  Fun Money
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#FFBD3C]"></span>
-                  Charity
-                </div>
-              </div>
-              <tc-pie
-                class="h-32 w-32 shrink-0 [--shape-color-1:#A838FF] [--shape-color-2:#19D6BF] [--shape-color-3:#3C37FF] [--shape-color-4:#FFBD3C]"
-                values="[35,68,22,16]"
-                shape-size="30"
-                shape-gap="6"
-              ></tc-pie>
-            </div>
+            <h2 class="card-title">Available to Spend</h2>
+            <canvas
+              id="availableToSpendChart"
+              class="h-32 w-32 shrink-0"
+            ></canvas>
+            <!-- Canvas for Chart.js -->
           </div>
         </section>
-        <!-- /card -->
+        <!-- /available to spend chart -->
+
+        <!-- account balances chart-->
         <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
           <div class="card-body">
-            <h2 class="card-title">Account balances</h2>
-            <div class="flex items-center gap-10">
-              <div class="grow">
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#19D6BF]"></span>
-                  Lloyds
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#A838FF]"></span>
-                  Santander
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#3C37FF]"></span>
-                  Vanguard
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="badge badge-xs bg-[#FFBD3C]"></span>
-                  Natwest
-                </div>
-              </div>
-              <tc-pie
-                class="h-32 w-32 shrink-0 [--shape-color-1:#A838FF] [--shape-color-2:#19D6BF] [--shape-color-3:#3C37FF] [--shape-color-4:#FFBD3C]"
-                values="[35,68,22,16]"
-                shape-size="30"
-                shape-gap="6"
-              ></tc-pie>
-            </div>
+            <h2 class="card-title">Account Balances</h2>
+            <canvas
+              id="accountBalancesChart"
+              class="h-32 w-32 shrink-0"
+            ></canvas>
+            <!-- Canvas for Chart.js -->
           </div>
         </section>
-        <!-- card -->
-        <!-- /card-->
-        <!-- card -->
-        <!-- <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
-					<div class="card-body pb-0">
-						<h2 class="card-title">19,000</h2>
-						<p>Downloads</p>
-					</div>
-					<tc-line
-						class="h-full w-full rounded-box [--area-opacity:.2] [--shape-color:#19D6BF]"
-						values="[6,5,2,11,13,16,14,14,14,15,18,16,18,15,19,16,20,18,12,14]"
-						min="0"></tc-line>
-				</section> -->
-        <!-- /card -->
-        <!-- card -->
-        <!-- <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
-					<div class="card-body pb-0">
-						<h2 class="card-title">32,800</h2>
-						<p>Unique visitors</p>
-					</div>
-					<tc-line
-						class="h-full w-full rounded-box [--area-opacity:.2] [--shape-color:#A838FF]"
-						values="[12,10,12,4,13,16,14,10,12,11,17,18,16,17,20,14,15,13,12,14]"
-						min="0"></tc-line>
-				</section> -->
-        <!-- /card -->
+        <!-- /account balances chart-->
       </div>
     </main>
     <!-- /content -->
@@ -334,4 +251,128 @@
     </aside>
   </body>
   <!-- /drawer -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document.getElementById("dailySpendChart").getContext("2d");
+      const dailySpendChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+          datasets: [
+            {
+              label: "Daily Spend (£)",
+              data: [12, 10, 12, 4, 13, 16, 14],
+              backgroundColor: "rgba(227, 232, 250)",
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              display: false,
+              beginAtZero: true,
+              grid: {
+                drawOnChartArea: false,
+              },
+            },
+            x: {
+              display: false,
+              grid: {
+                drawOnChartArea: false,
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document
+        .getElementById("spendByCategoryChart")
+        .getContext("2d");
+      const spendByCategoryChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Groceries", "Eating Out", "Fun Money", "Charity"],
+          datasets: [
+            {
+              data: [35, 68, 22, 16],
+              backgroundColor: ["#19D6BF", "#A838FF", "#3C37FF", "#FFBD3C"],
+              borderColor: ["#fff"],
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false, // Ensures the legend is not displayed
+            },
+          },
+        },
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document
+        .getElementById("availableToSpendChart")
+        .getContext("2d");
+      const spendByCategoryChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Groceries", "Eating Out", "Fun Money", "Charity"],
+          datasets: [
+            {
+              data: [35, 68, 22, 16],
+              backgroundColor: ["#19D6BF", "#A838FF", "#3C37FF", "#FFBD3C"],
+              borderColor: ["#fff"],
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false, // Ensures the legend is not displayed
+            },
+          },
+        },
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document
+        .getElementById("accountBalancesChart")
+        .getContext("2d");
+      const spendByCategoryChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: ["Groceries", "Eating Out", "Fun Money", "Charity"],
+          datasets: [
+            {
+              data: [35, 68, 22, 16],
+              backgroundColor: ["#19D6BF", "#A838FF", "#3C37FF", "#FFBD3C"],
+              borderColor: ["#fff"],
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false, // Ensures the legend is not displayed
+            },
+          },
+        },
+      });
+    });
+  </script>
 </html>
