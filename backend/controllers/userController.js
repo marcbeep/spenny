@@ -2,7 +2,6 @@ const User = require('../models/userModel');
 const Account = require('../models/accountModel');
 const Category = require('../models/categoryModel');
 const Budget = require('../models/budgetModel');
-const Analytics = require('../models/analyticsModel');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 

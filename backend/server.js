@@ -3,7 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('./jobs/goalEvaluation');
-require('./jobs/analyticsServices');
 
 const accountRoutes = require('./routes/account');
 const budgetRoutes = require('./routes/budget');

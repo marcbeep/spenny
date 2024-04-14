@@ -46,7 +46,7 @@
               class="menu dropdown-content mt-3 w-52 rounded-box bg-base-100 p-2 shadow-2xl"
             >
               <li>
-                <a>Logout</a>
+                <a onclick="logoutFunction()">Logout</a>
               </li>
             </ul>
           </div>
@@ -236,6 +236,21 @@
   </body>
   <!-- /drawer -->
   <script>
+
+    // auth
+    const userEmail = sessionStorage.getItem("userEmail");
+      const userProfilePicture = sessionStorage.getItem("userProfilePicture");
+
+      if (!userEmail || !userProfilePicture) {
+        window.location.href = "index.html";
+      } else {
+        document.getElementById(
+          "userEmail",
+        ).textContent = `Email: ${userEmail}`;
+        document.getElementById("userProfilePicture").src = userProfilePicture;
+      }
+
+      // charts
     document.addEventListener("DOMContentLoaded", function () {
       const ctx = document.getElementById("dailySpendChart").getContext("2d");
       const dailySpendChart = new Chart(ctx, {

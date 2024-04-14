@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Transaction = require('../models/transactionModel');
-const Analytics = require('../models/analyticsModel');
 const Account = require('../models/accountModel');
 const Category = require('../models/categoryModel');
 const Goal = require('../models/goalModel');
