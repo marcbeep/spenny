@@ -229,7 +229,7 @@
         const netWorth = data.statCards.data.netWorth || "N/A";
         document.querySelector(
           ".stat-value[data-id='netWorth']",
-        ).textContent = `${netWorth}`;
+        ).textContent = `£${netWorth}`;
 
         // Update Savings Rate
         const savingsRate = data.statCards.data.savingsRate || "N/A";
@@ -248,7 +248,7 @@
           data.statCards.data.averageDailySpend || "N/A";
         document.querySelector(
           ".stat-value[data-id='averageDailySpend']",
-        ).textContent = `${averageDailySpend}`;
+        ).textContent = `£${averageDailySpend}`;
       } else {
         console.log("Stat cards data is missing or incomplete");
       }
@@ -297,46 +297,51 @@
             <tr>
                 <td>No transactions yet! Add one.</td>
                 <td>${today}</td>
-                <td class="text-neutral">0.00</td>
+                <td class="text-neutral">£0.00</td>
             </tr>`;
       }
     }
 
     // Daily spend chart
     function updateDailySpendChart(dailyOutgoingsData) {
-    const ctx = document.getElementById("dailySpendChart").getContext("2d");
-    const data = dailyOutgoingsData.dailyOutgoings.length > 0 ? dailyOutgoingsData.dailyOutgoings : [0, 0, 0, 0, 0, 0, 0];
+      const ctx = document.getElementById("dailySpendChart").getContext("2d");
+      const data =
+        dailyOutgoingsData.dailyOutgoings.length > 0
+          ? dailyOutgoingsData.dailyOutgoings
+          : [0, 0, 0, 0, 0, 0, 0];
 
-    const dailySpendChart = new Chart(ctx, {
+      const dailySpendChart = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-            datasets: [{
-                label: "Daily Spend (£)",
-                data: data,
-                backgroundColor: "rgba(227, 232, 250)",
-            }],
+          labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+          datasets: [
+            {
+              label: "Daily Spend (£)",
+              data: data,
+              backgroundColor: "rgba(227, 232, 250)",
+            },
+          ],
         },
         options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    display: false,
-                },
-                x: {
-                    display: false,
-                }
+          scales: {
+            y: {
+              beginAtZero: true,
+              display: false,
             },
-            plugins: {
-                legend: {
-                    display: false,
-                }
-            }
-        }
-    });
+            x: {
+              display: false,
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      });
 
-    return dailySpendChart;
-}
+      return dailySpendChart;
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
       const ctx = document
