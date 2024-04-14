@@ -82,6 +82,43 @@ exports.statCards = async (req, res) => {
     }
 };
 
+// Last 5 Transactions
+exports.lastFiveTransactions = async (req, res) => {
+  const userId = req.user._id; 
+
+  try {
+      const lastFiveTransactions = await Transaction.find({ user: userId })
+          .sort({ createdAt: -1 }) 
+          .limit(5) 
+          .populate('transactionCategory', 'categoryName') // Ensures only categoryName is fetched
+          .populate('transactionAccount', 'accountName'); // Ensures only accountName is fetched
+
+      // Mapping the response to format it with the direct category and account names
+      const formattedTransactions = lastFiveTransactions.map(transaction => ({
+          _id: transaction._id,
+          transactionTitle: transaction.transactionTitle,
+          transactionType: transaction.transactionType,
+          transactionAmount: transaction.transactionAmount,
+          transactionCategory: transaction.transactionCategory ? transaction.transactionCategory.categoryName : "No Category",
+          transactionAccount: transaction.transactionAccount ? transaction.transactionAccount.accountName : "No Account",
+          createdAt: transaction.createdAt,
+          updatedAt: transaction.updatedAt,
+          __v: transaction.__v,
+      }));
+
+      res.status(200).json({
+          message: "Successfully retrieved the last five transactions",
+          data: formattedTransactions
+      });
+  } catch (error) {
+      console.error('Error retrieving last five transactions:', error);
+      res.status(500).json({
+          error: "Failed to retrieve transactions",
+          details: error.message
+      });
+  }
+};
+
 // Outgoings (Past week)
 
 const calculateDailyOutgoingsForLastWeek = async (userId) => {
