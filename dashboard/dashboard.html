@@ -61,25 +61,25 @@
         >
           <div class="stat">
             <div class="stat-title">Networth</div>
-            <div class="stat-value" data-id="netWorth">£15,000</div>
+            <div class="stat-value" data-id="netWorth">Loading...</div>
             <div class="stat-desc">All time</div>
           </div>
 
           <div class="stat">
             <div class="stat-title">Savings Rate</div>
-            <div class="stat-value" data-id="savingsRate">33%</div>
+            <div class="stat-value" data-id="savingsRate">Loading...</div>
             <div class="stat-desc">All time</div>
           </div>
 
           <div class="stat">
             <div class="stat-title">Goals Funded</div>
-            <div class="stat-value" data-id="goalsFunded">4/5</div>
+            <div class="stat-value" data-id="goalsFunded">Loading...</div>
             <div class="stat-desc">Past week</div>
           </div>
 
           <div class="stat">
             <div class="stat-title">Average Daily Spend</div>
-            <div class="stat-value" data-id="averageDailySpend">£15</div>
+            <div class="stat-value" data-id="averageDailySpend">Loading...</div>
             <div class="stat-desc">Past week</div>
           </div>
         </section>
@@ -104,17 +104,19 @@
         </section>
         <!-- /last 5 transactions -->
 
-        <!-- daily spend bar chat-->
-        <section
-          class="card col-span-12 bg-primary text-primary-content shadow-sm xl:col-span-6"
-        >
-          <div class="card-body pb-0">
-            <h2 class="card-title">Daily spend for last week</h2>
-            <a class="link-hover link text-xs">View all transactions →</a>
-          </div>
-          <canvas id="dailySpendChart" class="p-4"></canvas>
-        </section>
-        <!-- /daily spend bar chart-->
+        <!-- daily spend bar chart -->
+<section class="card col-span-12 bg-primary text-primary-content shadow-sm xl:col-span-6">
+  <div class="card-body pb-0">
+    <h2 class="card-title">Daily spend for last week</h2>
+    <a class="link-hover link text-xs">View all transactions →</a>
+  </div>
+  <div id="dailySpendChartContainer" class="p-4">
+    <canvas id="dailySpendChart"></canvas>
+    <h1 id="noSpendingMessage" class="hidden text-left"><i class="fa-solid fa-sack-xmark"></i> No spending data for this week yet.</h1>
+  </div>
+</section>
+<!-- /daily spend bar chart -->
+
 
         <!-- spend by cat chart -->
         <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
@@ -215,7 +217,6 @@
         .then((data) => {
           console.log("All dashboard data:", data);
           updateDashboard(data);
-          updateDailySpendChart(data.dailySpendLastWeek);
         })
         .catch((error) => {
           console.error("Failed to load dashboard data:", error);
@@ -255,6 +256,9 @@
 
       // Update Recent Transactions
       updateTransactions(data.lastFiveTransactions);
+
+      // Update Daily Spend Chart
+      updateDailySpendChart(data.dailySpendLastWeek);
     }
 
     function updateTransactions(transactionsData) {
@@ -295,53 +299,74 @@
         // If no transactions, display a placeholder transaction row
         transactionsTableBody.innerHTML = `
             <tr>
-                <td>No transactions yet! Add one.</td>
+                <td><i class="fa-solid fa-sack-xmark"></i> No transactions yet. Add one.</td>
                 <td>${today}</td>
                 <td class="text-neutral">£0.00</td>
             </tr>`;
       }
     }
 
-    // Daily spend chart
     function updateDailySpendChart(dailyOutgoingsData) {
-      const ctx = document.getElementById("dailySpendChart").getContext("2d");
-      const data =
-        dailyOutgoingsData.dailyOutgoings.length > 0
-          ? dailyOutgoingsData.dailyOutgoings
-          : [0, 0, 0, 0, 0, 0, 0];
+    const ctx = document.getElementById("dailySpendChart").getContext("2d");
+    const messageElement = document.getElementById("noSpendingMessage");
 
-      const dailySpendChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-          datasets: [
-            {
-              label: "Daily Spend (£)",
-              data: data,
-              backgroundColor: "rgba(227, 232, 250)",
-            },
-          ],
-        },
-        options: {
-          scales: {
-            y: {
-              beginAtZero: true,
-              display: false,
-            },
-            x: {
-              display: false,
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      });
+    // Ensure the canvas is visible to potentially hold a chart
+    ctx.canvas.style.display = 'block';
 
-      return dailySpendChart;
+    // Check if there is valid data to display
+    if (dailyOutgoingsData.dailyOutgoings && dailyOutgoingsData.dailyOutgoings.length > 0 && !dailyOutgoingsData.dailyOutgoings.every(val => val === 0)) {
+        // Hide the message if there is data
+        messageElement.classList.add('hidden');
+
+        // If a chart instance already exists, destroy it before creating a new one
+        if (window.dailySpendChart) {
+            window.dailySpendChart.destroy();
+        }
+
+        // Create a new chart instance
+        window.dailySpendChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                datasets: [{
+                    label: "Daily Spend (£)",
+                    data: dailyOutgoingsData.dailyOutgoings,
+                    backgroundColor: "rgba(227, 232, 250)",
+                }],
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        display: false,
+                    },
+                    x: {
+                        display: false,
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                    }
+                }
+            }
+        });
+    } else {
+        // Show the message if there is no data
+        messageElement.classList.remove('hidden');
+
+        // Hide the canvas since there's no data to display
+        ctx.canvas.style.display = 'none';
+
+        // Destroy the chart if it exists to free up resources
+        if (window.dailySpendChart) {
+            window.dailySpendChart.destroy();
+            window.dailySpendChart = undefined; // Clear the reference
+        }
     }
+}
+
+
 
     document.addEventListener("DOMContentLoaded", function () {
       const ctx = document
