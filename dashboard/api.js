@@ -3,7 +3,102 @@ const API_URL =
     ? "http://localhost:3000"
     : "https://spenny-6e54c38e0b23.herokuapp.com";
 
-// Helper  functions
+// Helper functions
+async function makeFetchRequest(path, options = {}) {
+  const token = sessionStorage.getItem("token");
+  const headers = {
+    "Content-Type": "application/json",
+    ...options.headers,
+  };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}${path}`, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      throw new Error(
+        errorResponse.error || `${response.status}: ${response.statusText}`,
+      );
+    }
+
+    return response.json(); 
+  } catch (error) {
+    console.error("Fetch request failed:", error);
+    throw error; 
+  }
+}
+
+// Dashboard Page functions
+
+// Fetch stat cards data
+function fetchStatCards() {
+  return makeFetchRequest('/analytics/statCards');
+}
+
+// Fetch the last five transactions
+function fetchLastFiveTransactions() {
+  return makeFetchRequest('/analytics/lastFiveTransactions');
+}
+
+// Fetch daily spend for the last week
+function fetchDailySpendLastWeek() {
+  return makeFetchRequest('/analytics/dailySpendLastWeek');
+}
+
+// Fetch spending by category for all time
+function fetchSpendByCategoryAllTime() {
+  return makeFetchRequest('/analytics/spendByCategoryAllTime');
+}
+
+// Fetch available to spend amounts
+function fetchAvailableToSpend() {
+  return makeFetchRequest('/analytics/availableToSpend');
+}
+
+// Fetch account balances
+function fetchAccountBalances() {
+  return makeFetchRequest('/analytics/accountBalances');
+}
+
+// Fetch all analytics data
+async function fetchAllAnalyticsData() {
+  try {
+    const results = await Promise.all([
+      fetchStatCards(),
+      fetchLastFiveTransactions(),
+      fetchDailySpendLastWeek(),
+      fetchSpendByCategoryAllTime(),
+      fetchAvailableToSpend(),
+      fetchAccountBalances()
+    ]);
+
+    // results[0] corresponds to the response from fetchStatCards
+    // results[1] corresponds to the response from fetchLastFiveTransactions, etc.
+
+    // You might want to handle the results differently based on your UI setup:
+    return {
+      statCards: results[0],
+      lastFiveTransactions: results[1],
+      dailySpendLastWeek: results[2],
+      spendByCategoryAllTime: results[3],
+      availableToSpend: results[4],
+      accountBalances: results[5]
+    };
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    throw error;
+  }
+}
+
+
+// Other functions
 
 function updateUI() {
   fetchAndDisplayAnalytics();
@@ -74,37 +169,6 @@ async function fetchAndDisplayAnalytics() {
     }
   } catch (error) {
     console.error("Error fetching all-time analytics:", error);
-  }
-}
-
-async function makeFetchRequest(path, options = {}) {
-  const token = sessionStorage.getItem("token");
-  const headers = {
-    "Content-Type": "application/json",
-    ...options.headers,
-  };
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  try {
-    const response = await fetch(`${API_URL}${path}`, {
-      ...options,
-      headers,
-    });
-
-    if (!response.ok) {
-      const errorResponse = await response.json();
-      throw new Error(
-        errorResponse.error || `${response.status}: ${response.statusText}`,
-      );
-    }
-
-    return response.json(); // Assuming all responses are expected to be JSON
-  } catch (error) {
-    console.error("Fetch request failed:", error);
-    throw error; // Re-throw to allow specific function handling
   }
 }
 

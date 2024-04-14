@@ -9,6 +9,7 @@
       src="https://kit.fontawesome.com/77a0651d35.js"
       crossorigin="anonymous"
     ></script>
+    <script src="api.js"></script>
     <!--chartjs-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
@@ -32,13 +33,13 @@
             <h1 class="lg:text-2xl font-semibold">Dashboard</h1>
           </div>
           <div>
-            <h2>m@example.com</h2>
+            <h2 id="userEmail"></h2>
           </div>
           <!-- dropdown -->
           <div class="dropdown-end dropdown z-10">
             <div tabindex="0" class="avatar btn btn-circle btn-ghost">
               <div class="w-10 rounded-full">
-                <img src="https://picsum.photos/80/80?5" />
+                <img id="userProfilePicture" src="" alt="User Profile" />
               </div>
             </div>
             <ul
@@ -46,7 +47,7 @@
               class="menu dropdown-content mt-3 w-52 rounded-box bg-base-100 p-2 shadow-2xl"
             >
               <li>
-                <a onclick="logoutFunction()">Logout</a>
+                <a onclick="logoutUser()">Logout</a>
               </li>
             </ul>
           </div>
@@ -246,7 +247,7 @@
       } else {
         document.getElementById(
           "userEmail",
-        ).textContent = `Email: ${userEmail}`;
+        ).textContent = `${userEmail}`;
         document.getElementById("userProfilePicture").src = userProfilePicture;
       }
 
