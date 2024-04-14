@@ -7,7 +7,7 @@ const Goal = require('../models/goalModel');
 
 const moment = require('moment');
 
-// Stat cards
+// Stat cards (All time)
 
 exports.statCards = async (req, res) => {
     const userId = req.user._id;
@@ -90,20 +90,14 @@ exports.lastFiveTransactions = async (req, res) => {
       const lastFiveTransactions = await Transaction.find({ user: userId })
           .sort({ createdAt: -1 }) 
           .limit(5) 
-          .populate('transactionCategory', 'categoryName') // Ensures only categoryName is fetched
-          .populate('transactionAccount', 'accountName'); // Ensures only accountName is fetched
 
       // Mapping the response to format it with the direct category and account names
       const formattedTransactions = lastFiveTransactions.map(transaction => ({
           _id: transaction._id,
           transactionTitle: transaction.transactionTitle,
+          createdAt: new Date(transaction.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
           transactionType: transaction.transactionType,
-          transactionAmount: transaction.transactionAmount,
-          transactionCategory: transaction.transactionCategory ? transaction.transactionCategory.categoryName : "No Category",
-          transactionAccount: transaction.transactionAccount ? transaction.transactionAccount.accountName : "No Account",
-          createdAt: transaction.createdAt,
-          updatedAt: transaction.updatedAt,
-          __v: transaction.__v,
+          transactionAmount: transaction.transactionAmount.toFixed(2),
       }));
 
       res.status(200).json({
@@ -160,13 +154,13 @@ const calculateDailyOutgoingsForLastWeek = async (userId) => {
   return totals;
 };
 
-exports.outgoingsPastWeek = async (req, res) => {
+exports.dailySpendLastWeek = async (req, res) => {
   const userId = req.user._id;
 
   try {
     const dailyOutgoings = await calculateDailyOutgoingsForLastWeek(userId);
     res.status(200).json({
-      message: 'Daily outgoings calculated successfully.',
+      message: 'Daily spend for last week calculated successfully.',
       dailyOutgoings,
     });
   } catch (error) {
@@ -175,67 +169,126 @@ exports.outgoingsPastWeek = async (req, res) => {
   }
 };
 
-// Spend by Category (Past week)
+// Spend by Category (All time)
 
 async function calculateSpendingByCategoryForUserId(userId) {
-  // Use moment.js to get the exact current time and calculate 7 days back
-  const now = moment().endOf('day'); // Consider up to the end of today
-  const sevenDaysAgo = moment().subtract(6, 'days').startOf('day'); // Go back 6 days, start of that day
+    try {
+        // Aggregate transactions by category for all time, filtering out uncategorized transactions
+        const transactions = await Transaction.aggregate([
+            {
+                $match: {
+                    user: new mongoose.Types.ObjectId(userId),
+                    transactionType: 'debit', // Only debit transactions count as spending
+                    transactionCategory: { $ne: null } // Exclude transactions without a category
+                },
+            },
+            {
+                $group: {
+                    _id: '$transactionCategory', // Group by transaction category ID
+                    totalAmount: { $sum: '$transactionAmount' }, // Sum up all amounts per category
+                },
+            }
+        ]);
 
-  console.log(`Calculating spending from ${sevenDaysAgo.toDate()} to ${now.toDate()}`);
+        // Fetch all categories for this user, sorted alphabetically by title
+        const categories = await Category.find({ user: userId }).sort('categoryTitle');
 
-  // Aggregate transactions by category within this time frame
-  const transactions = await Transaction.aggregate([
-    {
-      $match: {
-        user: new mongoose.Types.ObjectId(userId),
-        transactionType: 'debit',
-        createdAt: { $gte: sevenDaysAgo.toDate(), $lte: now.toDate() },
-      },
-    },
-    {
-      $group: {
-        _id: '$transactionCategory',
-        totalAmount: { $sum: '$transactionAmount' },
-      },
-    },
-  ]);
+        // Calculate the total spend to normalize data to percentages
+        const totalSpend = transactions.reduce((acc, cur) => acc + cur.totalAmount, 0);
 
-  // Fetch all categories for this user, sorted alphabetically by title
-  const categories = await Category.find({ user: userId }).sort('categoryTitle');
+        // Prepare arrays for categories and their corresponding total spend as percentages
+        let categoriesArray = [];
+        let percentagesArray = [];
 
-  // Prepare arrays for categories and their corresponding total spend
-  let categoriesArray = [];
-  let totalSpendArray = [];
-  const transactionsMap = transactions.reduce(
-    (acc, { _id, totalAmount }) => ({
-      ...acc,
-      [_id.toString()]: totalAmount,
-    }),
-    {},
-  );
+        categories.forEach(category => {
+            const transaction = transactions.find(t => t._id && t._id.toString() === category._id.toString());
+            const totalAmount = transaction ? transaction.totalAmount : 0;
+            const percentage = totalSpend > 0 ? (totalAmount / totalSpend * 100).toFixed(2) : 0;
+            categoriesArray.push(category.categoryTitle);
+            percentagesArray.push(parseFloat(percentage));
+        });
 
-  categories.forEach(({ _id, categoryTitle }) => {
-    categoriesArray.push(categoryTitle);
-    totalSpendArray.push(transactionsMap[_id.toString()] || 0);
-  });
-
-  return { categories: categoriesArray, total_spend: totalSpendArray };
+        return { categories: categoriesArray, percentages: percentagesArray };
+    } catch (error) {
+        console.error('Failed to calculate spending by category:', error);
+        throw new Error('Failed to calculate spending by category: ' + error.message);
+    }
 }
 
-exports.spendByCategoryPastWeek = async (req, res) => {
-  const userId = req.user._id;
+exports.spendByCategoryAllTime = async (req, res) => {
+    const userId = req.user._id;
+
+    try {
+        const { categories, percentages } = await calculateSpendingByCategoryForUserId(userId);
+        if (!percentages.some(percentage => percentage > 0)) {
+            return res.status(404).json({
+                message: 'No spending data available.',
+                categories: [],
+                percentages: []
+            });
+        }
+        res.status(200).json({
+            message: 'Spending by category analytics updated successfully.',
+            categories,
+            percentages,
+        });
+    } catch (error) {
+        console.error('Error calculating spending by category:', error);
+        res.status(500).json({
+            error: 'Failed to calculate spending by category.',
+            details: error.message
+        });
+    }
+};
+
+// Available to Spend
+exports.availableToSpend = async (req, res) => {
+  const userId = req.user._id;  // Assumes user ID is extracted from the authentication middleware
 
   try {
-    const { categories, total_spend } = await calculateSpendingByCategoryForUserId(userId);
-    res.status(200).json({
-      message: 'Spending by category analytics updated successfully.',
-      categories,
-      total_spend,
-    });
+      // Fetch all categories for this user, sorted alphabetically by title
+      const categories = await Category.find({ user: userId }).sort('categoryTitle');
+
+      // Prepare arrays for categories and their corresponding available-to-spend amounts
+      const categoryNames = categories.map(category => category.categoryTitle);
+      const availableAmounts = categories.map(category => category.categoryAvailable > 0 ? category.categoryAvailable : 0);
+
+      res.status(200).json({
+          message: "Successfully retrieved available to spend amounts.",
+          categories: categoryNames,
+          availableToSpend: availableAmounts
+      });
   } catch (error) {
-    console.error('Error calculating spending by category:', error);
-    res.status(500).json({ error: 'Failed to calculate spending by category.' });
+      console.error('Error retrieving available to spend amounts:', error);
+      res.status(500).json({
+          error: "Failed to retrieve available to spend amounts.",
+          details: error.message
+      });
   }
 };
 
+// Account Balances
+exports.accountBalances = async (req, res) => {
+  const userId = req.user._id;  // Assumes user ID is extracted from the authentication middleware
+
+  try {
+      // Fetch all accounts for this user
+      const accounts = await Account.find({ user: userId }).sort('accountName');
+
+      // Prepare arrays for account names and their corresponding non-negative balances
+      const accountNames = accounts.map(account => account.accountTitle);
+      const balances = accounts.map(account => Math.max(0, account.accountBalance)); // Ensures negative balances are returned as zero
+
+      res.status(200).json({
+          message: "Successfully retrieved account balances.",
+          accounts: accountNames,
+          balances: balances
+      });
+  } catch (error) {
+      console.error('Error retrieving account balances:', error);
+      res.status(500).json({
+          error: "Failed to retrieve account balances.",
+          details: error.message
+      });
+  }
+};

@@ -2,8 +2,10 @@ const express = require('express');
 const {
   statCards,
   lastFiveTransactions,
-  outgoingsPastWeek,
-  spendByCategoryPastWeek,
+  dailySpendLastWeek,
+  spendByCategoryAllTime,
+  availableToSpend,
+  accountBalances
 } = require('../controllers/analyticsController');
 const requireAuth = require('../middleware/requireAuth');
 
@@ -12,7 +14,9 @@ router.use(requireAuth);
 
 router.get('/statCards', statCards);
 router.get('/lastFiveTransactions', lastFiveTransactions);
-router.get('/outgoingsPastWeek', outgoingsPastWeek);
-router.get('/spendByCategoryPastWeek', spendByCategoryPastWeek);
+router.get('/dailySpendLastWeek', dailySpendLastWeek);
+router.get('/spendByCategoryAllTime', spendByCategoryAllTime);
+router.get('/availableToSpend', availableToSpend);
+router.get('/accountBalances', accountBalances);
 
 module.exports = router;
