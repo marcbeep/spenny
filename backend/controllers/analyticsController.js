@@ -230,7 +230,7 @@ exports.spendByCategoryAllTime = async (req, res) => {
   try {
     const { categories, percentages } = await calculateSpendingByCategoryForUserId(userId);
     if (!percentages.some((percentage) => percentage > 0)) {
-      return res.status(404).json({
+      return res.status(200).json({
         message: 'No spending data available.',
         categories: [],
         percentages: [],

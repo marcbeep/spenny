@@ -7,33 +7,36 @@ const API_URL =
 async function makeFetchRequest(path, options = {}) {
   const token = sessionStorage.getItem("token");
   const headers = {
-    "Content-Type": "application/json",
-    ...options.headers,
+      "Content-Type": "application/json",
+      ...options.headers,
   };
 
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
   }
 
   try {
-    const response = await fetch(`${API_URL}${path}`, {
-      ...options,
-      headers,
-    });
+      const response = await fetch(`${API_URL}${path}`, {
+          ...options,
+          headers,
+      });
 
-    if (!response.ok) {
-      const errorResponse = await response.json();
-      throw new Error(
-        errorResponse.error || `${response.status}: ${response.statusText}`,
-      );
-    }
+      const responseData = await response.json(); 
 
-    return response.json();
+      if (!response.ok) {
+          if (response.status === 404) {
+              return responseData; // return the 404 data
+          }
+          throw new Error(responseData.error || `${response.status}: ${response.statusText}`);
+      }
+
+      return responseData;
   } catch (error) {
-    console.error("Fetch request failed:", error);
-    throw error;
+      console.error("Fetch request failed:", error);
+      throw error;
   }
 }
+
 
 async function loginUser(event) {
   event.preventDefault();
