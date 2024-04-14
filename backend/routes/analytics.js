@@ -5,7 +5,7 @@ const {
   dailySpendLastWeek,
   spendByCategoryAllTime,
   availableToSpend,
-  accountBalances
+  accountBalances,
 } = require('../controllers/analyticsController');
 const requireAuth = require('../middleware/requireAuth');
 
