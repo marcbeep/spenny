@@ -215,6 +215,7 @@
         .then((data) => {
           console.log("All dashboard data:", data);
           updateDashboard(data);
+          updateDailySpendChart(data.dailySpendLastWeek);
         })
         .catch((error) => {
           console.error("Failed to load dashboard data:", error);
@@ -301,45 +302,41 @@
       }
     }
 
-    // charts
-    document.addEventListener("DOMContentLoaded", function () {
-      const ctx = document.getElementById("dailySpendChart").getContext("2d");
-      const dailySpendChart = new Chart(ctx, {
+    // Daily spend chart
+    function updateDailySpendChart(dailyOutgoingsData) {
+    const ctx = document.getElementById("dailySpendChart").getContext("2d");
+    const data = dailyOutgoingsData.dailyOutgoings.length > 0 ? dailyOutgoingsData.dailyOutgoings : [0, 0, 0, 0, 0, 0, 0];
+
+    const dailySpendChart = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-          datasets: [
-            {
-              label: "Daily Spend (£)",
-              data: [12, 10, 12, 4, 13, 16, 14],
-              backgroundColor: "rgba(227, 232, 250)",
-            },
-          ],
+            labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+            datasets: [{
+                label: "Daily Spend (£)",
+                data: data,
+                backgroundColor: "rgba(227, 232, 250)",
+            }],
         },
         options: {
-          scales: {
-            y: {
-              display: false,
-              beginAtZero: true,
-              grid: {
-                drawOnChartArea: false,
-              },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    display: false,
+                },
+                x: {
+                    display: false,
+                }
             },
-            x: {
-              display: false,
-              grid: {
-                drawOnChartArea: false,
-              },
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      });
+            plugins: {
+                legend: {
+                    display: false,
+                }
+            }
+        }
     });
+
+    return dailySpendChart;
+}
 
     document.addEventListener("DOMContentLoaded", function () {
       const ctx = document
