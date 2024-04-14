@@ -262,6 +262,12 @@
 
       // Update Spend by Category Chart
       updateSpendByCategoryChart(data.spendByCategoryAllTime);
+
+      // Update Available to Spend Chart
+      updateAvailableToSpendChart(data.availableToSpend);
+
+      // Update Account Balances Chart
+      updateAccountBalancesChart(data.accountBalances);
     }
 
     function updateTransactions(transactionsData) {
@@ -311,64 +317,78 @@
 
     function updateDailySpendChart(dailyOutgoingsData) {
     const ctx = document.getElementById("dailySpendChart").getContext("2d");
+    const placeholderData = {
+        dailyOutgoings: [10, 20, 30, 40, 50, 60, 70]
+    };
 
-    // Always ensure the chart container is visible
+    // Ensure the chart container is visible
     document.getElementById("dailySpendChartContainer").style.display = 'block';
 
-    // Create or update the chart without checking data validity or length
-    if (window.dailySpendChart) {
-        window.dailySpendChart.data.datasets[0].data = dailyOutgoingsData.dailyOutgoings;
-        window.dailySpendChart.update();
-    } else {
-        window.dailySpendChart = new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-                datasets: [{
-                    label: "Daily Spend (£)",
-                    data: dailyOutgoingsData.dailyOutgoings,
-                    backgroundColor: "rgba(227, 232, 250)",
-                }],
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        display: false,
-                    },
-                    x: {
-                        display: false,
-                    }
+    // Create a new chart instance each time the function is called
+    console.log(dailyOutgoingsData.dailyOutgoings);
+    let dailySpendChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+            datasets: [{
+                label: "Daily Spend (£)",
+                // data: dailyOutgoingsData.dailyOutgoings,
+                data: placeholderData.dailyOutgoings,
+                backgroundColor: "rgba(227, 232, 250)"
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    display: false
                 },
-                plugins: {
-                    legend: {
-                        display: false,
-                    }
+                x: {
+                    display: false
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
                 }
             }
-        });
+        }
+    });
+
+    // Optionally clear the previous chart instance before creating a new one
+    if (ctx.chart) {
+        ctx.chart.destroy();
     }
+
+    // Update the context with the new chart
+    ctx.chart = dailySpendChart;
 }
-
-
-
+    
 
 function updateSpendByCategoryChart(spendData) {
     const ctx = document.getElementById('spendByCategoryChart').getContext('2d');
+    const placeholderLabels = ["Groceries", "Eating Out", "Fun Money", "Charity", "Bills"];
+    const placeholderPercentages = [68, 35, 22, 16, 10];
 
-    // If a chart instance already exists, destroy it before creating a new one
-    if (window.spendByCategoryChart) {
-        window.spendByCategoryChart.destroy();
+    // Destroy existing chart instance if it exists
+    if (ctx.chart) {
+        ctx.chart.destroy();
     }
 
+    console.log(spendData.categories);
+    console.log(spendData.percentages);
     // Create a new chart instance directly using provided data
-    window.spendByCategoryChart = new Chart(ctx, {
+    ctx.chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: spendData.categories,
+            // labels: spendData.categories,
+            labels: placeholderLabels,
             datasets: [{
                 label: 'Spend by Category',
-                data: spendData.percentages,
+                // data: spendData.percentages,
+                data: placeholderPercentages,
                 backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
                 borderColor: ['#fff'],
                 borderWidth: 2
@@ -378,7 +398,7 @@ function updateSpendByCategoryChart(spendData) {
             responsive: true,
             plugins: {
                 legend: {
-                    display: true,
+                    display: false,
                     position: 'bottom'
                 }
             }
@@ -387,60 +407,86 @@ function updateSpendByCategoryChart(spendData) {
 }
 
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const ctx = document
-        .getElementById("availableToSpendChart")
-        .getContext("2d");
-      const spendByCategoryChart = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: ["Groceries", "Eating Out", "Fun Money", "Charity"],
-          datasets: [
-            {
-              data: [68, 35, 22, 16],
-              backgroundColor: ["#3b28cc", "#2667ff", "#3f8efc", "#87bfff"],
-              borderColor: ["#fff"],
-              borderWidth: 2,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false, // Ensures the legend is not displayed
-            },
-          },
-        },
-      });
-    });
+function updateAvailableToSpendChart(availableToSpend) {
+    const ctx = document.getElementById('availableToSpendChart').getContext('2d');
+    const placeholderData = {
+        labels: ["Groceries", "Eating Out", "Fun Money", "Charity", "Bills"],
+        values: [100, 200, 300, , 500]
+    };
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const ctx = document
-        .getElementById("accountBalancesChart")
-        .getContext("2d");
-      const spendByCategoryChart = new Chart(ctx, {
-        type: "doughnut",
+    // Destroy existing chart instance if it exists
+    if (ctx.chart) {
+        ctx.chart.destroy();
+    }
+
+    console.log(availableToSpend.categories);
+    console.log(availableToSpend.availableToSpend);
+    // Create a new chart instance directly using provided data
+    ctx.chart = new Chart(ctx, {
+        type: 'doughnut',
         data: {
-          labels: ["Groceries", "Eating Out", "Fun Money", "Charity"],
-          datasets: [
-            {
-              data: [68, 35, 22, 16],
-              backgroundColor: ["#3b28cc", "#2667ff", "#3f8efc", "#87bfff"],
-              borderColor: ["#fff"],
-              borderWidth: 2,
-            },
-          ],
+            // labels: availableToSpend.categories,
+            labels: placeholderData.labels,
+            datasets: [{
+                // data: availableToSpend.availableToSpend,
+                data: placeholderData.values,
+                backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
+                borderColor: ['#ffffff'],
+                borderWidth: 1
+            }]
         },
         options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false, // Ensures the legend is not displayed
-            },
-          },
-        },
-      });
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'bottom'
+                }
+            }
+        }
     });
+}
+
+
+function updateAccountBalancesChart(accountBalances) {
+    const ctx = document.getElementById('accountBalancesChart').getContext('2d');
+    const placeholderData = {
+        accountNames: ["Lloyds", "Monzo", "Revolut", "Barclays"],
+        balances: [1000, 2000, 3000, 4000]
+    };
+
+    // Destroy existing chart instance if it exists
+    if (ctx.chart) {
+        ctx.chart.destroy();
+    }
+
+    console.log(accountBalances.accounts);
+    console.log(accountBalances.balances);
+    // Create a new chart instance directly using provided data
+    ctx.chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            // labels: accountBalances.accounts,
+            labels: accountBalances.balances,
+            datasets: [{
+                // data: data.balances,
+                data: placeholderData.balances,
+                backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
+                borderColor: ['#ffffff'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
   </script>
 </html>
