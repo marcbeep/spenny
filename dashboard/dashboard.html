@@ -237,21 +237,46 @@
   </body>
   <!-- /drawer -->
   <script>
-
     // auth
     const userEmail = sessionStorage.getItem("userEmail");
-      const userProfilePicture = sessionStorage.getItem("userProfilePicture");
+    const userProfilePicture = sessionStorage.getItem("userProfilePicture");
 
-      if (!userEmail || !userProfilePicture) {
-        window.location.href = "index.html";
-      } else {
-        document.getElementById(
-          "userEmail",
-        ).textContent = `${userEmail}`;
-        document.getElementById("userProfilePicture").src = userProfilePicture;
-      }
+    if (!userEmail || !userProfilePicture) {
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("userEmail").textContent = `${userEmail}`;
+      document.getElementById("userProfilePicture").src = userProfilePicture;
+    }
 
-      // charts
+    // get user data
+    document.addEventListener("DOMContentLoaded", function () {
+      fetchAllAnalyticsData()
+        .then((data) => {
+          console.log("All dashboard data:", data);
+          updateDashboard(data);
+        })
+        .catch((error) => {
+          console.error("Failed to load dashboard data:", error);
+          // Optionally, display a user-friendly error message on the dashboard
+        });
+    });
+
+    function updateDashboard(data) {
+      // Update Stat Cards
+      document.querySelector(
+        ".stat-value[data-id='netWorth']",
+      ).textContent = `£${data.statCards.data.netWorth}`;
+      document.querySelector(
+        ".stat-value[data-id='savingsRate']",
+      ).textContent = `${data.statCards.data.savingsRate}%`;
+      document.querySelector(".stat-value[data-id='goalsFunded']").textContent =
+        data.statCards.data.goalsFunded;
+      document.querySelector(
+        ".stat-value[data-id='averageDailySpend']",
+      ).textContent = `£${data.statCards.data.averageDailySpend}`;
+    }
+
+    // charts
     document.addEventListener("DOMContentLoaded", function () {
       const ctx = document.getElementById("dailySpendChart").getContext("2d");
       const dailySpendChart = new Chart(ctx, {
