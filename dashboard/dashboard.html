@@ -56,51 +56,53 @@
         <!-- /header -->
 
         <!-- header stat cards -->
-<section class="stats stats-vertical col-span-12 w-full shadow-sm xl:stats-horizontal">
-  <div class="stat">
-      <div class="stat-title">Networth</div>
-      <div class="stat-value" data-id="netWorth">£15,000</div>
-      <div class="stat-desc">All time</div>
-  </div>
+        <section
+          class="stats stats-vertical col-span-12 w-full shadow-sm xl:stats-horizontal"
+        >
+          <div class="stat">
+            <div class="stat-title">Networth</div>
+            <div class="stat-value" data-id="netWorth">£15,000</div>
+            <div class="stat-desc">All time</div>
+          </div>
 
-  <div class="stat">
-      <div class="stat-title">Savings Rate</div>
-      <div class="stat-value" data-id="savingsRate">33%</div>
-      <div class="stat-desc">All time</div>
-  </div>
+          <div class="stat">
+            <div class="stat-title">Savings Rate</div>
+            <div class="stat-value" data-id="savingsRate">33%</div>
+            <div class="stat-desc">All time</div>
+          </div>
 
-  <div class="stat">
-      <div class="stat-title">Goals Funded</div>
-      <div class="stat-value" data-id="goalsFunded">4/5</div>
-      <div class="stat-desc">Past week</div>
-  </div>
+          <div class="stat">
+            <div class="stat-title">Goals Funded</div>
+            <div class="stat-value" data-id="goalsFunded">4/5</div>
+            <div class="stat-desc">Past week</div>
+          </div>
 
-  <div class="stat">
-      <div class="stat-title">Average Daily Spend</div>
-      <div class="stat-value" data-id="averageDailySpend">£15</div>
-      <div class="stat-desc">Past week</div>
-  </div>
-</section>
-<!-- /header stat cards -->
-
+          <div class="stat">
+            <div class="stat-title">Average Daily Spend</div>
+            <div class="stat-value" data-id="averageDailySpend">£15</div>
+            <div class="stat-desc">Past week</div>
+          </div>
+        </section>
+        <!-- /header stat cards -->
 
         <!-- last 5 transactions -->
-<section class="card col-span-12 overflow-hidden bg-base-100 shadow-sm xl:col-span-6">
-  <div class="card-body grow-0">
-      <h2 class="card-title">
-          <a class="link-hover link">Last 5 Transactions</a>
-      </h2>
-  </div>
-  <div class="overflow-x-auto">
-      <table class="table table-zebra">
-          <tbody class="last-five-transactions">
-              <!-- Rows will be populated dynamically here -->
-          </tbody>
-      </table>
-  </div>
-</section>
-<!-- /last 5 transactions -->
-
+        <section
+          class="card col-span-12 overflow-hidden bg-base-100 shadow-sm xl:col-span-6"
+        >
+          <div class="card-body grow-0">
+            <h2 class="card-title">
+              <a class="link-hover link">Last 5 Transactions</a>
+            </h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="table table-zebra">
+              <tbody class="last-five-transactions">
+                <!-- Rows will be populated dynamically here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <!-- /last 5 transactions -->
 
         <!-- daily spend bar chat-->
         <section
@@ -223,50 +225,70 @@
       // Update Stat Cards
       if (data.statCards && data.statCards.data) {
         // Update Net Worth
-        const netWorth = data.statCards.data.netWorth || 'N/A';
-        document.querySelector(".stat-value[data-id='netWorth']").textContent = `${netWorth}`;
+        const netWorth = data.statCards.data.netWorth || "N/A";
+        document.querySelector(
+          ".stat-value[data-id='netWorth']",
+        ).textContent = `${netWorth}`;
 
         // Update Savings Rate
-        const savingsRate = data.statCards.data.savingsRate || 'N/A';
-        document.querySelector(".stat-value[data-id='savingsRate']").textContent = `${savingsRate}%`;
+        const savingsRate = data.statCards.data.savingsRate || "N/A";
+        document.querySelector(
+          ".stat-value[data-id='savingsRate']",
+        ).textContent = `${savingsRate}%`;
 
         // Update Goals Funded
-        const goalsFunded = data.statCards.data.goalsFunded || 'N/A';
-        document.querySelector(".stat-value[data-id='goalsFunded']").textContent = goalsFunded;
+        const goalsFunded = data.statCards.data.goalsFunded || "N/A";
+        document.querySelector(
+          ".stat-value[data-id='goalsFunded']",
+        ).textContent = goalsFunded;
 
         // Update Average Daily Spend
-        const averageDailySpend = data.statCards.data.averageDailySpend || 'N/A';
-        document.querySelector(".stat-value[data-id='averageDailySpend']").textContent = `${averageDailySpend}`;
-    } else {
-        console.log('Stat cards data is missing or incomplete');
-    }
+        const averageDailySpend =
+          data.statCards.data.averageDailySpend || "N/A";
+        document.querySelector(
+          ".stat-value[data-id='averageDailySpend']",
+        ).textContent = `${averageDailySpend}`;
+      } else {
+        console.log("Stat cards data is missing or incomplete");
+      }
 
-    // Update Recent Transactions
-    updateTransactions(data.lastFiveTransactions);
-
+      // Update Recent Transactions
+      updateTransactions(data.lastFiveTransactions);
     }
 
     function updateTransactions(transactionsData) {
-    const transactionsTableBody = document.querySelector(".last-five-transactions");
-    transactionsTableBody.innerHTML = ''; // Clear existing rows
+      const transactionsTableBody = document.querySelector(
+        ".last-five-transactions",
+      );
+      transactionsTableBody.innerHTML = ""; // Clear existing rows
 
-    if (transactionsData && transactionsData.data.length > 0) {
-        transactionsData.data.forEach(txn => {
-            const row = `
+      if (transactionsData && transactionsData.data.length > 0) {
+        transactionsData.data.forEach((txn) => {
+          const row = `
                 <tr>
                     <td>${txn.transactionTitle}</td>
                     <td>${txn.createdAt}</td>
-                    <td class="${txn.transactionType === 'credit' ? 'text-primary' : 'text-neutral'}">
-                        <i class="fa-solid ${txn.transactionType === 'credit' ? 'fa-plus' : 'fa-minus'}"></i>
+                    <td class="${
+                      txn.transactionType === "credit"
+                        ? "text-primary"
+                        : "text-neutral"
+                    }">
+                        <i class="fa-solid ${
+                          txn.transactionType === "credit"
+                            ? "fa-plus"
+                            : "fa-minus"
+                        }"></i>
                         £${txn.transactionAmount}
                     </td>
                 </tr>`;
-            transactionsTableBody.innerHTML += row;
+          transactionsTableBody.innerHTML += row;
         });
-    } else {
+      } else {
         // Create a formatted string for today's date
-        const today = new Date().toLocaleDateString('en-GB', {
-            day: '2-digit', month: 'short', year: 'numeric'
+        const today = new Date().toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
         });
 
         // If no transactions, display a placeholder transaction row
@@ -276,11 +298,8 @@
                 <td>${today}</td>
                 <td class="text-neutral">0.00</td>
             </tr>`;
+      }
     }
-}
-
-
-
 
     // charts
     document.addEventListener("DOMContentLoaded", function () {

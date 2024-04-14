@@ -56,7 +56,7 @@ exports.addAccount = async (req, res) => {
         user: req.user._id,
         transactionAccount: account._id,
         transactionType: 'credit',
-        transactionTitle: `[${accountTitle.toLowerCase()}] account creation`,
+        transactionTitle: `[${accountTitle.toLowerCase()} account creation]`,
         transactionAmount: formattedBalance,
       });
 
