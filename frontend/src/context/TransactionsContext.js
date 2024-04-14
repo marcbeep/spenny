@@ -15,14 +15,16 @@ const transactionsReducer = (state, action) => {
     case 'UPDATE_TRANSACTION':
       return {
         ...state,
-        transactions: state.transactions.map(transaction =>
-          transaction._id === action.payload._id ? action.payload : transaction
+        transactions: state.transactions.map((transaction) =>
+          transaction._id === action.payload._id ? action.payload : transaction,
         ),
       };
     case 'DELETE_TRANSACTION':
       return {
         ...state,
-        transactions: state.transactions.filter(transaction => transaction._id !== action.payload),
+        transactions: state.transactions.filter(
+          (transaction) => transaction._id !== action.payload,
+        ),
       };
     default:
       return state;
@@ -50,9 +52,7 @@ export const TransactionsProvider = ({ children }) => {
   };
 
   return (
-    <TransactionsContext.Provider value={contextValue}>
-      {children}
-    </TransactionsContext.Provider>
+    <TransactionsContext.Provider value={contextValue}>{children}</TransactionsContext.Provider>
   );
 };
 

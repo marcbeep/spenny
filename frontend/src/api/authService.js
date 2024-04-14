@@ -26,5 +26,3 @@ export const signupUserAPI = async (email, password) => {
     throw new Error(error.response.data.error || 'An error occurred during signup.');
   }
 };
-
-

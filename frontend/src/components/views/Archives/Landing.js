@@ -46,11 +46,7 @@ const Landing = () => {
 
         {/* Image Container */}
         <motion.div className='flex-1 hidden lg:flex justify-end' variants={itemVariants}>
-          <motion.img
-            src='/landing-img.png'
-            alt='Finance Management'
-            className='max-w-md'
-          />
+          <motion.img src='/landing-img.png' alt='Finance Management' className='max-w-md' />
         </motion.div>
       </motion.div>
     </div>

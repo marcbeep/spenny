@@ -25,5 +25,5 @@ export const updateCategory = async (categoryId, updateData) => {
 
 export const deleteCategory = async (categoryId) => {
   const response = await axios.delete(`${API_BASE_URL}/categories/${categoryId}`);
-  return response.data; 
+  return response.data;
 };

@@ -1,6 +1,5 @@
 // AccountsContext.js: Contains the state and operations for user accounts, including adding, updating, and archiving accounts.
 
-
 import { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import backendURL from '../../config';

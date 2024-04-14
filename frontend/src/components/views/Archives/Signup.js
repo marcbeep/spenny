@@ -10,7 +10,7 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signup, user } = useAuth(); 
+  const { signup, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,12 +36,15 @@ const Signup = () => {
       setFeedback({ message: 'Signup successful! Welcome aboard.', type: 'success' });
     } catch (error) {
       console.error('Signup Error:', error.message);
-      setFeedback({ message: error.message || 'An error occurred, please try again.', type: 'error' });
+      setFeedback({
+        message: error.message || 'An error occurred, please try again.',
+        type: 'error',
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <div className='flex items-center justify-center min-h-screen bg-gray-100'>
       <div className='card w-96 bg-base-100 shadow-xl'>

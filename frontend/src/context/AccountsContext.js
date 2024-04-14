@@ -12,15 +12,15 @@ const accountReducer = (state, action) => {
       // Adjust to mark an account as archived instead of removing it
       return {
         ...state,
-        accounts: state.accounts.map(account =>
-          account._id === action.payload ? { ...account, accountStatus: 'archived' } : account
+        accounts: state.accounts.map((account) =>
+          account._id === action.payload ? { ...account, accountStatus: 'archived' } : account,
         ),
       };
     case 'UPDATE_ACCOUNT':
       return {
         ...state,
-        accounts: state.accounts.map(account =>
-          account._id === action.payload._id ? action.payload : account
+        accounts: state.accounts.map((account) =>
+          account._id === action.payload._id ? action.payload : account,
         ),
       };
     case 'SET_TOTAL_BALANCE':
@@ -36,9 +36,7 @@ export const AccountContextProvider = ({ children }) => {
   // fetchTotalBalance function removed. Use a custom hook to interact with the API and dispatch actions instead.
 
   return (
-    <AccountContext.Provider value={{ ...state, dispatch }}>
-      {children}
-    </AccountContext.Provider>
+    <AccountContext.Provider value={{ ...state, dispatch }}>{children}</AccountContext.Provider>
   );
 };
 

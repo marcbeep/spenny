@@ -21,19 +21,22 @@ export const useBudget = () => {
     }
   }, [dispatch]);
 
-  const assignMoneyToCategory = useCallback(async (categoryId, amount) => {
-    setIsLoading(true);
-    try {
-      await budgetService.assignMoneyToCategory(categoryId, amount);
-      // Optionally, refresh the "ready to assign" amount after successful update
-      await fetchReadyToAssign();
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fetchReadyToAssign]);
+  const assignMoneyToCategory = useCallback(
+    async (categoryId, amount) => {
+      setIsLoading(true);
+      try {
+        await budgetService.assignMoneyToCategory(categoryId, amount);
+        // Optionally, refresh the "ready to assign" amount after successful update
+        await fetchReadyToAssign();
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [fetchReadyToAssign],
+  );
 
   // TODO: implement moveMoneyBetweenCategories, removeMoneyFromCategory, and moveToReadyToAssign functions
 

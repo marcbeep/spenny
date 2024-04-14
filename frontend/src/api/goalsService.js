@@ -25,5 +25,5 @@ export const updateGoal = async (goalId, updateData) => {
 
 export const deleteGoal = async (goalId) => {
   const response = await axios.delete(`${API_BASE_URL}/goals/${goalId}`);
-  return response.data; 
+  return response.data;
 };

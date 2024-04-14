@@ -14,12 +14,15 @@ const categoriesReducer = (state, action) => {
       return {
         ...state,
         categories: state.categories.map((category) =>
-          category._id === action.payload._id ? action.payload : category
+          category._id === action.payload._id ? action.payload : category,
         ),
       };
     case 'DELETE_CATEGORY':
       // Assuming delete means removing from the list for UI purposes, actual deletion handled by API
-      return { ...state, categories: state.categories.filter((category) => category._id !== action.payload) };
+      return {
+        ...state,
+        categories: state.categories.filter((category) => category._id !== action.payload),
+      };
     default:
       return state;
   }

@@ -50,11 +50,7 @@ export const AnalyticsProvider = ({ children }) => {
     fetchData('allTimeAnalytics', analyticsService.fetchAllTimeAnalytics);
   }, []);
 
-  return (
-    <AnalyticsContext.Provider value={{ ...state }}>
-      {children}
-    </AnalyticsContext.Provider>
-  );
+  return <AnalyticsContext.Provider value={{ ...state }}>{children}</AnalyticsContext.Provider>;
 };
 
 export const useAnalytics = () => {

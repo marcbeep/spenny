@@ -25,7 +25,7 @@ export const updateTransaction = async (transactionId, updateData) => {
 
 export const deleteTransaction = async (transactionId) => {
   const response = await axios.delete(`${API_BASE_URL}/transactions/${transactionId}`);
-  return response.data; 
+  return response.data;
 };
 
 export const analyzeReceipt = async (imageData) => {

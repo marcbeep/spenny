@@ -11,7 +11,7 @@ export const fetchReadyToAssign = async () => {
 export const assignMoneyToCategory = async (categoryId, amount) => {
   const response = await axios.post(`${API_BASE_URL}/budget/assignToCategory`, {
     categoryId,
-    amount
+    amount,
   });
   return response.data;
 };
@@ -20,7 +20,7 @@ export const moveMoneyBetweenCategories = async (fromCategoryId, toCategoryId, a
   const response = await axios.post(`${API_BASE_URL}/budget/moveBetweenCategories`, {
     fromCategoryId,
     toCategoryId,
-    amount
+    amount,
   });
   return response.data;
 };
@@ -28,7 +28,7 @@ export const moveMoneyBetweenCategories = async (fromCategoryId, toCategoryId, a
 export const removeMoneyFromCategory = async (categoryId, amount) => {
   const response = await axios.post(`${API_BASE_URL}/budget/removeFromCategories`, {
     categoryId,
-    amount
+    amount,
   });
   return response.data;
 };
@@ -36,7 +36,7 @@ export const removeMoneyFromCategory = async (categoryId, amount) => {
 export const moveToReadyToAssign = async (categoryId, amount) => {
   const response = await axios.post(`${API_BASE_URL}/budget/moveToReadyToAssign`, {
     categoryId,
-    amount
+    amount,
   });
   return response.data;
 };

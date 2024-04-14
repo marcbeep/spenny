@@ -19,13 +19,13 @@ const goalsReducer = (state, action) => {
     case 'UPDATE_GOAL':
       return {
         ...state,
-        goals: state.goals.map(goal => goal._id === action.payload._id ? action.payload : goal),
+        goals: state.goals.map((goal) => (goal._id === action.payload._id ? action.payload : goal)),
         isLoading: false,
       };
     case 'DELETE_GOAL':
       return {
         ...state,
-        goals: state.goals.filter(goal => goal._id !== action.payload),
+        goals: state.goals.filter((goal) => goal._id !== action.payload),
         isLoading: false,
       };
     case 'SET_LOADING':
@@ -61,11 +61,7 @@ export const GoalsProvider = ({ children }) => {
     fetchGoals,
   };
 
-  return (
-    <GoalsContext.Provider value={contextValue}>
-      {children}
-    </GoalsContext.Provider>
-  );
+  return <GoalsContext.Provider value={contextValue}>{children}</GoalsContext.Provider>;
 };
 
 export const useGoals = () => {

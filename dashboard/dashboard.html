@@ -11,17 +11,6 @@
     ></script>
     <!--chartjs-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- chart library -->
-    <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/@weblogin/trendchart-elements@1.1.0/dist/index.js/+esm"
-      async
-    ></script>
-    <!-- svg loader for icons -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/external-svg-loader@1.6.10/svg-loader.min.js"
-      async
-    ></script>
   </head>
   <!-- drawer -->
   <body class="drawer min-h-screen bg-base-200 lg:drawer-open">
@@ -165,7 +154,6 @@
             <a class="link-hover link text-xs">View all transactions →</a>
           </div>
           <canvas id="dailySpendChart" class="p-4"></canvas>
-          <!-- Canvas for Chart.js -->
         </section>
         <!-- /daily spend bar chart-->
 
@@ -177,7 +165,6 @@
               id="spendByCategoryChart"
               class="h-32 w-32 shrink-0"
             ></canvas>
-            <!-- Canvas for Chart.js -->
           </div>
         </section>
         <!-- /spend by cat chart -->

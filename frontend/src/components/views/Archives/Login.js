@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../../../hooks/useAuth'; 
-import { Link, useNavigate } from 'react-router-dom'; 
+import { useAuth } from '../../../hooks/useAuth';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login, user } = useAuth(); 
+  const { login, user } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (setter) => (e) => {
@@ -20,7 +20,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/placeholder'); 
+      navigate('/placeholder');
     }
   }, [user, navigate]);
 
@@ -29,7 +29,7 @@ const Login = () => {
     setIsSubmitting(true);
 
     try {
-      await login(email, password); 
+      await login(email, password);
     } catch (err) {
       setFeedback({ message: err.message || 'Failed to log in. Please try again.', type: 'error' });
     } finally {
@@ -104,5 +104,3 @@ const Login = () => {
 };
 
 export default Login;
-
-
