@@ -8,33 +8,6 @@ const moment = require('moment');
 
 const createToken = (_id) => jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
 
-const initializeAnalyticsData = async (userId) => {
-  const weekStart = moment().startOf('isoWeek').toDate();
-  const weekEnd = moment().endOf('isoWeek').toDate();
-
-  const analyticsTypes = [
-    'totalSpend',
-    'spendingByCategory',
-    'netWorth',
-    'incomeVsExpenses',
-    'savingsRate',
-  ];
-
-  const promises = analyticsTypes.map((type) =>
-    Analytics.create({
-      user: userId,
-      analyticsType: type,
-      period: 'weekly',
-      periodStart: weekStart,
-      periodEnd: weekEnd,
-      analyticsData: 0,
-      analyticsLastCalculated: new Date(),
-    }),
-  );
-
-  await Promise.all(promises);
-};
-
 const initializeUserData = async (userId) => {
   try {
     const genericCategories = ['groceries', 'rent', 'eating out', 'fun money', 'savings'];
@@ -65,9 +38,6 @@ const initializeUserData = async (userId) => {
       budgetTotalAssigned: 0.0,
       budgetReadyToAssign: 0.0,
     });
-
-    await initializeAnalyticsData(userId);
-
     return { success: true };
   } catch (err) {
     console.error('Error initializing data for user:', err);
