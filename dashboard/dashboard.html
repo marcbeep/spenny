@@ -112,10 +112,10 @@
   </div>
   <div id="dailySpendChartContainer" class="p-4">
     <canvas id="dailySpendChart"></canvas>
-    <h1 id="noSpendingMessage" class="hidden text-left"><i class="fa-solid fa-sack-xmark"></i> No spending data for this week yet.</h1>
   </div>
 </section>
 <!-- /daily spend bar chart -->
+
 
 
         <!-- spend by cat chart -->
@@ -259,6 +259,9 @@
 
       // Update Daily Spend Chart
       updateDailySpendChart(data.dailySpendLastWeek);
+
+      // Update Spend by Category Chart
+      updateSpendByCategoryChart(data.spendByCategoryAllTime);
     }
 
     function updateTransactions(transactionsData) {
@@ -308,22 +311,15 @@
 
     function updateDailySpendChart(dailyOutgoingsData) {
     const ctx = document.getElementById("dailySpendChart").getContext("2d");
-    const messageElement = document.getElementById("noSpendingMessage");
 
-    // Ensure the canvas is visible to potentially hold a chart
-    ctx.canvas.style.display = 'block';
+    // Always ensure the chart container is visible
+    document.getElementById("dailySpendChartContainer").style.display = 'block';
 
-    // Check if there is valid data to display
-    if (dailyOutgoingsData.dailyOutgoings && dailyOutgoingsData.dailyOutgoings.length > 0 && !dailyOutgoingsData.dailyOutgoings.every(val => val === 0)) {
-        // Hide the message if there is data
-        messageElement.classList.add('hidden');
-
-        // If a chart instance already exists, destroy it before creating a new one
-        if (window.dailySpendChart) {
-            window.dailySpendChart.destroy();
-        }
-
-        // Create a new chart instance
+    // Create or update the chart without checking data validity or length
+    if (window.dailySpendChart) {
+        window.dailySpendChart.data.datasets[0].data = dailyOutgoingsData.dailyOutgoings;
+        window.dailySpendChart.update();
+    } else {
         window.dailySpendChart = new Chart(ctx, {
             type: "bar",
             data: {
@@ -351,50 +347,45 @@
                 }
             }
         });
-    } else {
-        // Show the message if there is no data
-        messageElement.classList.remove('hidden');
-
-        // Hide the canvas since there's no data to display
-        ctx.canvas.style.display = 'none';
-
-        // Destroy the chart if it exists to free up resources
-        if (window.dailySpendChart) {
-            window.dailySpendChart.destroy();
-            window.dailySpendChart = undefined; // Clear the reference
-        }
     }
 }
 
 
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const ctx = document
-        .getElementById("spendByCategoryChart")
-        .getContext("2d");
-      const spendByCategoryChart = new Chart(ctx, {
-        type: "doughnut",
+
+function updateSpendByCategoryChart(spendData) {
+    const ctx = document.getElementById('spendByCategoryChart').getContext('2d');
+
+    // If a chart instance already exists, destroy it before creating a new one
+    if (window.spendByCategoryChart) {
+        window.spendByCategoryChart.destroy();
+    }
+
+    // Create a new chart instance directly using provided data
+    window.spendByCategoryChart = new Chart(ctx, {
+        type: 'doughnut',
         data: {
-          labels: ["Groceries", "Eating Out", "Fun Money", "Charity"],
-          datasets: [
-            {
-              data: [68, 35, 22, 16],
-              backgroundColor: ["#3b28cc", "#2667ff", "#3f8efc", "#87bfff"],
-              borderColor: ["#fff"],
-              borderWidth: 2,
-            },
-          ],
+            labels: spendData.categories,
+            datasets: [{
+                label: 'Spend by Category',
+                data: spendData.percentages,
+                backgroundColor: ['#3b28cc', '#2667ff', '#3f8efc', '#87bfff', '#a4caff'],
+                borderColor: ['#fff'],
+                borderWidth: 2
+            }]
         },
         options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false, // Ensures the legend is not displayed
-            },
-          },
-        },
-      });
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            }
+        }
     });
+}
+
 
     document.addEventListener("DOMContentLoaded", function () {
       const ctx = document
