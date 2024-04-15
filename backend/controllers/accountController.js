@@ -304,26 +304,28 @@ exports.moveMoneyBetweenAccounts = async (req, res) => {
   }
 };
 
-const calculateTotalSpendingBalance = (accounts) => {
-  return accounts.reduce((total, account) => {
-    if (account.accountType === 'spending') {
-      return total + account.accountBalance;
-    }
-    return total;
-  }, 0);
-};
-
 exports.getSpendingBalance = async (req, res) => {
   try {
-    const accounts = await Account.find({
-      user: req.user._id,
-      accountType: 'spending'  // Ensure we only fetch spending accounts
+    if (!req.user || !req.user._id) {
+      console.error('No user ID found in request');
+      return res.status(400).json({ error: 'User ID is missing' });
+    }
+
+    const accounts = await Account.find({ 
+      user: req.user._id, 
+      accountType: 'spending' 
     });
-    const totalSpendingBalance = calculateTotalSpendingBalance(accounts);
+
+    if (!accounts) {
+      console.error('No accounts found for user:', req.user._id);
+      return res.status(404).json({ error: 'No spending accounts found' });
+    }
+
+    const totalSpendingBalance = accounts.reduce((total, account) => total + account.accountBalance, 0);
     res.status(200).json({ totalSpendingBalance });
   } catch (err) {
     console.error('Error fetching spending balance:', err);
-    res.status(400).json({ error: 'Failed to fetch spending balance' });
+    res.status(400).json({ error: 'Failed to fetch spending balance', details: err.message });
   }
 };
 

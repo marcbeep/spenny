@@ -58,14 +58,14 @@
           <div class="stats">
             <div class="stat">
               <div class="stat-title">Available to Spend</div>
-              <div class="stat-value">£15,000</div>
+              <div class="stat-value" id="availableToSpend">Loading...</div>
               <div class="stat-actions">
                 <button class="btn btn-sm">Add funds</button>
               </div>
             </div>
             <div class="stat">
               <div class="stat-title">Ready to Assign</div>
-              <div class="stat-value">£0</div>
+              <div class="stat-value" id="readyToAssign">Loading...</div>
               <div class="stat-actions">
                 <button class="btn btn-sm">Assign Funds</button>
               </div>
@@ -186,16 +186,51 @@
       document.getElementById("userProfilePicture").src = userProfilePicture;
     }
 
-    // get user data
     document.addEventListener("DOMContentLoaded", function () {
-      fetchAllAnalyticsData()
-        .then((data) => {
-          console.log("All dashboard data:", data);
-          updateDashboard(data);
-        })
-        .catch((error) => {
-          console.error("Failed to load dashboard data:", error);
-        });
+  fetchAllBudgetData()
+    .then((data) => {
+      console.log("All page data:", data);
+      updatePage(data);
+    })
+    .catch((error) => {
+      console.error("Failed to load page data:", error);
     });
+});
+
+function updatePage(data) {
+  // Update 'Available to Spend' and 'Ready to Assign' values
+  document.getElementById('availableToSpend').textContent = `£${data.spendingBalance}`;
+  document.getElementById('readyToAssign').textContent = `£${data.readyToAssign}`;
+
+  // Update categories table
+  const categoriesTable = document.querySelector(".table tbody");
+  categoriesTable.innerHTML = ""; // Clear existing entries
+  // data.categories.forEach((category) => {
+  //   const row = document.createElement("tr");
+  //   row.innerHTML = `
+  //     <td>${category.categoryTitle}</td>
+  //     <td><u>£${category.categoryAvailable.toFixed(2)}</u></td>
+  //     <td>
+  //       <div class="badge ${category.status === "funded" ? "bg-primary text-primary-content" : "badge-outline"}">
+  //         ${category.status.charAt(0).toUpperCase() + category.status.slice(1)}
+  //       </div>
+  //     </td>
+  //     <td><u>£${category.categoryGoal}</u></td>
+  //   `;
+  //   categoriesTable.appendChild(row);
+  // });
+  data.categories.forEach((category) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${category.categoryTitle}</td>
+      <td><u>£${category.categoryAvailable.toFixed(2)}</u></td>
+      <td>
+        hello
+      </td>
+      <td><u>£${category.categoryGoal}</u></td>
+    `;
+    categoriesTable.appendChild(row);
+  });
+}
   </script>
 </html>

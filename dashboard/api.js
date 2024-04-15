@@ -220,6 +220,49 @@ async function moveToReadyToAssign(categoryId, amount) {
   }
 }
 
+async function fetchSpendingBalance() {
+  try {
+    const response = await makeFetchRequest("/accounts/getSpendingBalance", {
+      method: "GET",
+    });
+    console.log("Spending Balance:", response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching spending balance:", error);
+    throw error;
+  }
+}
+
+async function fetchUserCategories() {
+  try {
+    const response = await makeFetchRequest("/categories", { method: "GET" });
+    const categories = await response;  
+    console.log("User Categories:", categories);
+    return categories;  // Return the categories data
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    throw error;  // Ensure to throw an error to be caught by the caller
+  }
+}
+
+async function fetchAllBudgetData() {
+  try {
+    const [spendingBalanceResponse, readyToAssignResponse, categories] = await Promise.all([
+      fetchSpendingBalance(),
+      fetchReadyToAssign(),
+      fetchUserCategories()  // Ensure this function returns the expected data
+    ]);
+
+    return {
+      spendingBalance: spendingBalanceResponse.totalSpendingBalance,  // Assuming these responses are directly the values
+      readyToAssign: readyToAssignResponse.readyToAssign,
+      categories  // Ensure categories is directly usable
+    };
+  } catch ( error ) {
+    console.error("Error fetching budget data:", error);
+    throw error;
+  }
+}
 
 // ##############################################################################################################
 // Other functions
