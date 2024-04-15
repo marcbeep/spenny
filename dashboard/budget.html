@@ -60,16 +60,18 @@
               <div class="stat-title">Available to Spend</div>
               <div class="stat-value" id="availableToSpend">Loading...</div>
               <div class="stat-actions">
-                <button class="btn btn-sm">Add funds</button>
+                <a href="accounts.html">
+                  <button class="btn btn-sm">Add funds</button>
+                </a>
               </div>
             </div>
             <div class="stat">
               <div class="stat-title">Ready to Assign</div>
               <div class="stat-value" id="readyToAssign">Loading...</div>
               <div class="stat-actions">
-                <button class="btn btn-sm" id="assignFundsButton">
-                  Assign Funds
-                </button>
+                <a href="assignFunds.html">
+                  <button class="btn btn-sm">Assign Funds</button>
+                </a>
               </div>
             </div>
           </div>
@@ -189,52 +191,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-      const assignFundsButton = document.getElementById("assignFundsButton");
-      assignFundsButton.addEventListener("click", function () {
-        let amount = prompt("Please enter the amount to assign:");
-        if (amount !== null && amount.trim() !== "" && !isNaN(amount)) {
-          amount = parseFloat(amount).toFixed(2);
-          if (amount > 0) {
-            const categorySelectHTML = Array.from(
-              document.querySelectorAll(".table tbody tr"),
-            )
-              .map(
-                (row, index) =>
-                  `<option value="${index}">${row.cells[0].textContent.trim()}</option>`,
-              )
-              .join("");
-            const categoryHTML = `<select id="categorySelect">${categorySelectHTML}</select>`;
-            const confirmMessage = `Select a category to assign funds:\n${categoryHTML}`;
-            let categoryIndex = prompt(confirmMessage, "0");
-
-            if (
-              categoryIndex !== null &&
-              categoryIndex.trim() !== "" &&
-              !isNaN(categoryIndex)
-            ) {
-              categoryIndex = parseInt(categoryIndex);
-              const categoryRow =
-                document.querySelectorAll(".table tbody tr")[categoryIndex];
-              if (categoryRow) {
-                const categoryId = categoryRow.dataset.categoryId; // Assuming data-category-id is properly set
-                assignMoneyToCategory(categoryId, amount)
-                  .then((result) => {
-                    alert(`Funds assigned successfully: ${result}`);
-                    fetchAllBudgetData().then((data) => updatePage(data));
-                  })
-                  .catch((error) =>
-                    alert(`Error assigning funds: ${error.message}`),
-                  );
-              } else {
-                alert("Invalid category selected.");
-              }
-            }
-          } else {
-            alert("Invalid amount entered.");
-          }
-        }
-      });
-
       fetchAllBudgetData()
         .then((data) => {
           console.log("All page data:", data);
