@@ -62,12 +62,40 @@ const initializeUserData = async (userId) => {
     // Update category activity based on transactions
     await updateCategoryActivity(userId, categories);
 
+    // Initialize fixed goals
+    await Promise.all([
+      Goal.create({
+        user: userId,
+        goalCategory: categories.find(c => c.categoryTitle === 'emergency fund')._id,
+        goalType: 'saving',
+        goalTarget: 100,
+        goalStatus: 'underfunded'
+      }),
+      Goal.create({
+        user: userId,
+        goalCategory: categories.find(c => c.categoryTitle === 'groceries')._id,
+        goalType: 'spending',
+        goalTarget: 10,
+        goalStatus: 'underfunded',
+        goalResetDay: 'monday'
+      }),
+      Goal.create({
+        user: userId,
+        goalCategory: categories.find(c => c.categoryTitle === 'bills & subscriptions')._id,
+        goalType: 'spending',
+        goalTarget: 5,
+        goalStatus: 'underfunded',
+        goalResetDay: 'friday'
+      })
+    ]);
+
     return { success: true };
   } catch (err) {
     console.error('Error initializing data for user:', err);
     return { error: err.message || 'Failed to initialize user data' };
   }
 };
+
 
 // Function to update category activity
 const updateCategoryActivity = async (userId, categories) => {
@@ -109,7 +137,7 @@ const createExampleTransactions = async (userId, categories, accounts) => {
       transactionAmount: 2.0,
       transactionDate: moment().toDate(),
       transactionCategory: categories.find((c) => c.categoryTitle === 'transport'),
-      transactionAccount: spendingAccounts[1], //monzo
+      transactionAccount: spendingAccounts[1],
     },
     {
       transactionTitle: 'asda shopping',
@@ -117,7 +145,7 @@ const createExampleTransactions = async (userId, categories, accounts) => {
       transactionAmount: 1.0,
       transactionDate: moment().subtract(1, 'days').toDate(),
       transactionCategory: categories.find((c) => c.categoryTitle === 'groceries'),
-      transactionAccount: spendingAccounts[0], //loyds
+      transactionAccount: spendingAccounts[0],
     },
     {
       transactionTitle: 'drinks at spoons',
