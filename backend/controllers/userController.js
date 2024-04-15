@@ -19,33 +19,21 @@ const initializeUserData = async (userId) => {
     ];
 
     const accounts = await Promise.all(
-      accountsData.map((accountData) =>
-        Account.create({
-          user: userId,
-          ...accountData,
-        }),
-      ),
+      accountsData.map(accountData => Account.create({
+        user: userId,
+        ...accountData,
+      }))
     );
 
     // Create categories
-    const genericCategories = [
-      'groceries',
-      'transport',
-      'eating out',
-      'fun money',
-      'bills & subscriptions',
-      'rent',
-      'emergency fund',
-    ];
+    const genericCategories = ['groceries', 'transport', 'eating out', 'fun money', 'bills & subscriptions', 'rent', 'emergency fund'];
     const categories = await Promise.all(
-      genericCategories.map((categoryTitle) =>
-        Category.create({
-          user: userId,
-          categoryTitle,
-          categoryAvailable: 10.0,
-          categoryActivity: 0.0,
-        }),
-      ),
+      genericCategories.map(categoryTitle => Category.create({
+        user: userId,
+        categoryTitle,
+        categoryAvailable: 10.0,
+        categoryActivity: 0.0,
+      }))
     );
 
     // Create a budget
@@ -59,11 +47,8 @@ const initializeUserData = async (userId) => {
     // Create example transactions
     await createExampleTransactions(userId, categories, accounts);
 
-    // Update category activity based on transactions
-    await updateCategoryActivity(userId, categories);
-
-    // Initialize fixed goals
-    await Promise.all([
+    // Initialize goals and link them to categories
+    const goals = await Promise.all([
       Goal.create({
         user: userId,
         goalCategory: categories.find(c => c.categoryTitle === 'emergency fund')._id,
@@ -89,12 +74,24 @@ const initializeUserData = async (userId) => {
       })
     ]);
 
+    // Update categories with the associated goal ID
+    await Promise.all(
+      categories.map(category => {
+        const goal = goals.find(g => g.goalCategory.toString() === category._id.toString());
+        if (goal) {
+          return Category.findByIdAndUpdate(category._id, { $set: { categoryGoal: goal._id } });
+        }
+        return Promise.resolve();
+      })
+    );
+
     return { success: true };
   } catch (err) {
     console.error('Error initializing data for user:', err);
     return { error: err.message || 'Failed to initialize user data' };
   }
 };
+
 
 
 // Function to update category activity
