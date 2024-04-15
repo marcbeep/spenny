@@ -152,7 +152,7 @@ exports.categoryTable = async (req, res) => {
         goalId: category.categoryGoal ? category.categoryGoal._id : null,
         categoryTitle: category.categoryTitle,
         categoryAvailable: category.categoryAvailable,
-        categoryStatus: category.categoryGoal ? category.categoryGoal.goalStatus : 'undefined', // You might define a default status
+        categoryStatus: category.categoryGoal ? category.categoryGoal.goalStatus : 'no goal', // You might define a default status
         categoryGoal: goalDescription
       };
     });

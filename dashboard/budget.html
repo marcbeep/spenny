@@ -205,28 +205,16 @@ function updatePage(data) {
   // Update categories table
   const categoriesTable = document.querySelector(".table tbody");
   categoriesTable.innerHTML = ""; // Clear existing entries
-  // data.categories.forEach((category) => {
-  //   const row = document.createElement("tr");
-  //   row.innerHTML = `
-  //     <td>${category.categoryTitle}</td>
-  //     <td><u>£${category.categoryAvailable.toFixed(2)}</u></td>
-  //     <td>
-  //       <div class="badge ${category.status === "funded" ? "bg-primary text-primary-content" : "badge-outline"}">
-  //         ${category.status.charAt(0).toUpperCase() + category.status.slice(1)}
-  //       </div>
-  //     </td>
-  //     <td><u>£${category.categoryGoal}</u></td>
-  //   `;
-  //   categoriesTable.appendChild(row);
-  // });
   data.categories.forEach((category) => {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${category.categoryTitle}</td>
       <td><u>£${category.categoryAvailable.toFixed(2)}</u></td>
       <td>
-        hello
-      </td>
+  ${category.categoryStatus !== 'no goal' ? `<div class="badge ${category.categoryStatus === "funded" ? "bg-primary text-primary-content" : "badge-outline"}">
+    ${category.categoryStatus}
+  </div>` : ''}
+</td>
       <td><u>${category.categoryGoal}</u></td>
     `;
     categoriesTable.appendChild(row);

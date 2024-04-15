@@ -235,7 +235,7 @@ async function fetchSpendingBalance() {
 
 async function fetchUserCategories() {
   try {
-    const response = await makeFetchRequest("/categories", { method: "GET" });
+    const response = await makeFetchRequest("/categories/categoryTable", { method: "GET" });
     const categories = await response;  
     console.log("User Categories:", categories);
     return categories;  // Return the categories data
