@@ -19,21 +19,33 @@ const initializeUserData = async (userId) => {
     ];
 
     const accounts = await Promise.all(
-      accountsData.map(accountData => Account.create({
-        user: userId,
-        ...accountData,
-      }))
+      accountsData.map((accountData) =>
+        Account.create({
+          user: userId,
+          ...accountData,
+        }),
+      ),
     );
 
     // Create categories
-    const genericCategories = ['groceries', 'transport', 'eating out', 'fun money', 'bills & subscriptions', 'rent', 'emergency fund'];
+    const genericCategories = [
+      'groceries',
+      'transport',
+      'eating out',
+      'fun money',
+      'bills & subscriptions',
+      'rent',
+      'emergency fund',
+    ];
     const categories = await Promise.all(
-      genericCategories.map(categoryTitle => Category.create({
-        user: userId,
-        categoryTitle,
-        categoryAvailable: 10.0,
-        categoryActivity: 0.0,
-      }))
+      genericCategories.map((categoryTitle) =>
+        Category.create({
+          user: userId,
+          categoryTitle,
+          categoryAvailable: 10.0,
+          categoryActivity: 0.0,
+        }),
+      ),
     );
 
     // Create a budget
@@ -51,38 +63,38 @@ const initializeUserData = async (userId) => {
     const goals = await Promise.all([
       Goal.create({
         user: userId,
-        goalCategory: categories.find(c => c.categoryTitle === 'emergency fund')._id,
+        goalCategory: categories.find((c) => c.categoryTitle === 'emergency fund')._id,
         goalType: 'saving',
         goalTarget: 100,
-        goalStatus: 'underfunded'
+        goalStatus: 'underfunded',
       }),
       Goal.create({
         user: userId,
-        goalCategory: categories.find(c => c.categoryTitle === 'groceries')._id,
+        goalCategory: categories.find((c) => c.categoryTitle === 'groceries')._id,
         goalType: 'spending',
         goalTarget: 10,
         goalStatus: 'underfunded',
-        goalResetDay: 'monday'
+        goalResetDay: 'monday',
       }),
       Goal.create({
         user: userId,
-        goalCategory: categories.find(c => c.categoryTitle === 'bills & subscriptions')._id,
+        goalCategory: categories.find((c) => c.categoryTitle === 'bills & subscriptions')._id,
         goalType: 'spending',
         goalTarget: 5,
         goalStatus: 'underfunded',
-        goalResetDay: 'friday'
-      })
+        goalResetDay: 'friday',
+      }),
     ]);
 
     // Update categories with the associated goal ID
     await Promise.all(
-      categories.map(category => {
-        const goal = goals.find(g => g.goalCategory.toString() === category._id.toString());
+      categories.map((category) => {
+        const goal = goals.find((g) => g.goalCategory.toString() === category._id.toString());
         if (goal) {
           return Category.findByIdAndUpdate(category._id, { $set: { categoryGoal: goal._id } });
         }
         return Promise.resolve();
-      })
+      }),
     );
 
     return { success: true };
@@ -91,8 +103,6 @@ const initializeUserData = async (userId) => {
     return { error: err.message || 'Failed to initialize user data' };
   }
 };
-
-
 
 // Function to update category activity
 const updateCategoryActivity = async (userId, categories) => {

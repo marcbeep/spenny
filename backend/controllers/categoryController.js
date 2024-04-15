@@ -129,14 +129,12 @@ exports.updateCategory = async (req, res) => {
 
 exports.categoryTable = async (req, res) => {
   try {
-    const categories = await Category.find({ user: req.user._id })
-      .sort('categoryTitle')
-      .populate({
-        path: 'categoryGoal',
-        select: 'goalType goalTarget goalStatus goalResetDay'
-      });
+    const categories = await Category.find({ user: req.user._id }).sort('categoryTitle').populate({
+      path: 'categoryGoal',
+      select: 'goalType goalTarget goalStatus goalResetDay',
+    });
 
-    const result = categories.map(category => {
+    const result = categories.map((category) => {
       // Format the goal description based on the type of goal
       let goalDescription = '';
       if (category.categoryGoal) {
@@ -153,7 +151,7 @@ exports.categoryTable = async (req, res) => {
         categoryTitle: category.categoryTitle,
         categoryAvailable: category.categoryAvailable,
         categoryStatus: category.categoryGoal ? category.categoryGoal.goalStatus : 'no goal', // You might define a default status
-        categoryGoal: goalDescription
+        categoryGoal: goalDescription,
       };
     });
     res.status(200).json(result);

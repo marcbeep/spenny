@@ -178,7 +178,11 @@ async function assignMoneyToCategory(categoryId, amount) {
   }
 }
 
-async function moveMoneyBetweenCategories(fromCategoryId, toCategoryId, amount) {
+async function moveMoneyBetweenCategories(
+  fromCategoryId,
+  toCategoryId,
+  amount,
+) {
   try {
     const result = await makeFetchRequest(`/budget/moveBetweenCategories`, {
       method: "POST",
@@ -235,30 +239,33 @@ async function fetchSpendingBalance() {
 
 async function fetchUserCategories() {
   try {
-    const response = await makeFetchRequest("/categories/categoryTable", { method: "GET" });
-    const categories = await response;  
+    const response = await makeFetchRequest("/categories/categoryTable", {
+      method: "GET",
+    });
+    const categories = await response;
     console.log("User Categories:", categories);
-    return categories;  // Return the categories data
+    return categories; // Return the categories data
   } catch (error) {
     console.error("Error fetching categories:", error);
-    throw error;  // Ensure to throw an error to be caught by the caller
+    throw error; // Ensure to throw an error to be caught by the caller
   }
 }
 
 async function fetchAllBudgetData() {
   try {
-    const [spendingBalanceResponse, readyToAssignResponse, categories] = await Promise.all([
-      fetchSpendingBalance(),
-      fetchReadyToAssign(),
-      fetchUserCategories()  // Ensure this function returns the expected data
-    ]);
+    const [spendingBalanceResponse, readyToAssignResponse, categories] =
+      await Promise.all([
+        fetchSpendingBalance(),
+        fetchReadyToAssign(),
+        fetchUserCategories(), // Ensure this function returns the expected data
+      ]);
 
     return {
-      spendingBalance: spendingBalanceResponse.totalSpendingBalance,  // Assuming these responses are directly the values
+      spendingBalance: spendingBalanceResponse.totalSpendingBalance, // Assuming these responses are directly the values
       readyToAssign: readyToAssignResponse.readyToAssign,
-      categories  // Ensure categories is directly usable
+      categories, // Ensure categories is directly usable
     };
-  } catch ( error ) {
+  } catch (error) {
     console.error("Error fetching budget data:", error);
     throw error;
   }

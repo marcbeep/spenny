@@ -27,7 +27,8 @@ exports.statCards = async (req, res) => {
       },
     ]);
 
-    let totalIncome = 0, totalExpenditure = 0;
+    let totalIncome = 0,
+      totalExpenditure = 0;
     transactions.forEach((transaction) => {
       if (transaction._id === 'credit') totalIncome += transaction.total;
       if (transaction._id === 'debit') totalExpenditure += transaction.total;

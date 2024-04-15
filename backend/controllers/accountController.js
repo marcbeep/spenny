@@ -311,9 +311,9 @@ exports.getSpendingBalance = async (req, res) => {
       return res.status(400).json({ error: 'User ID is missing' });
     }
 
-    const accounts = await Account.find({ 
-      user: req.user._id, 
-      accountType: 'spending' 
+    const accounts = await Account.find({
+      user: req.user._id,
+      accountType: 'spending',
     });
 
     if (!accounts) {
@@ -321,11 +321,13 @@ exports.getSpendingBalance = async (req, res) => {
       return res.status(404).json({ error: 'No spending accounts found' });
     }
 
-    const totalSpendingBalance = accounts.reduce((total, account) => total + account.accountBalance, 0);
+    const totalSpendingBalance = accounts.reduce(
+      (total, account) => total + account.accountBalance,
+      0,
+    );
     res.status(200).json({ totalSpendingBalance });
   } catch (err) {
     console.error('Error fetching spending balance:', err);
     res.status(400).json({ error: 'Failed to fetch spending balance', details: err.message });
   }
 };
-

@@ -67,7 +67,9 @@
               <div class="stat-title">Ready to Assign</div>
               <div class="stat-value" id="readyToAssign">Loading...</div>
               <div class="stat-actions">
-                <button class="btn btn-sm" id="assignFundsButton">Assign Funds</button>
+                <button class="btn btn-sm" id="assignFundsButton">
+                  Assign Funds
+                </button>
               </div>
             </div>
           </div>
@@ -172,7 +174,6 @@
       </nav>
       <!-- /sidebar menu -->
     </aside>
-
   </body>
   <!-- /drawer -->
   <script>
@@ -188,72 +189,96 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-    const assignFundsButton = document.getElementById('assignFundsButton');
-    assignFundsButton.addEventListener('click', function() {
-      let amount = prompt("Please enter the amount to assign:");
-      if (amount !== null && amount.trim() !== "" && !isNaN(amount)) {
-        amount = parseFloat(amount).toFixed(2);
-        if (amount > 0) {
-          const categorySelectHTML = Array.from(document.querySelectorAll('.table tbody tr'))
-            .map((row, index) => `<option value="${index}">${row.cells[0].textContent.trim()}</option>`)
-            .join('');
-          const categoryHTML = `<select id="categorySelect">${categorySelectHTML}</select>`;
-          const confirmMessage = `Select a category to assign funds:\n${categoryHTML}`;
-          let categoryIndex = prompt(confirmMessage, "0");
+      const assignFundsButton = document.getElementById("assignFundsButton");
+      assignFundsButton.addEventListener("click", function () {
+        let amount = prompt("Please enter the amount to assign:");
+        if (amount !== null && amount.trim() !== "" && !isNaN(amount)) {
+          amount = parseFloat(amount).toFixed(2);
+          if (amount > 0) {
+            const categorySelectHTML = Array.from(
+              document.querySelectorAll(".table tbody tr"),
+            )
+              .map(
+                (row, index) =>
+                  `<option value="${index}">${row.cells[0].textContent.trim()}</option>`,
+              )
+              .join("");
+            const categoryHTML = `<select id="categorySelect">${categorySelectHTML}</select>`;
+            const confirmMessage = `Select a category to assign funds:\n${categoryHTML}`;
+            let categoryIndex = prompt(confirmMessage, "0");
 
-          if (categoryIndex !== null && categoryIndex.trim() !== "" && !isNaN(categoryIndex)) {
-            categoryIndex = parseInt(categoryIndex);
-            const categoryRow = document.querySelectorAll('.table tbody tr')[categoryIndex];
-            if (categoryRow) {
-              const categoryId = categoryRow.dataset.categoryId; // Assuming data-category-id is properly set
-              assignMoneyToCategory(categoryId, amount)
-                .then(result => {
-                  alert(`Funds assigned successfully: ${result}`);
-                  fetchAllBudgetData().then(data => updatePage(data));
-                })
-                .catch(error => alert(`Error assigning funds: ${error.message}`));
-            } else {
-              alert("Invalid category selected.");
+            if (
+              categoryIndex !== null &&
+              categoryIndex.trim() !== "" &&
+              !isNaN(categoryIndex)
+            ) {
+              categoryIndex = parseInt(categoryIndex);
+              const categoryRow =
+                document.querySelectorAll(".table tbody tr")[categoryIndex];
+              if (categoryRow) {
+                const categoryId = categoryRow.dataset.categoryId; // Assuming data-category-id is properly set
+                assignMoneyToCategory(categoryId, amount)
+                  .then((result) => {
+                    alert(`Funds assigned successfully: ${result}`);
+                    fetchAllBudgetData().then((data) => updatePage(data));
+                  })
+                  .catch((error) =>
+                    alert(`Error assigning funds: ${error.message}`),
+                  );
+              } else {
+                alert("Invalid category selected.");
+              }
             }
+          } else {
+            alert("Invalid amount entered.");
           }
-        } else {
-          alert("Invalid amount entered.");
         }
-      }
+      });
+
+      fetchAllBudgetData()
+        .then((data) => {
+          console.log("All page data:", data);
+          updatePage(data);
+        })
+        .catch((error) => {
+          console.error("Failed to load page data:", error);
+        });
     });
 
-    fetchAllBudgetData()
-      .then((data) => {
-        console.log("All page data:", data);
-        updatePage(data);
-      })
-      .catch((error) => {
-        console.error("Failed to load page data:", error);
-      });
-  });
+    function updatePage(data) {
+      // Update 'Available to Spend' and 'Ready to Assign' values
+      document.getElementById(
+        "availableToSpend",
+      ).textContent = `£${data.spendingBalance}`;
+      document.getElementById(
+        "readyToAssign",
+      ).textContent = `£${data.readyToAssign}`;
 
-function updatePage(data) {
-  // Update 'Available to Spend' and 'Ready to Assign' values
-  document.getElementById('availableToSpend').textContent = `£${data.spendingBalance}`;
-  document.getElementById('readyToAssign').textContent = `£${data.readyToAssign}`;
-
-  // Update categories table
-  const categoriesTable = document.querySelector(".table tbody");
-  categoriesTable.innerHTML = ""; // Clear existing entries
-  data.categories.forEach((category) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
+      // Update categories table
+      const categoriesTable = document.querySelector(".table tbody");
+      categoriesTable.innerHTML = ""; // Clear existing entries
+      data.categories.forEach((category) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
       <td>${category.categoryTitle}</td>
       <td><u>£${category.categoryAvailable.toFixed(2)}</u></td>
       <td>
-  ${category.categoryStatus !== 'no goal' ? `<div class="badge ${category.categoryStatus === "funded" ? "bg-primary text-primary-content" : "badge-outline"}">
+  ${
+    category.categoryStatus !== "no goal"
+      ? `<div class="badge ${
+          category.categoryStatus === "funded"
+            ? "bg-primary text-primary-content"
+            : "badge-outline"
+        }">
     ${category.categoryStatus}
-  </div>` : ''}
+  </div>`
+      : ""
+  }
 </td>
       <td><u>${category.categoryGoal}</u></td>
     `;
-    categoriesTable.appendChild(row);
-  });
-}
+        categoriesTable.appendChild(row);
+      });
+    }
   </script>
 </html>

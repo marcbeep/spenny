@@ -330,9 +330,12 @@
 
       const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       const today = new Date().getDay();
-      const orderedDaysOfWeek = [...daysOfWeek.slice(today + 1), ...daysOfWeek.slice(0, today + 1)];
+      const orderedDaysOfWeek = [
+        ...daysOfWeek.slice(today + 1),
+        ...daysOfWeek.slice(0, today + 1),
+      ];
       console.log(orderedDaysOfWeek);
-      
+
       let dailySpendChart = new Chart(ctx, {
         type: "bar",
         data: {
