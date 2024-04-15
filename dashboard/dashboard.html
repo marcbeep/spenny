@@ -327,10 +327,16 @@
 
       // Create a new chart instance each time the function is called
       console.log(dailyOutgoingsData.dailyOutgoings);
+
+      const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const today = new Date().getDay();
+      const orderedDaysOfWeek = [...daysOfWeek.slice(today + 1), ...daysOfWeek.slice(0, today + 1)];
+      console.log(orderedDaysOfWeek);
+      
       let dailySpendChart = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+          labels: orderedDaysOfWeek,
           datasets: [
             {
               label: "Daily Spend (£)",

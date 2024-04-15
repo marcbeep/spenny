@@ -13,8 +13,8 @@ const initializeUserData = async (userId) => {
   try {
     // Create accounts
     const accountsData = [
-      { accountTitle: 'Lloyds', accountType: 'spending', accountBalance: 30 },
-      { accountTitle: 'Monzo', accountType: 'spending', accountBalance: 30 },
+      { accountTitle: 'Lloyds', accountType: 'spending', accountBalance: 50 },
+      { accountTitle: 'Monzo', accountType: 'spending', accountBalance: 50 },
       { accountTitle: 'Vanguard Index Funds', accountType: 'tracking', accountBalance: 100 },
     ];
 
@@ -33,8 +33,9 @@ const initializeUserData = async (userId) => {
       'transport',
       'eating out',
       'fun money',
-      'savings',
+      'bills & subscriptions',
       'rent',
+      'emergency fund',
     ];
     const categories = await Promise.all(
       genericCategories.map((categoryTitle) =>
@@ -50,9 +51,9 @@ const initializeUserData = async (userId) => {
     // Create a budget
     await Budget.create({
       user: userId,
-      budgetTotalAvailable: 0.0,
+      budgetTotalAvailable: 100.0,
       budgetTotalAssigned: 0.0,
-      budgetReadyToAssign: 10.0,
+      budgetReadyToAssign: 30.0,
     });
 
     // Create example transactions
@@ -108,7 +109,7 @@ const createExampleTransactions = async (userId, categories, accounts) => {
       transactionAmount: 2.0,
       transactionDate: moment().toDate(),
       transactionCategory: categories.find((c) => c.categoryTitle === 'transport'),
-      transactionAccount: spendingAccounts[1],
+      transactionAccount: spendingAccounts[1], //monzo
     },
     {
       transactionTitle: 'asda shopping',
@@ -116,7 +117,7 @@ const createExampleTransactions = async (userId, categories, accounts) => {
       transactionAmount: 1.0,
       transactionDate: moment().subtract(1, 'days').toDate(),
       transactionCategory: categories.find((c) => c.categoryTitle === 'groceries'),
-      transactionAccount: spendingAccounts[0],
+      transactionAccount: spendingAccounts[0], //loyds
     },
     {
       transactionTitle: 'drinks at spoons',
@@ -161,7 +162,7 @@ const createExampleTransactions = async (userId, categories, accounts) => {
     {
       transactionTitle: 'monzo account creation',
       transactionType: 'credit',
-      transactionAmount: 43.0,
+      transactionAmount: 62.0,
       transactionDate: moment().subtract(7, 'days').toDate(),
       transactionCategory: null,
       transactionAccount: spendingAccounts[1],
@@ -169,10 +170,10 @@ const createExampleTransactions = async (userId, categories, accounts) => {
     {
       transactionTitle: 'lloyds account creation',
       transactionType: 'credit',
-      transactionAmount: 37.0,
+      transactionAmount: 57.0,
       transactionDate: moment().subtract(7, 'days').toDate(),
       transactionCategory: null,
-      transactionAccount: spendingAccounts[2],
+      transactionAccount: spendingAccounts[0],
     },
   ];
 

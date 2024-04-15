@@ -20,7 +20,7 @@ const budgetSchema = new Schema(
     },
     budgetTotalAssigned: {
       type: Number,
-      required: true,
+      required: false,
       set: formatNumber,
     },
     budgetReadyToAssign: {

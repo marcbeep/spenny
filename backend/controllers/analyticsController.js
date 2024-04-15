@@ -18,21 +18,21 @@ exports.statCards = async (req, res) => {
 
     // Calculate all-time savings rate
     const transactions = await Transaction.aggregate([
-      { $match: { user: userId } },
+      { $match: { user: new mongoose.Types.ObjectId(userId) } }, // Corrected to use 'new'
       {
         $group: {
-          _id: '$type',
-          total: { $sum: '$amount' },
+          _id: '$transactionType',
+          total: { $sum: '$transactionAmount' },
         },
       },
     ]);
 
-    let totalIncome = 0,
-      totalExpenditure = 0;
+    let totalIncome = 0, totalExpenditure = 0;
     transactions.forEach((transaction) => {
       if (transaction._id === 'credit') totalIncome += transaction.total;
       if (transaction._id === 'debit') totalExpenditure += transaction.total;
     });
+
     const savingsRate = totalIncome
       ? (((totalIncome - totalExpenditure) / totalIncome) * 100).toFixed(2)
       : '0.00';
@@ -49,15 +49,15 @@ exports.statCards = async (req, res) => {
     const outgoings = await Transaction.aggregate([
       {
         $match: {
-          user: userId,
-          type: 'debit',
+          user: new mongoose.Types.ObjectId(userId),
+          transactionType: 'debit',
           createdAt: { $gte: startOfSevenDaysAgo.toDate(), $lte: endOfToday.toDate() },
         },
       },
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          total: { $sum: '$amount' },
+          total: { $sum: '$transactionAmount' },
         },
       },
     ]);
