@@ -126,3 +126,39 @@ exports.updateCategory = async (req, res) => {
     res.status(400).json({ error: 'Failed to update category' });
   }
 };
+
+exports.categoryTable = async (req, res) => {
+  try {
+    const categories = await Category.find({ user: req.user._id })
+      .sort('categoryTitle')
+      .populate({
+        path: 'categoryGoal',
+        select: 'goalType goalTarget goalStatus goalResetDay'
+      });
+
+    const result = categories.map(category => {
+      // Format the goal description based on the type of goal
+      let goalDescription = '';
+      if (category.categoryGoal) {
+        if (category.categoryGoal.goalType === 'spending') {
+          goalDescription = `£${category.categoryGoal.goalTarget} by ${category.categoryGoal.goalResetDay}`;
+        } else {
+          goalDescription = `£${category.categoryGoal.goalTarget}`;
+        }
+      }
+
+      return {
+        categoryId: category._id,
+        goalId: category.categoryGoal ? category.categoryGoal._id : null,
+        categoryTitle: category.categoryTitle,
+        categoryAvailable: category.categoryAvailable,
+        categoryStatus: category.categoryGoal ? category.categoryGoal.goalStatus : 'undefined', // You might define a default status
+        categoryGoal: goalDescription
+      };
+    });
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error fetching categories with goals:', error);
+    res.status(400).json({ error: 'Failed to fetch categories' });
+  }
+};
