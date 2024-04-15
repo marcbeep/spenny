@@ -6,6 +6,7 @@ const {
   getAccounts,
   getAccount,
   moveMoneyBetweenAccounts,
+  getSpendingBalance
 } = require('../controllers/accountController');
 const requireAuth = require('../middleware/requireAuth');
 
@@ -14,6 +15,7 @@ router.use(requireAuth);
 
 router.get('/', getAccounts);
 router.get('/:id', getAccount);
+router.get('/getSpendingBalance', getSpendingBalance);
 router.patch('/:id', updateAccount);
 router.post('/', addAccount);
 router.post('/moveMoney', moveMoneyBetweenAccounts);

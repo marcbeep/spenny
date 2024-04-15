@@ -9,6 +9,7 @@
       src="https://kit.fontawesome.com/77a0651d35.js"
       crossorigin="anonymous"
     ></script>
+    <script src="api.js"></script>
   </head>
   <!-- drawer -->
   <body class="drawer min-h-screen bg-base-200 lg:drawer-open">
@@ -30,20 +31,22 @@
             <h1 class="lg:text-2xl font-semibold">Budget</h1>
           </div>
           <div>
-            <h2>m@example.com</h2>
+            <h2 id="userEmail"></h2>
           </div>
           <!-- dropdown -->
           <div class="dropdown-end dropdown z-10">
             <div tabindex="0" class="avatar btn btn-circle btn-ghost">
               <div class="w-10 rounded-full">
-                <img src="https://picsum.photos/80/80?5" />
+                <img id="userProfilePicture" src="" alt="User Profile" />
               </div>
             </div>
             <ul
               tabindex="0"
               class="menu dropdown-content mt-3 w-52 rounded-box bg-base-100 p-2 shadow-2xl"
             >
-              <li><a>Logout</a></li>
+              <li>
+                <a onclick="logoutUser()">Logout</a>
+              </li>
             </ul>
           </div>
           <!-- /dropdown -->
@@ -54,7 +57,7 @@
         <div class="col-span-12 flex justify-center pt-8">
           <div class="stats">
             <div class="stat">
-              <div class="stat-title">Accounts</div>
+              <div class="stat-title">Available to Spend</div>
               <div class="stat-value">£15,000</div>
               <div class="stat-actions">
                 <button class="btn btn-sm">Add funds</button>
@@ -171,4 +174,28 @@
     </aside>
   </body>
   <!-- /drawer -->
+  <script>
+    // auth
+    const userEmail = sessionStorage.getItem("userEmail");
+    const userProfilePicture = sessionStorage.getItem("userProfilePicture");
+
+    if (!userEmail || !userProfilePicture) {
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("userEmail").textContent = `${userEmail}`;
+      document.getElementById("userProfilePicture").src = userProfilePicture;
+    }
+
+    // get user data
+    document.addEventListener("DOMContentLoaded", function () {
+      fetchAllAnalyticsData()
+        .then((data) => {
+          console.log("All dashboard data:", data);
+          updateDashboard(data);
+        })
+        .catch((error) => {
+          console.error("Failed to load dashboard data:", error);
+        });
+    });
+  </script>
 </html>

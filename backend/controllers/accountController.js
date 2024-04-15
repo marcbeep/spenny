@@ -303,3 +303,27 @@ exports.moveMoneyBetweenAccounts = async (req, res) => {
     res.status(400).json({ error: 'Failed to move money between accounts' });
   }
 };
+
+const calculateTotalSpendingBalance = (accounts) => {
+  return accounts.reduce((total, account) => {
+    if (account.accountType === 'spending') {
+      return total + account.accountBalance;
+    }
+    return total;
+  }, 0);
+};
+
+exports.getSpendingBalance = async (req, res) => {
+  try {
+    const accounts = await Account.find({
+      user: req.user._id,
+      accountType: 'spending'  // Ensure we only fetch spending accounts
+    });
+    const totalSpendingBalance = calculateTotalSpendingBalance(accounts);
+    res.status(200).json({ totalSpendingBalance });
+  } catch (err) {
+    console.error('Error fetching spending balance:', err);
+    res.status(400).json({ error: 'Failed to fetch spending balance' });
+  }
+};
+

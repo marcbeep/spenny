@@ -4,6 +4,7 @@ const API_URL =
     : "https://spenny-6e54c38e0b23.herokuapp.com";
 
 // Helper functions
+
 async function makeFetchRequest(path, options = {}) {
   const token = sessionStorage.getItem("token");
   const headers = {
@@ -147,6 +148,78 @@ async function fetchAllAnalyticsData() {
     throw error;
   }
 }
+
+// Budget Page functions
+
+async function fetchReadyToAssign() {
+  try {
+    const response = await makeFetchRequest(`/budget/readyToAssign`, {
+      method: "GET",
+    });
+    console.log("Ready to Assign:", response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching Ready to Assign amount:", error);
+    throw error;
+  }
+}
+
+async function assignMoneyToCategory(categoryId, amount) {
+  try {
+    const result = await makeFetchRequest(`/budget/assignToCategory`, {
+      method: "POST",
+      body: JSON.stringify({ categoryId, amount }),
+    });
+    console.log("Money assigned:", result);
+    return result;
+  } catch (error) {
+    console.error("Error assigning money to category:", error);
+    throw error;
+  }
+}
+
+async function moveMoneyBetweenCategories(fromCategoryId, toCategoryId, amount) {
+  try {
+    const result = await makeFetchRequest(`/budget/moveBetweenCategories`, {
+      method: "POST",
+      body: JSON.stringify({ fromCategoryId, toCategoryId, amount }),
+    });
+    console.log("Money moved between categories:", result);
+    return result;
+  } catch (error) {
+    console.error("Error moving money between categories:", error);
+    throw error;
+  }
+}
+
+async function removeMoneyFromCategory(categoryId, amount) {
+  try {
+    const result = await makeFetchRequest(`/budget/removeFromCategories`, {
+      method: "POST",
+      body: JSON.stringify({ categoryId, amount }),
+    });
+    console.log("Money removed from category:", result);
+    return result;
+  } catch (error) {
+    console.error("Error removing money from category:", error);
+    throw error;
+  }
+}
+
+async function moveToReadyToAssign(categoryId, amount) {
+  try {
+    const result = await makeFetchRequest(`/budget/moveToReadyToAssign`, {
+      method: "POST",
+      body: JSON.stringify({ categoryId, amount }),
+    });
+    console.log("Money moved to Ready to Assign:", result);
+    return result;
+  } catch (error) {
+    console.error("Error moving money to Ready to Assign:", error);
+    throw error;
+  }
+}
+
 
 // ##############################################################################################################
 // Other functions
