@@ -105,7 +105,7 @@ const createExampleTransactions = async (userId, categories, accounts) => {
     {
       transactionTitle: 'transfer from liam for uber',
       transactionType: 'credit',
-      transactionAmount: 1.0,
+      transactionAmount: 2.0,
       transactionDate: moment().toDate(),
       transactionCategory: categories.find((c) => c.categoryTitle === 'transport'),
       transactionAccount: spendingAccounts[1],
@@ -159,12 +159,20 @@ const createExampleTransactions = async (userId, categories, accounts) => {
       transactionAccount: spendingAccounts[1],
     },
     {
-      transactionTitle: 'lidl bakery item',
-      transactionType: 'debit',
-      transactionAmount: 7.0,
+      transactionTitle: 'monzo account creation',
+      transactionType: 'credit',
+      transactionAmount: 43.0,
       transactionDate: moment().subtract(7, 'days').toDate(),
-      transactionCategory: categories.find((c) => c.categoryTitle === 'groceries'),
+      transactionCategory: null,
       transactionAccount: spendingAccounts[1],
+    },
+    {
+      transactionTitle: 'lloyds account creation',
+      transactionType: 'credit',
+      transactionAmount: 37.0,
+      transactionDate: moment().subtract(7, 'days').toDate(),
+      transactionCategory: null,
+      transactionAccount: spendingAccounts[2],
     },
   ];
 
