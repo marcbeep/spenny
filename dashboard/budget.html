@@ -172,6 +172,33 @@
       </nav>
       <!-- /sidebar menu -->
     </aside>
+    <!-- Assign Funds Modal -->
+<div id="assignFundsModal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Assign Funds to Category</h3>
+    <form id="assignFundsForm">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Amount (£)</span>
+        </label>
+        <input type="number" step="0.01" id="assignAmount" class="input input-bordered" required>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Category</span>
+        </label>
+        <select id="categorySelect" class="select select-bordered" required>
+          <!-- Options will be populated dynamically -->
+        </select>
+      </div>
+      <div class="modal-action">
+        <button type="submit" class="btn btn-primary">Assign</button>
+        <a href="#" class="btn" onclick="closeModal()">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
   </body>
   <!-- /drawer -->
   <script>
@@ -196,6 +223,43 @@
       console.error("Failed to load page data:", error);
     });
 });
+
+document.querySelector('.btn.btn-sm').addEventListener('click', function() {
+  document.getElementById('assignFundsModal').style.display = 'block';
+  populateCategoryDropdown();
+});
+
+function populateCategoryDropdown() {
+  const select = document.getElementById('categorySelect');
+  select.innerHTML = '';  // Clear previous options
+  fetchUserCategories().then(categories => {
+    categories.forEach(category => {
+      const option = document.createElement('option');
+      option.value = category._id;
+      option.textContent = category.categoryTitle;
+      select.appendChild(option);
+    });
+  }).catch(error => console.error('Failed to load categories:', error));
+}
+
+document.getElementById('assignFundsForm').addEventListener('submit', async function(event) {
+  event.preventDefault();
+  const amount = document.getElementById('assignAmount').value;
+  const categoryId = document.getElementById('categorySelect').value;
+  try {
+    const result = await assignMoneyToCategory(categoryId, amount);
+    console.log('Assignment successful:', result);
+    updatePage(await fetchAllBudgetData());  // Refresh the data on the page
+    closeModal();
+  } catch (error) {
+    console.error('Assignment failed:', error);
+  }
+});
+
+function closeModal() {
+  document.getElementById('assignFundsModal').style.display = 'none';
+}
+
 
 function updatePage(data) {
   // Update 'Available to Spend' and 'Ready to Assign' values
