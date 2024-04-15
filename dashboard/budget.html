@@ -67,7 +67,7 @@
               <div class="stat-title">Ready to Assign</div>
               <div class="stat-value" id="readyToAssign">Loading...</div>
               <div class="stat-actions">
-                <button class="btn btn-sm">Assign Funds</button>
+                <button class="btn btn-sm" id="assignFundsButton">Assign Funds</button>
               </div>
             </div>
           </div>
@@ -172,32 +172,6 @@
       </nav>
       <!-- /sidebar menu -->
     </aside>
-    <!-- Assign Funds Modal -->
-<div id="assignFundsModal" class="modal">
-  <div class="modal-box">
-    <h3 class="font-bold text-lg">Assign Funds to Category</h3>
-    <form id="assignFundsForm">
-      <div class="form-control">
-        <label class="label">
-          <span class="label-text">Amount (£)</span>
-        </label>
-        <input type="number" step="0.01" id="assignAmount" class="input input-bordered" required>
-      </div>
-      <div class="form-control">
-        <label class="label">
-          <span class="label-text">Category</span>
-        </label>
-        <select id="categorySelect" class="select select-bordered" required>
-          <!-- Options will be populated dynamically -->
-        </select>
-      </div>
-      <div class="modal-action">
-        <button type="submit" class="btn btn-primary">Assign</button>
-        <a href="#" class="btn" onclick="closeModal()">Cancel</a>
-      </div>
-    </form>
-  </div>
-</div>
 
   </body>
   <!-- /drawer -->
@@ -214,52 +188,49 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-  fetchAllBudgetData()
-    .then((data) => {
-      console.log("All page data:", data);
-      updatePage(data);
-    })
-    .catch((error) => {
-      console.error("Failed to load page data:", error);
+    const assignFundsButton = document.getElementById('assignFundsButton');
+    assignFundsButton.addEventListener('click', function() {
+      let amount = prompt("Please enter the amount to assign:");
+      if (amount !== null && amount.trim() !== "" && !isNaN(amount)) {
+        amount = parseFloat(amount).toFixed(2);
+        if (amount > 0) {
+          const categorySelectHTML = Array.from(document.querySelectorAll('.table tbody tr'))
+            .map((row, index) => `<option value="${index}">${row.cells[0].textContent.trim()}</option>`)
+            .join('');
+          const categoryHTML = `<select id="categorySelect">${categorySelectHTML}</select>`;
+          const confirmMessage = `Select a category to assign funds:\n${categoryHTML}`;
+          let categoryIndex = prompt(confirmMessage, "0");
+
+          if (categoryIndex !== null && categoryIndex.trim() !== "" && !isNaN(categoryIndex)) {
+            categoryIndex = parseInt(categoryIndex);
+            const categoryRow = document.querySelectorAll('.table tbody tr')[categoryIndex];
+            if (categoryRow) {
+              const categoryId = categoryRow.dataset.categoryId; // Assuming data-category-id is properly set
+              assignMoneyToCategory(categoryId, amount)
+                .then(result => {
+                  alert(`Funds assigned successfully: ${result}`);
+                  fetchAllBudgetData().then(data => updatePage(data));
+                })
+                .catch(error => alert(`Error assigning funds: ${error.message}`));
+            } else {
+              alert("Invalid category selected.");
+            }
+          }
+        } else {
+          alert("Invalid amount entered.");
+        }
+      }
     });
-});
 
-document.querySelector('.btn.btn-sm').addEventListener('click', function() {
-  document.getElementById('assignFundsModal').style.display = 'block';
-  populateCategoryDropdown();
-});
-
-function populateCategoryDropdown() {
-  const select = document.getElementById('categorySelect');
-  select.innerHTML = '';  // Clear previous options
-  fetchUserCategories().then(categories => {
-    categories.forEach(category => {
-      const option = document.createElement('option');
-      option.value = category._id;
-      option.textContent = category.categoryTitle;
-      select.appendChild(option);
-    });
-  }).catch(error => console.error('Failed to load categories:', error));
-}
-
-document.getElementById('assignFundsForm').addEventListener('submit', async function(event) {
-  event.preventDefault();
-  const amount = document.getElementById('assignAmount').value;
-  const categoryId = document.getElementById('categorySelect').value;
-  try {
-    const result = await assignMoneyToCategory(categoryId, amount);
-    console.log('Assignment successful:', result);
-    updatePage(await fetchAllBudgetData());  // Refresh the data on the page
-    closeModal();
-  } catch (error) {
-    console.error('Assignment failed:', error);
-  }
-});
-
-function closeModal() {
-  document.getElementById('assignFundsModal').style.display = 'none';
-}
-
+    fetchAllBudgetData()
+      .then((data) => {
+        console.log("All page data:", data);
+        updatePage(data);
+      })
+      .catch((error) => {
+        console.error("Failed to load page data:", error);
+      });
+  });
 
 function updatePage(data) {
   // Update 'Available to Spend' and 'Ready to Assign' values
