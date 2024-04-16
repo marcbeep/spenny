@@ -54,29 +54,111 @@
         <!-- /header -->
 
         <!-- Ready to assign -->
-        <div class="col-span-12 flex justify-center pt-8">
+        <div class="col-span-12 flex justify-center pt-2">
           <div class="stats">
-            <div class="stat">
-              <div class="stat-title">Available to Spend</div>
-              <div class="stat-value" id="availableToSpend">Loading...</div>
-              <div class="stat-actions">
-                <a href="accounts.html">
-                  <button class="btn btn-sm">Add funds</button>
-                </a>
-              </div>
-            </div>
             <div class="stat">
               <div class="stat-title">Ready to Assign</div>
               <div class="stat-value" id="readyToAssign">Loading...</div>
-              <div class="stat-actions">
-                <a href="assignFunds.html">
-                  <button class="btn btn-sm">Assign Funds</button>
-                </a>
+              <div class="stat-desc">
+                Available to Spend:
+                <div id="availableToSpend">£0</div>
               </div>
             </div>
           </div>
         </div>
         <!-- /Ready to assign-->
+
+        <!-- Budget Actions Cards -->
+        <div class="col-span-12 flex flex-col items-center">
+          <div class="flex flex-wrap justify-center gap-4 w-full lg:w-3/4 mb-8">
+            <!-- Assign Funds Card -->
+            <div
+              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
+            >
+              <div class="card-body">
+                <h2 class="card-title">Assign Funds</h2>
+                <form>
+                  <select class="select select-bordered w-full mb-4">
+                    <option disabled selected>Select Account</option>
+                    <option>Account 1</option>
+                    <option>Account 2</option>
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="£ to Assign"
+                    class="input input-bordered w-full mb-4"
+                  />
+                  <button type="submit" class="btn w-full">Submit</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Move funds Card -->
+            <div
+              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
+            >
+              <div class="card-body">
+                <h2 class="card-title">Move Funds</h2>
+                <form>
+                  <select class="select select-bordered w-full mb-4">
+                    <option disabled selected>From</option>
+                    <option>Account 1</option>
+                    <option>Account 2</option>
+                  </select>
+                  <select class="select select-bordered w-full mb-4">
+                    <option disabled selected>To</option>
+                    <option>Account 1</option>
+                    <option>Account 2</option>
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="£ to Move"
+                    class="input input-bordered w-full mb-4"
+                  />
+                  <button type="submit" class="btn w-full">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Goal Card -->
+          <div
+            class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
+          >
+            <div class="card-body">
+              <h2 class="card-title">Add Goal</h2>
+              <form>
+                <select class="select select-bordered w-full mb-4">
+                  <option disabled selected>To</option>
+                  <option>Category 1</option>
+                  <option>Category 2</option>
+                </select>
+                <select class="select select-bordered w-full mb-4">
+                  <option disabled selected>Type</option>
+                  <option>Saving</option>
+                  <option>Spending</option>
+                </select>
+                <select class="select select-bordered w-full mb-4">
+                  <option disabled selected>Day of Week</option>
+                  <option>Mon</option>
+                  <option>Tues</option>
+                  <option>Weds</option>
+                  <option>Thurs</option>
+                  <option>Fri</option>
+                  <option>Sat</option>
+                  <option>Sun</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="£ Target"
+                  class="input input-bordered w-full mb-4"
+                />
+                <button type="submit" class="btn w-full">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- End Budget Actions Cards -->
 
         <!-- Categories Table Card -->
         <div class="col-span-12 flex justify-center">
@@ -84,7 +166,6 @@
             <div class="card-body">
               <div class="flex justify-between">
                 <h2 class="card-title">Categories</h2>
-                <button class="btn">Add Goal</button>
               </div>
               <div class="overflow-x-auto">
                 <table class="table w-full">

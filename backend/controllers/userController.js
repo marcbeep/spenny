@@ -6,6 +6,7 @@ const Goal = require('../models/goalModel');
 const Transaction = require('../models/transactionModel');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
+const checkAndUpdateGoalStatus = require('../utils/checkAndUpdateGoalStatus');
 
 const createToken = (_id) => jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: '3d' });
 
@@ -229,6 +230,9 @@ const createExampleTransactions = async (userId, categories, accounts) => {
       }),
     ),
   );
+
+  // For every goal, check and update its status
+  await checkAndUpdateGoalStatus(null, null);
 };
 
 exports.loginUser = async (req, res) => {
