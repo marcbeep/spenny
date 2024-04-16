@@ -302,7 +302,7 @@ async function fetchAllAccounts() {
 async function archiveAccount(accountId) {
   try {
     const result = await makeFetchRequest(`/accounts/archive/${accountId}`, {
-      method: "POST"
+      method: "POST",
     });
     console.log("Account archived:", result);
     alert("Account successfully archived.");
@@ -360,7 +360,10 @@ async function moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount) {
     refreshAccountData(); // Refresh the account data on the page
     return result;
   } catch (error) {
-    alert("Error moving money between accounts. Ensure you are not moving funds from/to archived accounts.", error);
+    alert(
+      "Error moving money between accounts. Ensure you are not moving funds from/to archived accounts.",
+      error,
+    );
     throw error;
   }
 }

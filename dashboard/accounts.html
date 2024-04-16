@@ -76,8 +76,12 @@
                   />
                   <select class="select select-bordered w-full mb-4">
                     <option disabled selected>Select Type</option>
-                    <option value="spending">Spending (e.g. Bank Account)</option>
-                    <option value="tracking">Tracking (e.g. Investment Account)</option>
+                    <option value="spending">
+                      Spending (e.g. Bank Account)
+                    </option>
+                    <option value="tracking">
+                      Tracking (e.g. Investment Account)
+                    </option>
                   </select>
                   <button type="submit" class="btn w-full">Submit</button>
                 </form>
@@ -102,10 +106,10 @@
                     <option>Acc 2</option>
                   </select>
                   <input
-                  type="text"
-                  placeholder="Amount"
-                  class="input input-bordered w-full mb-4"
-                />
+                    type="text"
+                    placeholder="Amount"
+                    class="input input-bordered w-full mb-4"
+                  />
                   <button type="submit" class="btn w-full">Submit</button>
                 </form>
               </div>
@@ -236,13 +240,19 @@
     });
 
     function updateAccountOptions(accounts) {
-      const fromAccountSelect = document.querySelectorAll('form')[1].querySelectorAll('select')[0];
-      const toAccountSelect = document.querySelectorAll('form')[1].querySelectorAll('select')[1];
-      fromAccountSelect.innerHTML = '<option disabled selected>From Account</option>';
-      toAccountSelect.innerHTML = '<option disabled selected>To Account</option>';
+      const fromAccountSelect = document
+        .querySelectorAll("form")[1]
+        .querySelectorAll("select")[0];
+      const toAccountSelect = document
+        .querySelectorAll("form")[1]
+        .querySelectorAll("select")[1];
+      fromAccountSelect.innerHTML =
+        "<option disabled selected>From Account</option>";
+      toAccountSelect.innerHTML =
+        "<option disabled selected>To Account</option>";
 
-      accounts.forEach(account => {
-        const fromOption = document.createElement('option');
+      accounts.forEach((account) => {
+        const fromOption = document.createElement("option");
         fromOption.value = account._id;
         fromOption.textContent = account.accountTitle;
         const toOption = fromOption.cloneNode(true);
@@ -252,41 +262,55 @@
       });
     }
 
-    document.querySelectorAll('form')[1].addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const fromAccountSelect = document.querySelectorAll('form')[1].querySelectorAll('select')[0];
-      const toAccountSelect = document.querySelectorAll('form')[1].querySelectorAll('select')[1];
-      const amountInput = document.querySelectorAll('form')[1].querySelector('input[type="text"]');
+    document
+      .querySelectorAll("form")[1]
+      .addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const fromAccountSelect = document
+          .querySelectorAll("form")[1]
+          .querySelectorAll("select")[0];
+        const toAccountSelect = document
+          .querySelectorAll("form")[1]
+          .querySelectorAll("select")[1];
+        const amountInput = document
+          .querySelectorAll("form")[1]
+          .querySelector('input[type="text"]');
 
-      const fromAccountId = fromAccountSelect.value;
-      const toAccountId = toAccountSelect.value;
-      const amount = parseFloat(amountInput.value.trim());
+        const fromAccountId = fromAccountSelect.value;
+        const toAccountId = toAccountSelect.value;
+        const amount = parseFloat(amountInput.value.trim());
 
-      if (!amount || isNaN(amount)) {
-        alert("Please enter a valid amount.");
-        return;
-      }
-      if (fromAccountId === toAccountId) {
-        alert("Cannot transfer funds between the same account.");
-        return;
-      }
+        if (!amount || isNaN(amount)) {
+          alert("Please enter a valid amount.");
+          return;
+        }
+        if (fromAccountId === toAccountId) {
+          alert("Cannot transfer funds between the same account.");
+          return;
+        }
 
-      try {
-        await moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount);
-        refreshAccountData();
-      } catch (error) {
-        console.error("Error moving funds:", error);
-      }
-    });
+        try {
+          await moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount);
+          refreshAccountData();
+        } catch (error) {
+          console.error("Error moving funds:", error);
+        }
+      });
 
     function updateTable(accounts) {
       const tableBody = document.querySelector(".table tbody");
       tableBody.innerHTML = "";
-      accounts.forEach(account => {
+      accounts.forEach((account) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td class="archive-trigger" data-account-id="${account._id}" style="cursor:pointer;">${account.accountTitle}</td>
-          <td class="update-balance" data-account-id="${account._id}" style="cursor:pointer;">£${account.accountBalance.toFixed(2)}</td>
+          <td class="archive-trigger" data-account-id="${
+            account._id
+          }" style="cursor:pointer;"><u>${account.accountTitle}</u></td>
+          <td class="update-balance" data-account-id="${
+            account._id
+          }" style="cursor:pointer;"><u>£${account.accountBalance.toFixed(
+            2,
+          )}</u></td>
           <td>${account.accountType}</td>
           <td>${account.accountStatus}</td>
         `;
@@ -297,19 +321,23 @@
     }
 
     function addEventListenersToCells() {
-      document.querySelectorAll('.archive-trigger').forEach(item => {
-        item.addEventListener('click', async function() {
-          const accountId = this.getAttribute('data-account-id');
-          if (confirm(`Are you sure you want to archive this account: ${this.textContent}?`)) {
+      document.querySelectorAll(".archive-trigger").forEach((item) => {
+        item.addEventListener("click", async function () {
+          const accountId = this.getAttribute("data-account-id");
+          if (
+            confirm(
+              `Are you sure you want to archive this account: ${this.textContent}?`,
+            )
+          ) {
             await archiveAccount(accountId);
             refreshAccountData();
           }
         });
       });
 
-      document.querySelectorAll('.update-balance').forEach(item => {
-        item.addEventListener('click', async function() {
-          const accountId = this.getAttribute('data-account-id');
+      document.querySelectorAll(".update-balance").forEach((item) => {
+        item.addEventListener("click", async function () {
+          const accountId = this.getAttribute("data-account-id");
           const newBalance = prompt("Enter new balance:");
           if (newBalance && !isNaN(newBalance)) {
             await updateAccount(accountId, parseFloat(newBalance));
@@ -324,5 +352,5 @@
       updateTable(accounts);
       updateAccountOptions(accounts);
     }
-</script>
+  </script>
 </html>
