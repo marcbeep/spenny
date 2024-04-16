@@ -499,7 +499,7 @@ exports.transactionTable = async (req, res) => {
 exports.getCategoryAndAccountNames = async (req, res) => {
   try {
     const categories = await Category.find({ user: req.user._id });
-    const accounts = await Account.find({ user: req.user._id });
+    const accounts = await Account.find({ user: req.user._id, accountStatus: 'active', accountType: 'spending'});
 
     const categoryNames = {};
     categories.forEach((category) => {
