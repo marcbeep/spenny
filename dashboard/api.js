@@ -286,6 +286,80 @@ async function fetchAllTransactions() {
   }
 }
 
+async function addTransaction(transactionData) {
+  try {
+    const newTransaction = await makeFetchRequest("/transactions", {
+      method: "POST",
+      body: JSON.stringify(transactionData),
+    });
+    console.log("Transaction Created:", newTransaction);
+    alert("Transaction successfully created.");
+    return newTransaction;
+  } catch (error) {
+    alert("Error creating transaction:", error.message);
+    throw error;
+  }
+}
+
+async function deleteTransaction(transactionId) {
+  try {
+    await makeFetchRequest(`/transactions/${transactionId}`, {
+      method: "DELETE",
+    });
+    console.log(`Transaction ${transactionId} deleted.`);
+    alert("Transaction successfully deleted.");
+  } catch (error) {
+    alert("Error deleting transaction:", error.message);
+    throw error;
+  }
+}
+
+async function updateTransaction(transactionId, updatedData) {
+  try {
+    const updatedTransaction = await makeFetchRequest(
+      `/transactions/${transactionId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(updatedData),
+      },
+    );
+    console.log("Transaction Updated:", updatedTransaction);
+    alert("Transaction successfully updated.");
+    return updatedTransaction;
+  } catch (error) {
+    alert("Error updating transaction:", error.message);
+    throw error;
+  }
+}
+
+async function ai(transactionData) {
+  try {
+    const newTransaction = await makeFetchRequest("/transactions/ai", {
+      method: "POST",
+      body: JSON.stringify(transactionData),
+    });
+    console.log("Transaction Created:", newTransaction);
+    alert("Transaction successfully created.");
+    return newTransaction;
+  } catch (error) {
+    alert("Error creating transaction:", error.message);
+    throw error;
+  }
+}
+
+async function getCategoryAndAccountNames() {
+  try {
+    const response = await makeFetchRequest(
+      "/transactions/getCategoryAndAccountNames",
+    );
+    console.log("Category and Account Names:", response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching category and account names:", error);
+    throw error;
+  }
+}
+
 // Account page functions
 
 async function fetchAllAccounts() {

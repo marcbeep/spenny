@@ -221,5 +221,58 @@
         console.error("Error loading transactions:", error);
       }
     });
+
+    document.querySelector('.form-control').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const titleInput = document.querySelector('input[placeholder="Transaction Title"]');
+    const categorySelect = document.querySelector('select')[0]; // Assuming first select is category
+    const accountSelect = document.querySelector('select')[1]; // Assuming second select is account
+    const amountInput = document.querySelector('input[type="text"][placeholder="Amount"]');
+    const isCredit = document.querySelector('.toggle').checked; // Assuming toggle is credit/debit
+
+    // Construct the transaction data object based on your API needs
+    const transactionData = {
+        title: titleInput.value.trim(),
+        category: categorySelect.value,
+        account: accountSelect.value,
+        amount: parseFloat(amountInput.value),
+        type: isCredit ? 'credit' : 'debit' // Adjust based on your API requirement
+    };
+
+    if (!transactionData.title || !transactionData.amount || isNaN(transactionData.amount)) {
+        alert('Please fill in all fields correctly.');
+        return;
+    }
+
+    try {
+        await addTransaction(transactionData);
+        refreshTransactionData();
+    } catch (error) {
+        console.error("Error adding transaction:", error);
+    }
+});
+
+async function refreshTransactionData() {
+    try {
+        const transactions = await fetchAllTransactions();
+        const tableBody = document.getElementById("transactionTableBody");
+        tableBody.innerHTML = ""; // Clear the table first
+
+        transactions.forEach((transaction) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${transaction.title}</td>
+                <td>£${transaction.amount.toFixed(2)}</td>
+                <td>${transaction.type}</td>
+                <td>${transaction.category}</td>
+                <td>${transaction.account}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Failed to refresh transactions:", error);
+    }
+}
+
   </script>
 </html>

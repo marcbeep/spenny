@@ -494,3 +494,26 @@ exports.transactionTable = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch transaction details' });
   }
 };
+
+// gets category and account names for a user and returns them in 2 dictionaries
+exports.getCategoryAndAccountNames = async (req, res) => {
+  try {
+    const categories = await Category.find({ user: req.user._id });
+    const accounts = await Account.find({ user: req.user._id });
+
+    const categoryNames = {};
+    categories.forEach((category) => {
+      categoryNames[category._id] = category.categoryTitle;
+    });
+
+    const accountNames = {};
+    accounts.forEach((account) => {
+      accountNames[account._id] = account.accountTitle;
+    });
+
+    res.status(200).json({ categoryNames, accountNames });
+  } catch (error) {
+    console.error('Error fetching category and account names:', error);
+    res.status(500).json({ error: 'Failed to fetch category and account names' });
+  }
+};

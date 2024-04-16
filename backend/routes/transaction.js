@@ -8,11 +8,13 @@ const {
   updateSingleTransaction,
   ai,
   transactionTable,
+  getCategoryAndAccountNames
 } = require('../controllers/transactionController');
 
 const router = express.Router();
 router.use(requireAuth);
 
+router.get('/getCategoryAndAccountNames', getCategoryAndAccountNames);
 router.get('/transactionTable', transactionTable);
 router.get('/', getAllTransactions);
 router.get('/:id', getSingleTransaction);
