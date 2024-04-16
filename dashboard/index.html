@@ -9,6 +9,7 @@
       src="https://kit.fontawesome.com/77a0651d35.js"
       crossorigin="anonymous"
     ></script>
+    <script src="api.js"></script>
   </head>
   <body class="bg-base-100">
     <header
@@ -56,6 +57,13 @@
       </footer>
     </div>
     <script>
+      // auth
+    const userEmail = sessionStorage.getItem("userEmail");
+    const userProfilePicture = sessionStorage.getItem("userProfilePicture");
+
+    if (userEmail && userProfilePicture) {
+      window.location.href = "dashboard.html";
+    }
       // Adjust the top padding of the body to ensure it does not overlap the header
       document.addEventListener("DOMContentLoaded", function () {
         const headerHeight = document.querySelector("header").offsetHeight;

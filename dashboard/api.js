@@ -57,7 +57,7 @@ async function loginUser(event) {
     sessionStorage.setItem("token", data.token);
 
     // Redirect on successful login
-    window.location.href = "success.html";
+    window.location.href = "dashboard.html";
   } catch (error) {
     // Show an alert message on login failure
     alert("Error logging in. Try again.");
@@ -80,7 +80,7 @@ async function signupUser(event) {
     sessionStorage.setItem("userProfilePicture", data.profilePicture);
     sessionStorage.setItem("token", data.token);
 
-    window.location.href = "success.html";
+    window.location.href = "dashboard.html";
   } catch (error) {
     alert(
       "Error signing up. Ensure email hasn't been used and password is 8 characters long.",
