@@ -299,6 +299,56 @@ async function fetchAllAccounts() {
   }
 }
 
+async function archiveAccount(accountId) {
+  try {
+    const result = await makeFetchRequest(`/accounts/archive/${accountId}`, {
+      method: "POST"
+    });
+    console.log("Account archived:", result);
+    alert("Account successfully archived.");
+    refreshAccountData(); // Refresh the account data on the page
+    return result;
+  } catch (error) {
+    console.error("Error archiving account:", error);
+    alert("Error archiving account: " + error.message);
+    throw error;
+  }
+}
+
+async function addAccount(accountData) {
+  try {
+    const newAccount = await makeFetchRequest("/accounts", {
+      method: "POST",
+      body: JSON.stringify(accountData),
+    });
+    console.log("Account Created:", newAccount);
+    alert("Account successfully created.");
+    refreshAccountData(); // Refresh the account data on the page
+    return newAccount;
+  } catch (error) {
+    alert("Error creating account:", error.message);
+    throw error;
+  }
+}
+
+async function updateAccount(accountId, accountBalance) {
+  try {
+    const body = { accountBalance };
+    const account = await makeFetchRequest(`/accounts/${accountId}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    });
+    console.log("Account updated:", account);
+    alert("Account successfully updated.");
+    refreshAccountData(); // Refresh the account data on the page
+    return account;
+  } catch (error) {
+    console.error("Error updating account:", error);
+    alert("Error updating account: " + error.message);
+    throw error;
+  }
+}
+
 // ##############################################################################################################
 // Other functions
 

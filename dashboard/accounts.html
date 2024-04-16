@@ -5,6 +5,7 @@
     <title>Accounts - Spenny</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="output.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
     <script
       src="https://kit.fontawesome.com/77a0651d35.js"
       crossorigin="anonymous"
@@ -73,12 +74,17 @@
                     placeholder="Balance"
                     class="input input-bordered w-full mb-4"
                   />
+                  <select class="select select-bordered w-full mb-4">
+                    <option disabled selected>Select Type</option>
+                    <option>Spending (e.g. Bank Account)</option>
+                    <option>Tracking (e.g. Investment Account)</option>
+                  </select>
                   <button type="submit" class="btn w-full">Submit</button>
                 </form>
               </div>
             </div>
 
-            <!-- Archive Account Card -->
+            <!-- Archive Account Card
             <div
               class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
             >
@@ -93,7 +99,7 @@
                   <button type="submit" class="btn w-full">Submit</button>
                 </form>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
         <!-- End Account Actions Cards -->
@@ -197,25 +203,91 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-      try {
-        const accounts = await fetchAllAccounts(); // Fetch all accounts from the API
-        const tableBody = document.querySelector(".table tbody"); // Select the table body where account rows will be displayed
-        tableBody.innerHTML = ""; // Clear existing rows
+  const accounts = await fetchAllAccounts();
+  const tableBody = document.querySelector(".table tbody");
+  tableBody.innerHTML = "";
 
-        accounts.forEach((account) => {
-          // Create a new row for each account
-          const row = document.createElement("tr");
-          row.innerHTML = `
-        <td>${account.accountTitle}</td>
-        <td><u>£${account.accountBalance.toFixed(2)}</u></td>
+  accounts.forEach(account => {
+    const row = document.createElement("tr");
+    const balanceCell = `<td class="update-balance" data-account-id="${account._id}" style="cursor:pointer;"><u>£${account.accountBalance.toFixed(2)}</u></td>`;
+    row.innerHTML = `
+      <td class="archive-trigger" data-account-id="${account._id}" style="cursor:pointer;"><u>${account.accountTitle}</u></td>
+      ${balanceCell}
+      <td>${account.accountType}</td>
+      <td>${account.accountStatus}</td>
+    `;
+    tableBody.appendChild(row);
+  });
+
+  addEventListenersToCells();
+});
+
+function addEventListenersToCells() {
+  document.querySelectorAll('.archive-trigger').forEach(item => {
+    item.addEventListener('click', async function() {
+      const accountId = this.getAttribute('data-account-id');
+      if (confirm(`Are you sure you want to archive this account: ${this.textContent}?`)) {
+        await archiveAccount(accountId);
+        refreshAccountData();
+      }
+    });
+  });
+
+  document.querySelectorAll('.update-balance').forEach(item => {
+    item.addEventListener('click', async function() {
+      const accountId = this.getAttribute('data-account-id');
+      const newBalance = prompt("Enter new balance:");
+      if (newBalance && !isNaN(newBalance)) {
+        await updateAccount(accountId, parseFloat(newBalance));
+        refreshAccountData();
+      }
+    });
+  });
+}
+
+// Add account form submission
+document.querySelector('form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const title = document.querySelector('input[type="text"][placeholder="Title"]').value.trim();
+  const balance = document.querySelector('input[type="text"][placeholder="Balance"]').value.trim();
+  const typeSelect = document.querySelector('select');
+  const type = typeSelect.options[typeSelect.selectedIndex].value;
+
+  if (!title || !balance || !type || isNaN(balance) || type === "Select Type") {
+    alert("Please fill in all fields correctly.");
+    return;
+  }
+
+  await addAccount({
+    accountTitle: title,
+    accountType: type.toLowerCase(),
+    accountBalance: parseFloat(balance)
+  });
+  refreshAccountData();
+});
+
+async function refreshAccountData() {
+  try {
+    const accounts = await fetchAllAccounts();
+    const tableBody = document.querySelector(".table tbody");
+    tableBody.innerHTML = ""; // Clear existing content
+
+    accounts.forEach(account => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td class="archive-trigger" data-account-id="${account._id}" style="cursor:pointer;"><u>${account.accountTitle}</u></td>
+        <td class="update-balance" data-account-id="${account._id}" style="cursor:pointer;"><u>£${account.accountBalance.toFixed(2)}</u></td>
         <td>${account.accountType}</td>
         <td>${account.accountStatus}</td>
       `;
-          tableBody.appendChild(row); // Append the new row to the table body
-        });
-      } catch (error) {
-        console.error("Failed to load accounts:", error);
-      }
+      tableBody.appendChild(row);
     });
-  </script>
+
+    addEventListenersToCells(); // Rebind event listeners to the new table rows
+  } catch (error) {
+    console.error("Error refreshing account data:", error);
+  }
+}
+
+</script>
 </html>

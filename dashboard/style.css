@@ -1,0 +1,7 @@
+.archive-trigger, .update-balance {
+  cursor: pointer;
+}
+
+.archive-trigger:hover, .update-balance:hover {
+  text-decoration: underline;
+}
