@@ -197,153 +197,149 @@
   </body>
   <!-- /drawer -->
   <script>
-    // auth
+    // Authentication and initialization
     const userEmail = sessionStorage.getItem("userEmail");
     const userProfilePicture = sessionStorage.getItem("userProfilePicture");
 
     if (!userEmail || !userProfilePicture) {
       window.location.href = "index.html";
     } else {
-      document.getElementById("userEmail").textContent = `${userEmail}`;
+      document.getElementById("userEmail").textContent = userEmail;
       document.getElementById("userProfilePicture").src = userProfilePicture;
     }
 
-    document.addEventListener("DOMContentLoaded", async () => {
+    // Event listeners setup
+    document.addEventListener("DOMContentLoaded", initializePage);
+    document
+      .querySelector(".form-control")
+      .addEventListener("submit", handleFormSubmit);
+    document
+      .querySelector(".file-input")
+      .addEventListener("change", handleReceiptUpload);
+
+    async function initializePage() {
+      await populateTransactions();
+      await populateSelectOptions();
+    }
+
+    async function populateTransactions() {
       try {
         const transactions = await fetchAllTransactions();
         const tableBody = document.getElementById("transactionTableBody");
-        tableBody.innerHTML = ""; // Clear existing table rows
-
+        tableBody.innerHTML = "";
         transactions.forEach((transaction) => {
           const row = document.createElement("tr");
-          row.innerHTML = `
-        <td><u>${transaction.transactionTitle}</u></td>
-        <td><u>£${transaction.transactionAmount.toFixed(2)}</u></td>
-        <td>${transaction.transactionType}</td>
-        <td>${transaction.categoryName}</td>
-        <td>${transaction.accountName}</td>
-      `;
+          row.innerHTML = `<td><u>${transaction.transactionTitle}</u></td>
+          <td><u>£${transaction.transactionAmount.toFixed(2)}</u></td>
+          <td>${transaction.transactionType}</td>
+          <td>${transaction.categoryName}</td>
+          <td>${transaction.accountName}</td>`;
           tableBody.appendChild(row);
-        });
-
-        // Fetch categories and account names
-        const namesData = await getCategoryAndAccountNames();
-        const categorySelect = document.getElementById("categorySelect");
-        const accountSelect = document.getElementById("accountSelect");
-
-        // Clear existing options
-        categorySelect.innerHTML =
-          "<option disabled selected>Category</option>";
-        accountSelect.innerHTML = "<option disabled selected>Account</option>";
-
-        // Populate category options
-        Object.entries(namesData.categoryNames).forEach(([id, name]) => {
-          const option = document.createElement("option");
-          option.value = id;
-          option.textContent = name;
-          categorySelect.appendChild(option);
-        });
-
-        // Populate account options
-        Object.entries(namesData.accountNames).forEach(([id, name]) => {
-          const option = document.createElement("option");
-          option.value = id;
-          option.textContent = name;
-          accountSelect.appendChild(option);
         });
       } catch (error) {
         console.error("Error loading transactions:", error);
       }
-    });
+    }
 
-    document
-      .querySelector(".form-control")
-      .addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const titleInput = document.querySelector(
-          'input[placeholder="Transaction Title"]',
+    async function populateSelectOptions() {
+      try {
+        const namesData = await getCategoryAndAccountNames();
+        populateSelect(
+          document.getElementById("categorySelect"),
+          namesData.categoryNames,
         );
-        const categorySelect = document.getElementById("categorySelect");
-        const accountSelect = document.getElementById("accountSelect");
-        const amountInput = document.querySelector(
-          'input[type="text"][placeholder="Amount"]',
+        populateSelect(
+          document.getElementById("accountSelect"),
+          namesData.accountNames,
         );
-        const isCredit = document.querySelector(".toggle").checked;
+      } catch (error) {
+        console.error("Error fetching category and account names:", error);
+      }
+    }
 
-        const transactionData = {
-          transactionTitle: titleInput.value.trim(),
-          transactionCategory: categorySelect.value, // Use id of selected category
-          transactionAccount: accountSelect.value, // Use id of selected account
-          transactionAmount: parseFloat(amountInput.value),
-          transactionType: isCredit ? "debit" : "credit",
-        };
-
-        if (
-          !transactionData.transactionTitle ||
-          !transactionData.transactionAmount ||
-          isNaN(transactionData.transactionAmount)
-        ) {
-          alert("Please fill in all fields correctly.");
-          return;
-        }
-
-        try {
-          console.log("Adding transaction:", transactionData);
-          await addTransaction(transactionData);
-          refreshTransactionData();
-        } catch (error) {
-          console.error("Error adding transaction:", error);
-        }
+    function populateSelect(selectElement, optionsData) {
+      selectElement.innerHTML = `<option disabled selected>${
+        selectElement.id === "categorySelect" ? "Category" : "Account"
+      }</option>`;
+      Object.entries(optionsData).forEach(([id, name]) => {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = name;
+        selectElement.appendChild(option);
       });
+    }
+
+    async function handleFormSubmit(event) {
+      event.preventDefault();
+      const transactionData = {
+        transactionTitle: document
+          .querySelector('input[placeholder="Transaction Title"]')
+          .value.trim(),
+        transactionCategory: document.getElementById("categorySelect").value,
+        transactionAccount: document.getElementById("accountSelect").value,
+        transactionAmount: parseFloat(
+          document.querySelector('input[type="text"][placeholder="Amount"]')
+            .value,
+        ),
+        transactionType: document.querySelector(".toggle").checked
+          ? "debit"
+          : "credit",
+      };
+
+      if (
+        !transactionData.transactionTitle ||
+        isNaN(transactionData.transactionAmount)
+      ) {
+        alert("Please fill in all fields correctly.");
+        return;
+      }
+
+      try {
+        await addTransaction(transactionData);
+        refreshTransactionData();
+      } catch (error) {
+        console.error("Error adding transaction:", error);
+      }
+    }
+
+    async function handleReceiptUpload(event) {
+      const file = event.target.files[0];
+      if (!file) {
+        alert("Please select a file to upload.");
+        return;
+      }
+      const aiButtonLabel = document.querySelector(".btn-neutral");
+      aiButtonLabel.innerHTML =
+        '<span class="loading loading-dots loading-sm"></span> Analyzing...';
+      aiButtonLabel.disabled = true;
+
+      try {
+        const {
+          data: { text },
+        } = await Tesseract.recognize(file, "eng", {
+          logger: (m) => console.log(m),
+        });
+        console.log("Extracted text:", text);
+        const result = await ai({ text });
+        alert("AI Transaction analysis complete.");
+        console.log("AI Response:", result);
+        refreshTransactionData();
+      } catch (error) {
+        console.error("Error processing the image:", error);
+        alert("Failed to process the image.");
+      } finally {
+        aiButtonLabel.innerHTML =
+          '<i class="fa-solid fa-robot"></i>Upload Receipt and Analyse with AI';
+        aiButtonLabel.disabled = false;
+      }
+    }
 
     async function refreshTransactionData() {
       try {
-        const transactions = await fetchAllTransactions();
-        const tableBody = document.getElementById("transactionTableBody");
-        tableBody.innerHTML = ""; // Clear the table first
-
-        transactions.forEach((transaction) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-          <td><u>${transaction.transactionTitle}</u></td>
-        <td><u>£${transaction.transactionAmount.toFixed(2)}</u></td>
-        <td>${transaction.transactionType}</td>
-        <td>${transaction.categoryName}</td>
-        <td>${transaction.accountName}</td>
-            `;
-          tableBody.appendChild(row);
-        });
+        await populateTransactions();
       } catch (error) {
         console.error("Failed to refresh transactions:", error);
       }
     }
-
-    async function handleReceiptUpload(input) {
-  const file = input.files[0];
-  if (!file) {
-    alert('Please select a file to upload.');
-    return;
-  }
-
-  try {
-    const { data: { text } } = await Tesseract.recognize(
-      file,
-      'eng',
-      {
-        logger: m => console.log(m) // Logs progress
-      }
-    );
-    console.log("Extracted text:", text);
-    const transactionData = { text };
-    const result = await ai(transactionData);
-    alert('AI Transaction analysis complete.');
-    console.log("AI Response:", result);
-    refreshTransactionData(); // Refresh the transactions list if needed
-  } catch (error) {
-    console.error('Error processing the image:', error);
-    alert('Failed to process the image.');
-  }
-}
-
   </script>
 </html>
