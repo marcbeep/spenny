@@ -360,7 +360,7 @@ async function moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount) {
     refreshAccountData(); // Refresh the account data on the page
     return result;
   } catch (error) {
-    alert("Error moving money between accounts:", error.message);
+    alert("Error moving money between accounts. Ensure you are not moving funds from/to archived accounts.", error);
     throw error;
   }
 }

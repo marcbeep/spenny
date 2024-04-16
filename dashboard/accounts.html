@@ -218,115 +218,111 @@
   </body>
   <!-- /drawer -->
   <script>
-    // auth
+    // Authentication and profile setup
     const userEmail = sessionStorage.getItem("userEmail");
     const userProfilePicture = sessionStorage.getItem("userProfilePicture");
 
     if (!userEmail || !userProfilePicture) {
       window.location.href = "index.html";
     } else {
-      document.getElementById("userEmail").textContent = `${userEmail}`;
+      document.getElementById("userEmail").textContent = userEmail;
       document.getElementById("userProfilePicture").src = userProfilePicture;
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-  const accounts = await fetchAllAccounts();
-  const tableBody = document.querySelector(".table tbody");
-  tableBody.innerHTML = "";
+      const accounts = await fetchAllAccounts();
+      updateAccountOptions(accounts);
+      updateTable(accounts);
+    });
 
-  accounts.forEach(account => {
-    const row = document.createElement("tr");
-    const balanceCell = `<td class="update-balance" data-account-id="${account._id}" style="cursor:pointer;"><u>£${account.accountBalance.toFixed(2)}</u></td>`;
-    row.innerHTML = `
-      <td class="archive-trigger" data-account-id="${account._id}" style="cursor:pointer;"><u>${account.accountTitle}</u></td>
-      ${balanceCell}
-      <td>${account.accountType}</td>
-      <td>${account.accountStatus}</td>
-    `;
-    tableBody.appendChild(row);
-  });
+    function updateAccountOptions(accounts) {
+      const fromAccountSelect = document.querySelectorAll('form')[1].querySelectorAll('select')[0];
+      const toAccountSelect = document.querySelectorAll('form')[1].querySelectorAll('select')[1];
+      fromAccountSelect.innerHTML = '<option disabled selected>From Account</option>';
+      toAccountSelect.innerHTML = '<option disabled selected>To Account</option>';
 
-  addEventListenersToCells();
-});
+      accounts.forEach(account => {
+        const fromOption = document.createElement('option');
+        fromOption.value = account._id;
+        fromOption.textContent = account.accountTitle;
+        const toOption = fromOption.cloneNode(true);
 
-function addEventListenersToCells() {
-  document.querySelectorAll('.archive-trigger').forEach(item => {
-    item.addEventListener('click', async function() {
-      const accountId = this.getAttribute('data-account-id');
-      if (confirm(`Are you sure you want to archive this account: ${this.textContent}?`)) {
-        await archiveAccount(accountId);
+        fromAccountSelect.appendChild(fromOption);
+        toAccountSelect.appendChild(toOption);
+      });
+    }
+
+    document.querySelectorAll('form')[1].addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const fromAccountSelect = document.querySelectorAll('form')[1].querySelectorAll('select')[0];
+      const toAccountSelect = document.querySelectorAll('form')[1].querySelectorAll('select')[1];
+      const amountInput = document.querySelectorAll('form')[1].querySelector('input[type="text"]');
+
+      const fromAccountId = fromAccountSelect.value;
+      const toAccountId = toAccountSelect.value;
+      const amount = parseFloat(amountInput.value.trim());
+
+      if (!amount || isNaN(amount)) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+      if (fromAccountId === toAccountId) {
+        alert("Cannot transfer funds between the same account.");
+        return;
+      }
+
+      try {
+        await moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount);
         refreshAccountData();
+      } catch (error) {
+        console.error("Error moving funds:", error);
       }
     });
-  });
 
-  document.querySelectorAll('.update-balance').forEach(item => {
-    item.addEventListener('click', async function() {
-      const accountId = this.getAttribute('data-account-id');
-      const newBalance = prompt("Enter new balance:");
-      if (newBalance && !isNaN(newBalance)) {
-        await updateAccount(accountId, parseFloat(newBalance));
-        refreshAccountData();
-      }
-    });
-  });
-}
+    function updateTable(accounts) {
+      const tableBody = document.querySelector(".table tbody");
+      tableBody.innerHTML = "";
+      accounts.forEach(account => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="archive-trigger" data-account-id="${account._id}" style="cursor:pointer;">${account.accountTitle}</td>
+          <td class="update-balance" data-account-id="${account._id}" style="cursor:pointer;">£${account.accountBalance.toFixed(2)}</td>
+          <td>${account.accountType}</td>
+          <td>${account.accountStatus}</td>
+        `;
+        tableBody.appendChild(row);
+      });
 
-// Add account form submission
-document.querySelector('form').addEventListener('submit', async (event) => {
-  event.preventDefault(); // Prevent the default form submission behavior
-  const titleInput = document.querySelector('input[type="text"][placeholder="Title"]');
-  const balanceInput = document.querySelector('input[type="text"][placeholder="Balance"]');
-  const typeSelect = document.querySelector('select');
+      addEventListenersToCells();
+    }
 
-  const title = titleInput.value.trim();
-  const balance = balanceInput.value.trim();
-  const type = typeSelect.value;
+    function addEventListenersToCells() {
+      document.querySelectorAll('.archive-trigger').forEach(item => {
+        item.addEventListener('click', async function() {
+          const accountId = this.getAttribute('data-account-id');
+          if (confirm(`Are you sure you want to archive this account: ${this.textContent}?`)) {
+            await archiveAccount(accountId);
+            refreshAccountData();
+          }
+        });
+      });
 
-  // Validate the input fields
-  if (!title || !balance || type === "Select Type" || isNaN(parseFloat(balance))) {
-    alert("Please fill in all fields correctly.");
-    return; // Stop the function if validation fails
-  }
+      document.querySelectorAll('.update-balance').forEach(item => {
+        item.addEventListener('click', async function() {
+          const accountId = this.getAttribute('data-account-id');
+          const newBalance = prompt("Enter new balance:");
+          if (newBalance && !isNaN(newBalance)) {
+            await updateAccount(accountId, parseFloat(newBalance));
+            refreshAccountData();
+          }
+        });
+      });
+    }
 
-  // Prepare data object for API request
-  const accountData = {
-    accountTitle: title,
-    accountType: type.toLowerCase(),
-    accountBalance: parseFloat(balance)
-  };
-
-  // API call to add the account
-  try {
-    await addAccount(accountData);
-    refreshAccountData(); // Refresh the accounts table to show the new account
-  } catch (error) {
-    console.error("Error adding account:", error);
-  }
-});
-
-async function refreshAccountData() {
-  try {
-    const accounts = await fetchAllAccounts();
-    const tableBody = document.querySelector(".table tbody");
-    tableBody.innerHTML = ""; // Clear existing content
-
-    accounts.forEach(account => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td class="archive-trigger" data-account-id="${account._id}" style="cursor:pointer;"><u>${account.accountTitle}</u></td>
-        <td class="update-balance" data-account-id="${account._id}" style="cursor:pointer;"><u>£${account.accountBalance.toFixed(2)}</u></td>
-        <td>${account.accountType}</td>
-        <td>${account.accountStatus}</td>
-      `;
-      tableBody.appendChild(row);
-    });
-
-    addEventListenersToCells(); // Rebind event listeners to the new table rows
-  } catch (error) {
-    console.error("Error refreshing account data:", error);
-  }
-}
-
+    async function refreshAccountData() {
+      const accounts = await fetchAllAccounts();
+      updateTable(accounts);
+      updateAccountOptions(accounts);
+    }
 </script>
 </html>
