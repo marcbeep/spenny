@@ -1,3 +1,6 @@
+<!-- TODO:
+  1. add pagination
+-->
 <!doctype html>
 <html lang="en">
   <head>
@@ -10,6 +13,7 @@
       crossorigin="anonymous"
     ></script>
     <script src="api.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1"></script>
   </head>
   <!-- drawer -->
   <body class="drawer min-h-screen bg-base-200 lg:drawer-open">
@@ -109,6 +113,7 @@
                       type="file"
                       class="file-input hidden"
                       accept="image/*"
+                      onchange="handleReceiptUpload(this)"
                     />
                   </label>
                 </div>
@@ -212,8 +217,8 @@
         transactions.forEach((transaction) => {
           const row = document.createElement("tr");
           row.innerHTML = `
-        <td>${transaction.transactionTitle}</td>
-        <td>£${transaction.transactionAmount.toFixed(2)}</td>
+        <td><u>${transaction.transactionTitle}</u></td>
+        <td><u>£${transaction.transactionAmount.toFixed(2)}</u></td>
         <td>${transaction.transactionType}</td>
         <td>${transaction.categoryName}</td>
         <td>${transaction.accountName}</td>
@@ -300,11 +305,11 @@
         transactions.forEach((transaction) => {
           const row = document.createElement("tr");
           row.innerHTML = `
-                <td>${transaction.transactionTitle}</td>
-                <td>£${transaction.transactionAmount.toFixed(2)}</td>
-                <td>${transaction.transactionType}</td>
-                <td>${transaction.transactionCategory}</td>
-                <td>${transaction.transactionAccount}</td>
+          <td><u>${transaction.transactionTitle}</u></td>
+        <td><u>£${transaction.transactionAmount.toFixed(2)}</u></td>
+        <td>${transaction.transactionType}</td>
+        <td>${transaction.categoryName}</td>
+        <td>${transaction.accountName}</td>
             `;
           tableBody.appendChild(row);
         });
@@ -312,5 +317,33 @@
         console.error("Failed to refresh transactions:", error);
       }
     }
+
+    async function handleReceiptUpload(input) {
+  const file = input.files[0];
+  if (!file) {
+    alert('Please select a file to upload.');
+    return;
+  }
+
+  try {
+    const { data: { text } } = await Tesseract.recognize(
+      file,
+      'eng',
+      {
+        logger: m => console.log(m) // Logs progress
+      }
+    );
+    console.log("Extracted text:", text);
+    const transactionData = { text };
+    const result = await ai(transactionData);
+    alert('AI Transaction analysis complete.');
+    console.log("AI Response:", result);
+    refreshTransactionData(); // Refresh the transactions list if needed
+  } catch (error) {
+    console.error('Error processing the image:', error);
+    alert('Failed to process the image.');
+  }
+}
+
   </script>
 </html>
