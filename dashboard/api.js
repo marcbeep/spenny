@@ -349,6 +349,22 @@ async function updateAccount(accountId, accountBalance) {
   }
 }
 
+async function moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount) {
+  try {
+    const result = await makeFetchRequest("/accounts/moveMoney", {
+      method: "POST",
+      body: JSON.stringify({ fromAccountId, toAccountId, amount }),
+    });
+    console.log("Money moved successfully:", result);
+    alert("Money moved successfully.");
+    refreshAccountData(); // Refresh the account data on the page
+    return result;
+  } catch (error) {
+    alert("Error moving money between accounts:", error.message);
+    throw error;
+  }
+}
+
 // ##############################################################################################################
 // Other functions
 

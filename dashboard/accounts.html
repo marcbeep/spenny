@@ -76,9 +76,36 @@
                   />
                   <select class="select select-bordered w-full mb-4">
                     <option disabled selected>Select Type</option>
-                    <option>Spending (e.g. Bank Account)</option>
-                    <option>Tracking (e.g. Investment Account)</option>
+                    <option value="spending">Spending (e.g. Bank Account)</option>
+                    <option value="tracking">Tracking (e.g. Investment Account)</option>
                   </select>
+                  <button type="submit" class="btn w-full">Submit</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Move Funds between Accounts Card -->
+            <div
+              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
+            >
+              <div class="card-body">
+                <h2 class="card-title">Move Funds Between Accounts</h2>
+                <form>
+                  <select class="select select-bordered w-full mb-4">
+                    <option disabled selected>From Account</option>
+                    <option>Acc 1</option>
+                    <option>Acc 2</option>
+                  </select>
+                  <select class="select select-bordered w-full mb-4">
+                    <option disabled selected>To Account</option>
+                    <option>Acc 1</option>
+                    <option>Acc 2</option>
+                  </select>
+                  <input
+                  type="text"
+                  placeholder="Amount"
+                  class="input input-bordered w-full mb-4"
+                />
                   <button type="submit" class="btn w-full">Submit</button>
                 </form>
               </div>
@@ -247,23 +274,35 @@ function addEventListenersToCells() {
 
 // Add account form submission
 document.querySelector('form').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const title = document.querySelector('input[type="text"][placeholder="Title"]').value.trim();
-  const balance = document.querySelector('input[type="text"][placeholder="Balance"]').value.trim();
+  event.preventDefault(); // Prevent the default form submission behavior
+  const titleInput = document.querySelector('input[type="text"][placeholder="Title"]');
+  const balanceInput = document.querySelector('input[type="text"][placeholder="Balance"]');
   const typeSelect = document.querySelector('select');
-  const type = typeSelect.options[typeSelect.selectedIndex].value;
 
-  if (!title || !balance || !type || isNaN(balance) || type === "Select Type") {
+  const title = titleInput.value.trim();
+  const balance = balanceInput.value.trim();
+  const type = typeSelect.value;
+
+  // Validate the input fields
+  if (!title || !balance || type === "Select Type" || isNaN(parseFloat(balance))) {
     alert("Please fill in all fields correctly.");
-    return;
+    return; // Stop the function if validation fails
   }
 
-  await addAccount({
+  // Prepare data object for API request
+  const accountData = {
     accountTitle: title,
     accountType: type.toLowerCase(),
     accountBalance: parseFloat(balance)
-  });
-  refreshAccountData();
+  };
+
+  // API call to add the account
+  try {
+    await addAccount(accountData);
+    refreshAccountData(); // Refresh the accounts table to show the new account
+  } catch (error) {
+    console.error("Error adding account:", error);
+  }
 });
 
 async function refreshAccountData() {
