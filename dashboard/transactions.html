@@ -66,20 +66,27 @@
                     placeholder="Transaction Title"
                     class="input input-bordered w-full col-span-1 md:col-span-1"
                   />
-                  <select id="categorySelect" class="select select-bordered w-full col-span-1 md:col-span-1">
+                  <select
+                    id="categorySelect"
+                    class="select select-bordered w-full col-span-1 md:col-span-1"
+                  >
                     <option disabled selected>Category</option>
                     <!-- Options will be dynamically populated -->
                   </select>
-                  
-                  <select id="accountSelect" class="select select-bordered w-full col-span-1 md:col-span-1">
+
+                  <select
+                    id="accountSelect"
+                    class="select select-bordered w-full col-span-1 md:col-span-1"
+                  >
                     <option disabled selected>Account</option>
                     <!-- Options will be dynamically populated -->
                   </select>
-                  
+
                   <input
                     type="text"
                     placeholder="Amount"
-                    class="input input-bordered w-full col-span-1 md:col-span-1"/>
+                    class="input input-bordered w-full col-span-1 md:col-span-1"
+                  />
                   <div class="form-control w-full col-span-1 md:col-span-1">
                     <label class="label cursor-pointer justify-between">
                       <span class="label-text">Credit/Debit</span>
@@ -197,106 +204,113 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const transactions = await fetchAllTransactions();
-    const tableBody = document.getElementById("transactionTableBody");
-    tableBody.innerHTML = ""; // Clear existing table rows
+      try {
+        const transactions = await fetchAllTransactions();
+        const tableBody = document.getElementById("transactionTableBody");
+        tableBody.innerHTML = ""; // Clear existing table rows
 
-    transactions.forEach((transaction) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
+        transactions.forEach((transaction) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
         <td>${transaction.transactionTitle}</td>
         <td>£${transaction.transactionAmount.toFixed(2)}</td>
         <td>${transaction.transactionType}</td>
         <td>${transaction.categoryName}</td>
         <td>${transaction.accountName}</td>
       `;
-      tableBody.appendChild(row);
+          tableBody.appendChild(row);
+        });
+
+        // Fetch categories and account names
+        const namesData = await getCategoryAndAccountNames();
+        const categorySelect = document.getElementById("categorySelect");
+        const accountSelect = document.getElementById("accountSelect");
+
+        // Clear existing options
+        categorySelect.innerHTML =
+          "<option disabled selected>Category</option>";
+        accountSelect.innerHTML = "<option disabled selected>Account</option>";
+
+        // Populate category options
+        Object.entries(namesData.categoryNames).forEach(([id, name]) => {
+          const option = document.createElement("option");
+          option.value = id;
+          option.textContent = name;
+          categorySelect.appendChild(option);
+        });
+
+        // Populate account options
+        Object.entries(namesData.accountNames).forEach(([id, name]) => {
+          const option = document.createElement("option");
+          option.value = id;
+          option.textContent = name;
+          accountSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Error loading transactions:", error);
+      }
     });
 
-    // Fetch categories and account names
-    const namesData = await getCategoryAndAccountNames();
-    const categorySelect = document.getElementById('categorySelect');
-    const accountSelect = document.getElementById('accountSelect');
+    document
+      .querySelector(".form-control")
+      .addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const titleInput = document.querySelector(
+          'input[placeholder="Transaction Title"]',
+        );
+        const categorySelect = document.getElementById("categorySelect");
+        const accountSelect = document.getElementById("accountSelect");
+        const amountInput = document.querySelector(
+          'input[type="text"][placeholder="Amount"]',
+        );
+        const isCredit = document.querySelector(".toggle").checked;
 
-    // Clear existing options
-    categorySelect.innerHTML = '<option disabled selected>Category</option>';
-    accountSelect.innerHTML = '<option disabled selected>Account</option>';
+        const transactionData = {
+          transactionTitle: titleInput.value.trim(),
+          transactionCategory: categorySelect.value, // Use id of selected category
+          transactionAccount: accountSelect.value, // Use id of selected account
+          transactionAmount: parseFloat(amountInput.value),
+          transactionType: isCredit ? "debit" : "credit",
+        };
 
-    // Populate category options
-    Object.entries(namesData.categoryNames).forEach(([id, name]) => {
-      const option = document.createElement('option');
-      option.value = id;
-      option.textContent = name;
-      categorySelect.appendChild(option);
-    });
+        if (
+          !transactionData.transactionTitle ||
+          !transactionData.transactionAmount ||
+          isNaN(transactionData.transactionAmount)
+        ) {
+          alert("Please fill in all fields correctly.");
+          return;
+        }
 
-    // Populate account options
-    Object.entries(namesData.accountNames).forEach(([id, name]) => {
-      const option = document.createElement('option');
-      option.value = id;
-      option.textContent = name;
-      accountSelect.appendChild(option);
-    });
+        try {
+          console.log("Adding transaction:", transactionData);
+          await addTransaction(transactionData);
+          refreshTransactionData();
+        } catch (error) {
+          console.error("Error adding transaction:", error);
+        }
+      });
 
-  } catch (error) {
-    console.error("Error loading transactions:", error);
-  }
-});
-
-
-    document.querySelector('.form-control').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const titleInput = document.querySelector('input[placeholder="Transaction Title"]');
-    const categorySelect = document.getElementById('categorySelect');
-    const accountSelect = document.getElementById('accountSelect');
-    const amountInput = document.querySelector('input[type="text"][placeholder="Amount"]');
-    const isCredit = document.querySelector('.toggle').checked;
-
-    const transactionData = {
-        transactionTitle: titleInput.value.trim(),
-        transactionCategory: categorySelect.value, // Use id of selected category
-        transactionAccount: accountSelect.value, // Use id of selected account
-        transactionAmount: parseFloat(amountInput.value),
-        transactionType: isCredit ? 'debit' : 'credit'
-    };
-
-    if (!transactionData.transactionTitle || !transactionData.transactionAmount || isNaN(transactionData.transactionAmount)) {
-        alert('Please fill in all fields correctly.');
-        return;
-    }
-
-    try {
-        console.log("Adding transaction:", transactionData)
-        await addTransaction(transactionData);
-        refreshTransactionData();
-    } catch (error) {
-        console.error("Error adding transaction:", error);
-    }
-});
-
-
-async function refreshTransactionData() {
-    try {
+    async function refreshTransactionData() {
+      try {
         const transactions = await fetchAllTransactions();
         const tableBody = document.getElementById("transactionTableBody");
         tableBody.innerHTML = ""; // Clear the table first
 
         transactions.forEach((transaction) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
+          const row = document.createElement("tr");
+          row.innerHTML = `
                 <td>${transaction.transactionTitle}</td>
                 <td>£${transaction.transactionAmount.toFixed(2)}</td>
                 <td>${transaction.transactionType}</td>
                 <td>${transaction.transactionCategory}</td>
                 <td>${transaction.transactionAccount}</td>
             `;
-            tableBody.appendChild(row);
+          tableBody.appendChild(row);
         });
-    } catch (error) {
+      } catch (error) {
         console.error("Failed to refresh transactions:", error);
+      }
     }
-}
-
   </script>
 </html>

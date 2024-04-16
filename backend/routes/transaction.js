@@ -8,7 +8,7 @@ const {
   updateSingleTransaction,
   ai,
   transactionTable,
-  getCategoryAndAccountNames
+  getCategoryAndAccountNames,
 } = require('../controllers/transactionController');
 
 const router = express.Router();
