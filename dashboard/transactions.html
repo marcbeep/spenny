@@ -226,18 +226,71 @@
       try {
         const transactions = await fetchAllTransactions();
         const tableBody = document.getElementById("transactionTableBody");
-        tableBody.innerHTML = "";
+        tableBody.innerHTML = ""; // Clear existing table rows
         transactions.forEach((transaction) => {
           const row = document.createElement("tr");
-          row.innerHTML = `<td><u>${transaction.transactionTitle}</u></td>
-          <td><u>£${transaction.transactionAmount.toFixed(2)}</u></td>
-          <td>${transaction.transactionType}</td>
-          <td>${transaction.categoryName}</td>
-          <td>${transaction.accountName}</td>`;
+          row.innerHTML = `
+        <td class="cursor-pointer" data-id="${transaction.transactionId}"><u>${
+          transaction.transactionTitle
+        }</u></td>
+        <td class="edit-amount cursor-pointer" data-id="${
+          transaction.transactionId
+        }" data-amount="${transaction.transactionAmount.toFixed(
+          2,
+        )}"><u>£${transaction.transactionAmount.toFixed(2)}</u></td>
+        <td>${transaction.transactionType}</td>
+        <td>${transaction.categoryName}</td>
+        <td>${transaction.accountName}</td>
+      `;
           tableBody.appendChild(row);
+          row
+            .querySelector("td[data-id]")
+            .addEventListener("click", () =>
+              confirmDelete(transaction.transactionId),
+            );
+
+          // Add event listener for editing amount
+          row
+            .querySelector(".edit-amount")
+            .addEventListener("click", function () {
+              const newAmount = prompt(
+                "Enter new amount:",
+                this.getAttribute("data-amount"),
+              );
+              if (newAmount !== null && !isNaN(newAmount)) {
+                updateTransactionAmount(
+                  this.getAttribute("data-id"),
+                  parseFloat(newAmount),
+                );
+              }
+            });
         });
       } catch (error) {
         console.error("Error loading transactions:", error);
+      }
+    }
+
+    async function updateTransactionAmount(transactionId, newAmount) {
+      try {
+        console.log(transactionId, { transactionAmount: newAmount });
+        const updatedTransaction = await updateTransaction(transactionId, {
+          transactionAmount: newAmount,
+        });
+        refreshTransactionData(); // Refresh the transactions list
+      } catch (error) {
+        console.error("Error updating transaction amount:", error);
+      }
+    }
+
+    function confirmDelete(transactionId) {
+      if (confirm("Are you sure you want to delete this transaction?")) {
+        deleteTransaction(transactionId)
+          .then(() => {
+            refreshTransactionData(); // Re-fetch the transactions list
+          })
+          .catch((err) => {
+            console.error("Error deleting transaction:", err);
+          });
       }
     }
 

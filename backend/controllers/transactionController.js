@@ -413,12 +413,10 @@ ${text}
     });
 
     let response = completion.choices[0].message.content;
-    console.log('1. ', response);
     const indexOfJsonStart = response.indexOf('{');
-    response = indexOfJsonStart !== -1 ? response.slice(indexOfJsonStart) : response;
-    console.log('2. ', response);
+    response = indexOfJsonStart !== -1 ? response.slice(indexOfJsonStart) : '{}'; // Default to empty object if no JSON found
+    response = response.trim(); // Trim whitespace which might cause issues
     const transactionDetails = JSON.parse(response);
-    console.log('3. ', transactionDetails);
 
     if (!transactionDetails.success) {
       return res
