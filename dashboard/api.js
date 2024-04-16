@@ -275,7 +275,9 @@ async function fetchAllBudgetData() {
 
 async function fetchAllTransactions() {
   try {
-    const transactions = await makeFetchRequest("/transactions/transactionTable");
+    const transactions = await makeFetchRequest(
+      "/transactions/transactionTable",
+    );
     console.log("All Transactions:", transactions);
     return transactions;
   } catch (error) {

@@ -113,31 +113,32 @@
         <!-- End Add Transaction Form Card -->
 
         <!-- Transactions Card -->
-<div class="col-span-12 flex flex-col items-center">
-  <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
-      <div class="card-body">
-          <div class="overflow-x-auto">
-              <table class="table w-full">
+        <div class="col-span-12 flex flex-col items-center">
+          <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
+            <div class="card-body">
+              <div class="overflow-x-auto">
+                <table class="table w-full">
                   <!-- Table Headings -->
                   <thead>
-                      <tr>
-                          <th>Title</th>
-                          <th>Amount</th>
-                          <th>Type</th>
-                          <th>Category</th>
-                          <th>Account</th> <!-- Added column for Account Name -->
-                      </tr>
+                    <tr>
+                      <th>Title</th>
+                      <th>Amount</th>
+                      <th>Type</th>
+                      <th>Category</th>
+                      <th>Account</th>
+                      <!-- Added column for Account Name -->
+                    </tr>
                   </thead>
                   <!-- Table Body -->
-                  <tbody id="transactionTableBody"> <!-- Add an ID for easier JS access -->
+                  <tbody id="transactionTableBody">
+                    <!-- Add an ID for easier JS access -->
                   </tbody>
-              </table>
+                </table>
+              </div>
+            </div>
           </div>
-      </div>
-  </div>
-</div>
-<!-- End Transactions Card -->
-
+        </div>
+        <!-- End Transactions Card -->
 
         <!-- /MAIN PAGE CONTENT-->
       </div>
@@ -197,26 +198,28 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
-    try {
+      try {
         const transactions = await fetchAllTransactions(); // This function is supposed to fetch data from your API
-        const tableBody = document.getElementById('transactionTableBody');
-        tableBody.innerHTML = ''; // Clear existing table rows
+        const tableBody = document.getElementById("transactionTableBody");
+        tableBody.innerHTML = ""; // Clear existing table rows
 
-        transactions.forEach(transaction => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
+        transactions.forEach((transaction) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
                 <td>${transaction.transactionTitle}</td>
                 <td>£${transaction.transactionAmount.toFixed(2)}</td>
-                <td>${transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}</td>
+                <td>${
+                  transaction.transactionType.charAt(0).toUpperCase() +
+                  transaction.transactionType.slice(1)
+                }</td>
                 <td>${transaction.categoryName}</td>
                 <td>${transaction.accountName}</td>
             `;
-            tableBody.appendChild(row);
+          tableBody.appendChild(row);
         });
-    } catch (error) {
+      } catch (error) {
         console.error("Error loading transactions:", error);
-    }
-});
-
+      }
+    });
   </script>
 </html>
