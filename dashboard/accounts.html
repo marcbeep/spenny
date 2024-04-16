@@ -9,6 +9,7 @@
       src="https://kit.fontawesome.com/77a0651d35.js"
       crossorigin="anonymous"
     ></script>
+    <script src="api.js"></script>
   </head>
   <!-- drawer -->
   <body class="drawer min-h-screen bg-base-200 lg:drawer-open">
@@ -30,20 +31,22 @@
             <h1 class="lg:text-2xl font-semibold">Accounts</h1>
           </div>
           <div>
-            <h2>m@example.com</h2>
+            <h2 id="userEmail"></h2>
           </div>
           <!-- dropdown -->
           <div class="dropdown-end dropdown z-10">
             <div tabindex="0" class="avatar btn btn-circle btn-ghost">
               <div class="w-10 rounded-full">
-                <img src="https://picsum.photos/80/80?5" />
+                <img id="userProfilePicture" src="" alt="User Profile" />
               </div>
             </div>
             <ul
               tabindex="0"
               class="menu dropdown-content mt-3 w-52 rounded-box bg-base-100 p-2 shadow-2xl"
             >
-              <li><a>Logout</a></li>
+              <li>
+                <a onclick="logoutUser()">Logout</a>
+              </li>
             </ul>
           </div>
           <!-- /dropdown -->
@@ -105,9 +108,9 @@
                   <thead>
                     <tr>
                       <th>Title</th>
+                      <th>Balance</th>
                       <th>Type</th>
                       <th>Status</th>
-                      <th>Balance</th>
                     </tr>
                   </thead>
                   <!-- Table Body -->
@@ -181,4 +184,38 @@
     </aside>
   </body>
   <!-- /drawer -->
+  <script>
+    // auth
+    const userEmail = sessionStorage.getItem("userEmail");
+    const userProfilePicture = sessionStorage.getItem("userProfilePicture");
+
+    if (!userEmail || !userProfilePicture) {
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("userEmail").textContent = `${userEmail}`;
+      document.getElementById("userProfilePicture").src = userProfilePicture;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const accounts = await fetchAllAccounts(); // Fetch all accounts from the API
+        const tableBody = document.querySelector(".table tbody"); // Select the table body where account rows will be displayed
+        tableBody.innerHTML = ""; // Clear existing rows
+
+        accounts.forEach((account) => {
+          // Create a new row for each account
+          const row = document.createElement("tr");
+          row.innerHTML = `
+        <td>${account.accountTitle}</td>
+        <td><u>£${account.accountBalance.toFixed(2)}</u></td>
+        <td>${account.accountType}</td>
+        <td>${account.accountStatus}</td>
+      `;
+          tableBody.appendChild(row); // Append the new row to the table body
+        });
+      } catch (error) {
+        console.error("Failed to load accounts:", error);
+      }
+    });
+  </script>
 </html>

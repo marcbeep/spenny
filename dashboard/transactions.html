@@ -206,8 +206,8 @@
         transactions.forEach((transaction) => {
           const row = document.createElement("tr");
           row.innerHTML = `
-                <td>${transaction.transactionTitle}</td>
-                <td>£${transaction.transactionAmount.toFixed(2)}</td>
+                <td><u>${transaction.transactionTitle}</u></td>
+                <td><u>£${transaction.transactionAmount.toFixed(2)}</u></td>
                 <td>${
                   transaction.transactionType.charAt(0).toUpperCase() +
                   transaction.transactionType.slice(1)

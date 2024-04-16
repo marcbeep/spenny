@@ -286,6 +286,19 @@ async function fetchAllTransactions() {
   }
 }
 
+// Account page functions
+
+async function fetchAllAccounts() {
+  try {
+    const accounts = await makeFetchRequest("/accounts");
+    console.log("All Accounts:", accounts);
+    return accounts;
+  } catch (error) {
+    console.error("Error fetching all accounts:", error);
+    throw error;
+  }
+}
+
 // ##############################################################################################################
 // Other functions
 
