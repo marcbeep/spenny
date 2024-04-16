@@ -460,3 +460,33 @@ ${text}
     res.status(400).json({ error: 'Failed to process AI request' });
   }
 };
+
+// returns the transaction id, transaction title, associated category name, transaction amount, transaction type, and transaction account name
+exports.transactionTable = async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: 'transactionCategory',
+        select: 'categoryTitle'  // Only fetch the category title
+      })
+      .populate({
+        path: 'transactionAccount',
+        select: 'accountTitle'  // Only fetch the account title
+      });
+
+    const transactionDetails = transactions.map(transaction => ({
+      transactionId: transaction._id,
+      transactionTitle: transaction.transactionTitle,
+      categoryName: transaction.transactionCategory ? transaction.transactionCategory.categoryTitle : '',
+      transactionAmount: transaction.transactionAmount,
+      transactionType: transaction.transactionType,
+      accountName: transaction.transactionAccount ? transaction.transactionAccount.accountTitle : ''
+    }));
+
+    res.status(200).json(transactionDetails);
+  } catch (error) {
+    console.error('Error fetching transaction table:', error);
+    res.status(500).json({ error: 'Failed to fetch transaction details' });
+  }
+};

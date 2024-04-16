@@ -9,6 +9,7 @@
       src="https://kit.fontawesome.com/77a0651d35.js"
       crossorigin="anonymous"
     ></script>
+    <script src="api.js"></script>
   </head>
   <!-- drawer -->
   <body class="drawer min-h-screen bg-base-200 lg:drawer-open">
@@ -30,20 +31,22 @@
             <h1 class="lg:text-2xl font-semibold">Transactions</h1>
           </div>
           <div>
-            <h2>m@example.com</h2>
+            <h2 id="userEmail"></h2>
           </div>
           <!-- dropdown -->
           <div class="dropdown-end dropdown z-10">
             <div tabindex="0" class="avatar btn btn-circle btn-ghost">
               <div class="w-10 rounded-full">
-                <img src="https://picsum.photos/80/80?5" />
+                <img id="userProfilePicture" src="" alt="User Profile" />
               </div>
             </div>
             <ul
               tabindex="0"
               class="menu dropdown-content mt-3 w-52 rounded-box bg-base-100 p-2 shadow-2xl"
             >
-              <li><a>Logout</a></li>
+              <li>
+                <a onclick="logoutUser()">Logout</a>
+              </li>
             </ul>
           </div>
           <!-- /dropdown -->
@@ -110,47 +113,31 @@
         <!-- End Add Transaction Form Card -->
 
         <!-- Transactions Card -->
-        <div class="col-span-12 flex flex-col items-center">
-          <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
-            <div class="card-body">
-              <div class="overflow-x-auto">
-                <table class="table w-full">
+<div class="col-span-12 flex flex-col items-center">
+  <div class="card w-full lg:w-3/4 bg-base-100 shadow-xl">
+      <div class="card-body">
+          <div class="overflow-x-auto">
+              <table class="table w-full">
                   <!-- Table Headings -->
                   <thead>
-                    <tr>
-                      <th>Title</th>
-                      <th>Category</th>
-                      <th>Type</th>
-                      <th>Amount</th>
-                    </tr>
+                      <tr>
+                          <th>Title</th>
+                          <th>Amount</th>
+                          <th>Type</th>
+                          <th>Category</th>
+                          <th>Account</th> <!-- Added column for Account Name -->
+                      </tr>
                   </thead>
                   <!-- Table Body -->
-                  <tbody>
-                    <tr>
-                      <td>Example Transaction 1</td>
-                      <td>Groceries</td>
-                      <td>Credit</td>
-                      <td><u>£50</u></td>
-                    </tr>
-                    <tr>
-                      <td>Example Transaction 2</td>
-                      <td>Utilities</td>
-                      <td>Debit</td>
-                      <td><u>£75</u></td>
-                    </tr>
-                    <tr>
-                      <td>Example Transaction 3</td>
-                      <td>Entertainment</td>
-                      <td>Credit</td>
-                      <td><u>£200</u></td>
-                    </tr>
+                  <tbody id="transactionTableBody"> <!-- Add an ID for easier JS access -->
                   </tbody>
-                </table>
-              </div>
-            </div>
+              </table>
           </div>
-        </div>
-        <!-- End Transactions Card -->
+      </div>
+  </div>
+</div>
+<!-- End Transactions Card -->
+
 
         <!-- /MAIN PAGE CONTENT-->
       </div>
@@ -197,4 +184,39 @@
     </aside>
   </body>
   <!-- /drawer -->
+  <script>
+    // auth
+    const userEmail = sessionStorage.getItem("userEmail");
+    const userProfilePicture = sessionStorage.getItem("userProfilePicture");
+
+    if (!userEmail || !userProfilePicture) {
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("userEmail").textContent = `${userEmail}`;
+      document.getElementById("userProfilePicture").src = userProfilePicture;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const transactions = await fetchAllTransactions(); // This function is supposed to fetch data from your API
+        const tableBody = document.getElementById('transactionTableBody');
+        tableBody.innerHTML = ''; // Clear existing table rows
+
+        transactions.forEach(transaction => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${transaction.transactionTitle}</td>
+                <td>£${transaction.transactionAmount.toFixed(2)}</td>
+                <td>${transaction.transactionType.charAt(0).toUpperCase() + transaction.transactionType.slice(1)}</td>
+                <td>${transaction.categoryName}</td>
+                <td>${transaction.accountName}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error loading transactions:", error);
+    }
+});
+
+  </script>
 </html>

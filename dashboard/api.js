@@ -271,6 +271,19 @@ async function fetchAllBudgetData() {
   }
 }
 
+// Transaction page functions
+
+async function fetchAllTransactions() {
+  try {
+    const transactions = await makeFetchRequest("/transactions/transactionTable");
+    console.log("All Transactions:", transactions);
+    return transactions;
+  } catch (error) {
+    console.error("Error fetching all transactions:", error);
+    throw error;
+  }
+}
+
 // ##############################################################################################################
 // Other functions
 

@@ -7,11 +7,13 @@ const {
   deleteSingleTransaction,
   updateSingleTransaction,
   ai,
+  transactionTable,
 } = require('../controllers/transactionController');
 
 const router = express.Router();
 router.use(requireAuth);
 
+router.get('/transactionTable', transactionTable);
 router.get('/', getAllTransactions);
 router.get('/:id', getSingleTransaction);
 router.post('/', createTransaction);
