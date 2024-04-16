@@ -299,8 +299,9 @@
       data.categories.forEach((category) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-      <td>${category.categoryTitle}</td>
+      <td><u>${category.categoryTitle}</u></td>
       <td>£${category.categoryAvailable.toFixed(2)}</td>
+      <td><u>${category.categoryGoal}</u></td>
       <td>
   ${
     category.categoryStatus !== "no goal"
@@ -314,7 +315,6 @@
       : ""
   }
 </td>
-      <td><u>${category.categoryGoal}</u></td>
     `;
         categoriesTable.appendChild(row);
       });
