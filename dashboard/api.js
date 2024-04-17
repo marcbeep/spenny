@@ -299,6 +299,20 @@ async function deleteGoal(goalId) {
   }
 }
 
+async function deleteCategory(categoryId, newCategoryId) {
+  try {
+    const response = await makeFetchRequest(`/categories/${categoryId}`, {
+      method: "DELETE",
+      body: JSON.stringify({ newCategoryId }),
+    });
+    console.log("Category deleted:", response);
+    return response;
+  } catch (error) {
+    console.error("Error deleting category:", error);
+    throw error;
+  }
+}
+
 // Transaction page functions
 
 async function fetchAllTransactions() {
