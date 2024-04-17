@@ -57,21 +57,10 @@
           <!-- /dropdown -->
         </header>
         <!-- /header -->
-
         <!-- Budget Actions Cards -->
         <div class="col-span-12 flex flex-col items-center">
           <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full mb-8">
             <!-- Ready to Assign Card -->
-            <div class="card bg-base-100 shadow-xl w-full">
-              <div class="card-body">
-                <h2 class="card-title">I WANT TO DELETE</h2>
-                <div class="stat place-items-center">
-                  <div class="stat-value">Loading...</div>
-                  <div class="stat-desc" id="availableToSpend">Loading...</div>
-                </div>
-              </div>
-            </div>
-
             <div class="card w-96 bg-base-100 shadow-xl">
               <div class="card-body">
                 <h2 class="card-title" id="readyToAssign">Loading...</h2>
@@ -317,9 +306,6 @@
       const cover = document.getElementById("cover");
 
       // Update 'Available to Spend' and 'Ready to Assign' values
-      document.getElementById(
-        "availableToSpend",
-      ).textContent = `Available to Spend: £${data.spendingBalance}`;
       readyToAssign.textContent = `£${data.readyToAssign} to Assign`;
 
       if (data.readyToAssign > 0) {
@@ -518,16 +504,19 @@
         const row = document.createElement("tr");
         row.innerHTML = `
     <td>${category.categoryTitle}</td>
-    <td>
-      <div class="badge ${fundedStyle}">
+    <td onclick="handleAvailableBalanceClick('${
+      category.categoryId
+    }', ${category.categoryAvailable.toFixed(2)})">
+      <div class="badge ${fundedStyle}" style="cursor: pointer;">
         £${category.categoryAvailable.toFixed(2)}
       </div>
     </td>
     <td>
       <u onclick="editGoalPrompt('${category.goalId}', '${
         category.categoryGoal
-      }')">
+      }')"><div style="cursor: pointer;">
         ${category.categoryGoal}
+      </div>
       </u>
     </td>
   `;
@@ -629,6 +618,35 @@
             console.error("Error updating goal:", error);
             alert("Failed to update goal.");
           });
+      }
+    }
+
+    function handleAvailableBalanceClick(categoryId, currentAvailable) {
+      const newAvailableStr = prompt(
+        "Enter new available balance:",
+        currentAvailable,
+      );
+      if (newAvailableStr !== null) {
+        const newAvailable = parseFloat(newAvailableStr);
+        if (!isNaN(newAvailable) && newAvailable !== currentAvailable) {
+          const amountToRemove = currentAvailable - newAvailable;
+          removeMoneyFromCategory(categoryId, amountToRemove)
+            .then(() => {
+              alert("Available balance updated successfully.");
+              fetchAllBudgetData() // Assuming this function re-fetches all data and updates the UI
+                .then((data) => updatePage(data))
+                .catch((error) =>
+                  console.error(
+                    "Failed to update data after balance update:",
+                    error,
+                  ),
+                );
+            })
+            .catch((error) => {
+              console.error("Error updating available balance:", error);
+              alert("Failed to update available balance.");
+            });
+        }
       }
     }
   </script>
