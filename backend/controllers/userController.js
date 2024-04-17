@@ -84,9 +84,8 @@ const initializeUserData = async (userId) => {
       }),
     ]);
 
-        // Create example transactions
-        await createExampleTransactions(userId, categories, accounts);
-
+    // Create example transactions
+    await createExampleTransactions(userId, categories, accounts);
 
     // Update categories with the associated goal ID
     await Promise.all(

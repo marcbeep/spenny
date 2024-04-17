@@ -22,9 +22,14 @@ const checkAndUpdateGoalStatus = async (goalId = null, categoryId = null) => {
           break;
         case 'spending':
           const today = moment();
-          const resetDay = moment().isoWeekday(goal.goalResetDay);
-          const resetDayPassed = today.isSameOrAfter(resetDay, 'day');
+          let resetDay = moment().isoWeekday(goal.goalResetDay);
 
+          // Adjust resetDay to last occurrence if today is past it
+          if (resetDay.isAfter(today, 'day')) {
+            resetDay.subtract(1, 'weeks');
+          }
+
+          const resetDayPassed = today.isSameOrAfter(resetDay, 'day');
           if (!resetDayPassed) {
             isGoalFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable;
           }
