@@ -215,39 +215,11 @@
                       <th>Name</th>
                       <th>Available</th>
                       <th>Goal</th>
-                      <th>Status</th>
                     </tr>
                   </thead>
                   <!-- Table Body -->
                   <tbody>
-                    <tr>
-                      <td>Groceries</td>
-                      <td><u>£500</u></td>
-                      <td>
-                        <div class="badge bg-primary text-primary-content">
-                          Funded
-                        </div>
-                      </td>
-                      <td><u>£10</u></td>
-                    </tr>
-                    <tr>
-                      <td>Utilities</td>
-                      <td><u>£200</u></td>
-                      <td>
-                        <div class="badge badge-outline">Underfunded</div>
-                      </td>
-                      <td><u>£250</u></td>
-                    </tr>
-                    <tr>
-                      <td>Entertainment</td>
-                      <td><u>£50</u></td>
-                      <td>
-                        <div class="badge bg-primary text-primary-content">
-                          Funded
-                        </div>
-                      </td>
-                      <td><u>£50</u></td>
-                    </tr>
+                    <!-- Rows will be dynamically generated from the script -->
                   </tbody>
                 </table>
               </div>
@@ -493,29 +465,30 @@
         categorySelect.appendChild(option);
       });
 
-      // Update categories table
+      /// Update categories table
       const categoriesTable = document.querySelector(".table tbody");
       categoriesTable.innerHTML = ""; // Clear existing entries
       data.categories.forEach((category) => {
+        const fundedStyle =
+          category.categoryStatus === "funded"
+            ? "bg-primary text-primary-content"
+            : "badge-outline";
         const row = document.createElement("tr");
         row.innerHTML = `
-      <td>${category.categoryTitle}</td>
-      <td>£${category.categoryAvailable.toFixed(2)}</td>
-      <td><u>${category.categoryGoal}</u></td>
-      <td>
-        ${
-          category.categoryStatus !== "no goal"
-            ? `<div class="badge ${
-                category.categoryStatus === "funded"
-                  ? "bg-primary text-primary-content"
-                  : "badge-outline"
-              }">
-          ${category.categoryStatus}
-        </div>`
-            : ""
-        }
-      </td>
-    `;
+    <td>${category.categoryTitle}</td>
+    <td>
+      <div class="badge ${fundedStyle}">
+        £${category.categoryAvailable.toFixed(2)}
+      </div>
+    </td>
+    <td>
+      <u onclick="editGoalPrompt('${category.goalId}', '${
+        category.categoryGoal
+      }')">
+        ${category.categoryGoal}
+      </u>
+    </td>
+  `;
         categoriesTable.appendChild(row);
       });
     }
@@ -594,5 +567,27 @@
           alert("Failed to add goal.");
         }
       });
+
+    function editGoalPrompt(goalId, currentGoal) {
+      const newGoal = prompt("Edit Goal Target:", currentGoal);
+      if (newGoal !== null && newGoal.trim() !== "" && !isNaN(newGoal)) {
+        const formattedGoal = parseFloat(newGoal);
+        editGoal(goalId, formattedGoal)
+          .then((response) => {
+            alert("Goal updated successfully!");
+            fetchAllBudgetData()
+              .then((data) => {
+                updatePage(data); // Refresh the data on the page
+              })
+              .catch((error) =>
+                console.error("Failed to refresh data:", error),
+              );
+          })
+          .catch((error) => {
+            console.error("Error updating goal:", error);
+            alert("Failed to update goal.");
+          });
+      }
+    }
   </script>
 </html>

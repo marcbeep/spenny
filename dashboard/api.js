@@ -299,6 +299,20 @@ async function deleteGoal(goalId) {
   }
 }
 
+async function editGoal(goalId, goalTarget) {
+  try {
+    const response = await makeFetchRequest(`/goals/${goalId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ goalTarget }),
+    });
+    console.log("Goal updated:", response);
+    return response;
+  } catch (error) {
+    console.error("Error updating goal:", error);
+    throw error;
+  }
+}
+
 async function deleteCategory(categoryId, newCategoryId) {
   try {
     const response = await makeFetchRequest(`/categories/${categoryId}`, {
