@@ -64,6 +64,11 @@ exports.deleteCategory = async (req, res) => {
   }
 
   try {
+    const category = await Category.findById(id); // Fetch the category to delete
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
     const newCategory = await Category.findById(newCategoryId);
     if (!newCategory) {
       return res.status(404).json({ error: 'New category not found' });
@@ -73,20 +78,28 @@ exports.deleteCategory = async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized to delete this category' });
     }
 
+    // Reassign funds from the old category to the new category
+    const amountToAdd = category.categoryAvailable;
+    newCategory.categoryAvailable += amountToAdd;
+    await newCategory.save();
+
+    // Update transactions to point to the new category
     await Transaction.updateMany(
       { transactionCategory: id },
       { transactionCategory: newCategoryId },
     );
 
+    // Delete goals related to the category
     await Goal.findOneAndDelete({ goalCategory: id });
     await Category.findByIdAndDelete(id);
 
+    // Optionally update goal status if needed
     const newCategoryGoal = await Goal.findOne({ goalCategory: newCategoryId });
     if (newCategoryGoal) {
       await checkAndUpdateGoalStatus(newCategoryGoal._id);
     }
 
-    res.status(200).json({ message: 'Category successfully deleted' });
+    res.status(200).json({ message: 'Category successfully deleted and funds reassigned' });
   } catch (error) {
     console.error('Error deleting category:', error);
     res.status(500).json({ error: 'Failed to delete category and reassign transactions' });

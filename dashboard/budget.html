@@ -194,6 +194,36 @@
                 </form>
               </div>
             </div>
+
+            <!-- Delete Category Card -->
+            <div
+              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
+            >
+              <div class="card-body">
+                <h2 class="card-title">Delete Category</h2>
+                <form id="deleteCategoryForm">
+                  <select
+                    id="categoryToDelete"
+                    class="select select-bordered w-full mb-4"
+                  >
+                    <option disabled selected>Select Category to Delete</option>
+                    <!-- Categories will be dynamically populated here -->
+                  </select>
+                  <select
+                    id="reassignCategorySelect"
+                    class="select select-bordered w-full mb-4"
+                  >
+                    <option disabled selected>
+                      Select Category to Reassign Funds
+                    </option>
+                    <!-- Other categories will be dynamically populated here -->
+                  </select>
+                  <button type="submit" class="btn w-full">
+                    Delete Category
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
         <!-- End Budget Actions Cards -->
@@ -361,6 +391,34 @@
         }
       });
 
+    document
+      .getElementById("deleteCategoryForm")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const categoryIdToDelete =
+          document.getElementById("categoryToDelete").value;
+        const reassignToCategoryId = document.getElementById(
+          "reassignCategorySelect",
+        ).value;
+
+        if (!categoryIdToDelete || !reassignToCategoryId) {
+          alert(
+            "Please select both the category to delete and the category to reassign resources.",
+          );
+          return;
+        }
+
+        try {
+          await deleteCategory(categoryIdToDelete, reassignToCategoryId);
+          alert("Category deleted successfully.");
+          const updatedData = await fetchAllBudgetData();
+          updatePage(updatedData); // Assume this function updates all your UI components
+        } catch (error) {
+          console.error("Error deleting category:", error);
+          alert("Failed to delete category.");
+        }
+      });
+
     function initializeMoveFundsForm(categories) {
       const fromSelect = document.getElementById("fromCategory");
       const toSelect = document.getElementById("toCategory");
@@ -449,6 +507,9 @@
         "readyToAssign",
       ).textContent = `£${data.readyToAssign}`;
 
+      // Update categories dropdown for delete
+      initializeCategoryDeletionForm(data.categories);
+
       // Update categories dropdown for Assign Funds
       const categorySelect = document.querySelector("#assignFundsForm .select");
       categorySelect.innerHTML =
@@ -484,6 +545,27 @@
       </td>
     `;
         categoriesTable.appendChild(row);
+      });
+    }
+
+    function initializeCategoryDeletionForm(categories) {
+      const deleteSelect = document.getElementById("categoryToDelete");
+      const reassignSelect = document.getElementById("reassignCategorySelect");
+      deleteSelect.innerHTML =
+        "<option disabled selected>Select Category to Delete</option>";
+      reassignSelect.innerHTML =
+        "<option disabled selected>Select Category to Reassign Funds</option>";
+
+      categories.forEach((category) => {
+        let deleteOption = document.createElement("option");
+        deleteOption.value = category.categoryId;
+        deleteOption.textContent = category.categoryTitle;
+        deleteSelect.appendChild(deleteOption);
+
+        let reassignOption = document.createElement("option");
+        reassignOption.value = category.categoryId;
+        reassignOption.textContent = category.categoryTitle;
+        reassignSelect.appendChild(reassignOption);
       });
     }
 
