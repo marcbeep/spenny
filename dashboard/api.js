@@ -94,7 +94,9 @@ async function signupUser(event) {
     window.location.href = "dashboard.html";
   } catch (error) {
     console.error("Signup failed:", error);
-    alert("Error signing up. Ensure your email has not been used, your password is at least 8 characters long and try again.");
+    alert(
+      "Error signing up. Ensure your email has not been used, your password is at least 8 characters long and try again.",
+    );
     signupButton.disabled = false;
     spinner.classList.add("hidden"); // Hide the spinner
   }

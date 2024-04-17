@@ -64,12 +64,26 @@
             <!-- Ready to Assign Card -->
             <div class="card bg-base-100 shadow-xl w-full">
               <div class="card-body">
-                <h2 class="card-title">Ready to Assign</h2>
-                <div class="stat">
-                  <div class="stat-value" id="readyToAssign">Loading...</div>
+                <h2 class="card-title">I WANT TO DELETE</h2>
+                <div class="stat place-items-center">
+                  <div class="stat-value">Loading...</div>
                   <div class="stat-desc" id="availableToSpend">Loading...</div>
                 </div>
               </div>
+            </div>
+
+            <div class="card w-96 bg-base-100 shadow-xl">
+              <div class="card-body">
+                <h2 class="card-title" id="readyToAssign">Loading...</h2>
+                <p id="description">Loading...</p>
+              </div>
+              <figure>
+                <img
+                  src="https://notioly.com/wp-content/uploads/2022/08/167.Money_.png"
+                  alt="Cover"
+                  id="cover"
+                />
+              </figure>
             </div>
 
             <!-- Assign Funds Card -->
@@ -297,6 +311,40 @@
         });
     });
 
+    function updateReadyToAssign(data) {
+      const readyToAssign = document.getElementById("readyToAssign");
+      const description = document.getElementById("description");
+      const cover = document.getElementById("cover");
+
+      // Update 'Available to Spend' and 'Ready to Assign' values
+      document.getElementById(
+        "availableToSpend",
+      ).textContent = `Available to Spend: £${data.spendingBalance}`;
+      readyToAssign.textContent = `£${data.readyToAssign} to Assign`;
+
+      if (data.readyToAssign > 0) {
+        // More than zero
+        description.textContent =
+          "Get this number to zero by assigning it to categories.";
+        cover.src =
+          "https://notioly.com/wp-content/uploads/2022/08/167.Money_.png";
+        cover.alt = "Money to Assign";
+      } else if (data.readyToAssign === 0) {
+        // Exactly zero
+        description.textContent = "Nice! All your funds are assigned.";
+        cover.src =
+          "https://notioly.com/wp-content/uploads/2022/08/159.Toast_.png";
+        cover.alt = "All Funds Assigned";
+      } else {
+        // Less than zero
+        description.textContent =
+          "You've assigned more than you have! Remove some funds from your categories!";
+        cover.src =
+          "https://notioly.com/wp-content/uploads/2023/10/299.Algorithm.png";
+        cover.alt = "Overassigned Funds";
+      }
+    }
+
     function initializeDeleteGoalForm(categories) {
       const categorySelect = document.getElementById("deleteGoalCategory");
       categorySelect.innerHTML =
@@ -443,13 +491,7 @@
       });
 
     function updatePage(data) {
-      // Update 'Available to Spend' and 'Ready to Assign' values
-      document.getElementById(
-        "availableToSpend",
-      ).textContent = `Available to Spend: £${data.spendingBalance}`;
-      document.getElementById(
-        "readyToAssign",
-      ).textContent = `£${data.readyToAssign}`;
+      updateReadyToAssign(data);
 
       // Update categories dropdown for delete
       initializeCategoryDeletionForm(data.categories);
