@@ -57,9 +57,6 @@ const initializeUserData = async (userId) => {
       budgetReadyToAssign: 30.0,
     });
 
-    // Create example transactions
-    await createExampleTransactions(userId, categories, accounts);
-
     // Initialize goals and link them to categories
     const goals = await Promise.all([
       Goal.create({
@@ -86,6 +83,10 @@ const initializeUserData = async (userId) => {
         goalResetDay: 'friday',
       }),
     ]);
+
+        // Create example transactions
+        await createExampleTransactions(userId, categories, accounts);
+
 
     // Update categories with the associated goal ID
     await Promise.all(
