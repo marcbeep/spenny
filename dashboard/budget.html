@@ -102,16 +102,20 @@
             >
               <div class="card-body">
                 <h2 class="card-title">Move Funds</h2>
-                <form>
-                  <select class="select select-bordered w-full mb-4">
-                    <option disabled selected>From</option>
-                    <option>Account 1</option>
-                    <option>Account 2</option>
+                <form id="moveFundsForm">
+                  <select
+                    id="fromCategory"
+                    class="select select-bordered w-full mb-4"
+                  >
+                    <option disabled selected>From Category</option>
+                    <!-- Categories will be dynamically populated here -->
                   </select>
-                  <select class="select select-bordered w-full mb-4">
-                    <option disabled selected>To</option>
-                    <option>Account 1</option>
-                    <option>Account 2</option>
+                  <select
+                    id="toCategory"
+                    class="select select-bordered w-full mb-4"
+                  >
+                    <option disabled selected>To Category</option>
+                    <!-- Categories will be dynamically populated here -->
                   </select>
                   <input
                     type="text"
@@ -281,11 +285,63 @@
         .then((data) => {
           console.log("All page data:", data);
           updatePage(data);
+          initializeMoveFundsForm(data.categories);
         })
         .catch((error) => {
           console.error("Failed to load page data:", error);
         });
     });
+
+    function initializeMoveFundsForm(categories) {
+      const fromSelect = document.getElementById("fromCategory");
+      const toSelect = document.getElementById("toCategory");
+      fromSelect.innerHTML = "<option disabled selected>From Category</option>";
+      toSelect.innerHTML = "<option disabled selected>To Category</option>";
+
+      categories.forEach((category) => {
+        const fromOption = document.createElement("option");
+        const toOption = document.createElement("option");
+        fromOption.value = toOption.value = category.categoryId;
+        fromOption.textContent = toOption.textContent = category.categoryTitle;
+        fromSelect.appendChild(fromOption);
+        toSelect.appendChild(toOption);
+      });
+    }
+
+    document
+      .getElementById("moveFundsForm")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const fromCategoryId = document.getElementById("fromCategory").value;
+        const toCategoryId = document.getElementById("toCategory").value;
+        const amount = parseFloat(
+          document.querySelector("#moveFundsForm input[type='text']").value,
+        );
+
+        if (!fromCategoryId || !toCategoryId || isNaN(amount)) {
+          alert("Please select both categories and enter a valid amount.");
+          return;
+        }
+
+        if (fromCategoryId === toCategoryId) {
+          alert("Cannot move funds within the same category.");
+          return;
+        }
+
+        try {
+          await moveMoneyBetweenCategories(
+            fromCategoryId,
+            toCategoryId,
+            amount,
+          );
+          alert("Funds moved successfully.");
+          const updatedData = await fetchAllBudgetData();
+          updatePage(updatedData);
+        } catch (error) {
+          console.error("Error moving funds:", error);
+          alert("Failed to move funds.");
+        }
+      });
 
     document
       .querySelector("#assignFundsForm")
