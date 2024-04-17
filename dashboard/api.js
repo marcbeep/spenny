@@ -44,6 +44,11 @@ async function loginUser(event) {
   event.preventDefault();
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
+  const loginButton = document.getElementById("loginButton");
+  const spinner = document.getElementById("spinner");
+
+  loginButton.disabled = true;
+  spinner.classList.remove("hidden"); // Show the spinner
 
   try {
     const data = await makeFetchRequest("/users/login", {
@@ -59,9 +64,10 @@ async function loginUser(event) {
     // Redirect on successful login
     window.location.href = "dashboard.html";
   } catch (error) {
-    // Show an alert message on login failure
-    alert("Error logging in. Try again.");
     console.error("Login failed:", error);
+    alert("Error logging in. Check your email & password and try again.");
+    loginButton.disabled = false;
+    spinner.classList.add("hidden"); // Hide the spinner if there's an error
   }
 }
 
@@ -69,6 +75,11 @@ async function signupUser(event) {
   event.preventDefault();
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
+  const signupButton = document.getElementById("signupButton");
+  const spinner = document.getElementById("spinner");
+
+  signupButton.disabled = true;
+  spinner.classList.remove("hidden"); // Show the spinner
 
   try {
     const data = await makeFetchRequest("/users/signup", {
@@ -82,10 +93,10 @@ async function signupUser(event) {
 
     window.location.href = "dashboard.html";
   } catch (error) {
-    alert(
-      "Error signing up. Ensure email hasn't been used and password is 8 characters long.",
-    );
     console.error("Signup failed:", error);
+    alert("Error signing up. Ensure your email has not been used, your password is at least 8 characters long and try again.");
+    signupButton.disabled = false;
+    spinner.classList.add("hidden"); // Hide the spinner
   }
 }
 
@@ -278,10 +289,8 @@ async function createGoal(categoryId, goalType, goalTarget, goalResetDay) {
       body: JSON.stringify({ categoryId, goalType, goalTarget, goalResetDay }),
     });
     console.log("Goal created:", newGoal);
-    alert("Goal successfully created.");
     return newGoal;
   } catch (error) {
-    alert("Error creating goal:", error.message);
     throw error;
   }
 }
@@ -349,11 +358,9 @@ async function addTransaction(transactionData) {
       body: JSON.stringify(transactionData),
     });
     console.log("Transaction Created:", newTransaction);
-    alert("Transaction successfully created.");
     return newTransaction;
   } catch (error) {
-    alert("Error creating transaction:", error.message);
-    throw error;
+    console.log("Error creating transaction:", error);
   }
 }
 
@@ -363,9 +370,8 @@ async function deleteTransaction(transactionId) {
       method: "DELETE",
     });
     console.log(`Transaction ${transactionId} deleted.`);
-    alert("Transaction successfully deleted.");
   } catch (error) {
-    alert("Error deleting transaction:", error.message);
+    console.error(`Error deleting transaction ${transactionId}:`, error);
     throw error;
   }
 }
@@ -380,10 +386,9 @@ async function updateTransaction(transactionId, updatedData) {
       },
     );
     console.log("Transaction Updated:", updatedTransaction);
-    alert("Transaction successfully updated.");
     return updatedTransaction;
   } catch (error) {
-    alert("Error updating transaction:", error.message);
+    console.log("Error updating transaction:", error.message);
     throw error;
   }
 }
@@ -395,10 +400,9 @@ async function ai(transactionData) {
       body: JSON.stringify(transactionData),
     });
     console.log("Transaction Created:", newTransaction);
-    alert("Transaction successfully created.");
     return newTransaction;
   } catch (error) {
-    alert("Error creating transaction:", error.message);
+    console.log("Error creating transaction:", error.message);
     throw error;
   }
 }
@@ -435,12 +439,10 @@ async function archiveAccount(accountId) {
       method: "POST",
     });
     console.log("Account archived:", result);
-    alert("Account successfully archived.");
     refreshAccountData(); // Refresh the account data on the page
     return result;
   } catch (error) {
     console.error("Error archiving account:", error);
-    alert("Error archiving account: " + error.message);
     throw error;
   }
 }
@@ -452,11 +454,10 @@ async function addAccount(accountData) {
       body: JSON.stringify(accountData),
     });
     console.log("Account Created:", newAccount);
-    alert("Account successfully created.");
     refreshAccountData(); // Refresh the account data on the page
     return newAccount;
   } catch (error) {
-    alert("Error creating account:", error.message);
+    console.log("Error creating account:", error.message);
     throw error;
   }
 }
@@ -469,12 +470,10 @@ async function updateAccount(accountId, accountBalance) {
       body: JSON.stringify(body),
     });
     console.log("Account updated:", account);
-    alert("Account successfully updated.");
     refreshAccountData(); // Refresh the account data on the page
     return account;
   } catch (error) {
     console.error("Error updating account:", error);
-    alert("Error updating account: " + error.message);
     throw error;
   }
 }
@@ -486,11 +485,10 @@ async function moveMoneyBetweenAccounts(fromAccountId, toAccountId, amount) {
       body: JSON.stringify({ fromAccountId, toAccountId, amount }),
     });
     console.log("Money moved successfully:", result);
-    alert("Money moved successfully.");
     refreshAccountData(); // Refresh the account data on the page
     return result;
   } catch (error) {
-    alert(
+    console.log(
       "Error moving money between accounts. Ensure you are not moving funds from/to archived accounts.",
       error,
     );
