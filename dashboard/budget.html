@@ -181,11 +181,13 @@
             >
               <div class="card-body">
                 <h2 class="card-title">Delete Goal</h2>
-                <form>
-                  <select class="select select-bordered w-full mb-4">
+                <form id="deleteGoalForm">
+                  <select
+                    id="deleteGoalCategory"
+                    class="select select-bordered w-full mb-4"
+                  >
                     <option disabled selected>Select Category</option>
-                    <option>Category 1</option>
-                    <option>Category 2</option>
+                    <!-- Categories with goals will be dynamically populated here -->
                   </select>
                   <button type="submit" class="btn w-full">Delete Goal</button>
                 </form>
@@ -313,11 +315,50 @@
           updatePage(data);
           initializeMoveFundsForm(data.categories);
           initializeAddGoalForm(data.categories);
+          initializeDeleteGoalForm(data.categories);
         })
         .catch((error) => {
           console.error("Failed to load page data:", error);
         });
     });
+
+    function initializeDeleteGoalForm(categories) {
+      const categorySelect = document.getElementById("deleteGoalCategory");
+      categorySelect.innerHTML =
+        "<option disabled selected>Select Category</option>";
+      categories
+        .filter((category) => category.goalId)
+        .forEach((category) => {
+          const option = document.createElement("option");
+          option.value = category.goalId; // Use goalId here
+          option.textContent = category.categoryTitle;
+          categorySelect.appendChild(option);
+        });
+    }
+
+    document
+      .getElementById("deleteGoalForm")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const goalId = document.getElementById("deleteGoalCategory").value;
+
+        if (!goalId) {
+          alert("Please select a category to delete its goal.");
+          return;
+        }
+
+        try {
+          // Assuming you have an API function `deleteGoal(goalId)` correctly implemented
+          await deleteGoal(goalId); // Pass goalId to the delete function
+          alert("Goal deleted successfully.");
+          const updatedData = await fetchAllBudgetData();
+          updatePage(updatedData);
+          initializeDeleteGoalForm(updatedData.categories); // Reinitialize the form
+        } catch (error) {
+          console.error("Error deleting goal:", error);
+          alert("Failed to delete goal.");
+        }
+      });
 
     function initializeMoveFundsForm(categories) {
       const fromSelect = document.getElementById("fromCategory");

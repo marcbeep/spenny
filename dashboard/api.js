@@ -286,6 +286,19 @@ async function createGoal(categoryId, goalType, goalTarget, goalResetDay) {
   }
 }
 
+async function deleteGoal(goalId) {
+  try {
+    const response = await makeFetchRequest(`/goals/${goalId}`, {
+      method: "DELETE",
+    });
+    console.log("Goal deleted:", response);
+    return response;
+  } catch (error) {
+    console.error("Error deleting goal:", error);
+    throw error;
+  }
+}
+
 // Transaction page functions
 
 async function fetchAllTransactions() {
