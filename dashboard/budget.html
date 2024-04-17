@@ -312,6 +312,7 @@
           console.log("All page data:", data);
           updatePage(data);
           initializeMoveFundsForm(data.categories);
+          initializeAddGoalForm(data.categories);
         })
         .catch((error) => {
           console.error("Failed to load page data:", error);
