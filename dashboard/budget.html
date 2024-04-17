@@ -58,28 +58,22 @@
         </header>
         <!-- /header -->
 
-        <!-- Ready to assign -->
-        <div class="col-span-12 flex justify-center pt-2">
-          <div class="stats">
-            <div class="stat">
-              <div class="stat-title">Ready to Assign</div>
-              <div class="stat-value" id="readyToAssign">Loading...</div>
-              <div class="stat-desc">
-                Available to Spend:
-                <div id="availableToSpend">£0</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- /Ready to assign-->
-
         <!-- Budget Actions Cards -->
         <div class="col-span-12 flex flex-col items-center">
-          <div class="flex flex-wrap justify-center gap-4 w-full lg:w-3/4 mb-8">
+          <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full mb-8">
+            <!-- Ready to Assign Card -->
+            <div class="card bg-base-100 shadow-xl w-full">
+              <div class="card-body">
+                <h2 class="card-title">Ready to Assign</h2>
+                <div class="stat">
+                  <div class="stat-value" id="readyToAssign">Loading...</div>
+                  <div class="stat-desc" id="availableToSpend">Loading...</div>
+                </div>
+              </div>
+            </div>
+
             <!-- Assign Funds Card -->
-            <div
-              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
-            >
+            <div class="card bg-base-100 shadow-xl w-full">
               <div class="card-body">
                 <h2 class="card-title">Assign Funds</h2>
                 <form id="assignFundsForm">
@@ -98,9 +92,7 @@
             </div>
 
             <!-- Move Funds Card -->
-            <div
-              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
-            >
+            <div class="card bg-base-100 shadow-xl w-full">
               <div class="card-body">
                 <h2 class="card-title">Move Funds</h2>
                 <form id="moveFundsForm">
@@ -129,9 +121,7 @@
             </div>
 
             <!-- Add Goal Card -->
-            <div
-              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
-            >
+            <div class="card bg-base-100 shadow-xl w-full">
               <div class="card-body">
                 <h2 class="card-title">Add Goal</h2>
                 <form id="addGoalForm">
@@ -151,20 +141,6 @@
                     <option value="saving">Saving</option>
                     <option value="spending">Spending</option>
                   </select>
-                  <select
-                    id="goalResetDay"
-                    class="select select-bordered w-full mb-4"
-                    disabled
-                  >
-                    <option disabled selected>Select Day</option>
-                    <option value="sunday">Sunday</option>
-                    <option value="monday">Monday</option>
-                    <option value="tuesday">Tuesday</option>
-                    <option value="wednesday">Wednesday</option>
-                    <option value="thursday">Thursday</option>
-                    <option value="friday">Friday</option>
-                    <option value="saturday">Saturday</option>
-                  </select>
                   <input
                     type="number"
                     id="goalTarget"
@@ -177,9 +153,7 @@
             </div>
 
             <!-- Delete Goal Card -->
-            <div
-              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
-            >
+            <div class="card bg-base-100 shadow-xl w-full">
               <div class="card-body">
                 <h2 class="card-title">Delete Goal</h2>
                 <form id="deleteGoalForm">
@@ -196,9 +170,7 @@
             </div>
 
             <!-- Delete Category Card -->
-            <div
-              class="card bg-base-100 shadow-xl w-full md:max-w-md lg:max-w-xs flex-grow"
-            >
+            <div class="card bg-base-100 shadow-xl w-full">
               <div class="card-body">
                 <h2 class="card-title">Delete Category</h2>
                 <form id="deleteCategoryForm">
@@ -502,7 +474,7 @@
       // Update 'Available to Spend' and 'Ready to Assign' values
       document.getElementById(
         "availableToSpend",
-      ).textContent = `£${data.spendingBalance}`;
+      ).textContent = `Available to Spend: £${data.spendingBalance}`;
       document.getElementById(
         "readyToAssign",
       ).textContent = `£${data.readyToAssign}`;
@@ -527,7 +499,7 @@
       data.categories.forEach((category) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-      <td><u>${category.categoryTitle}</u></td>
+      <td>${category.categoryTitle}</td>
       <td>£${category.categoryAvailable.toFixed(2)}</td>
       <td><u>${category.categoryGoal}</u></td>
       <td>
