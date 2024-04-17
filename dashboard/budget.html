@@ -133,14 +133,40 @@
             >
               <div class="card-body">
                 <h2 class="card-title">Add Goal</h2>
-                <form>
-                  <select class="select select-bordered w-full mb-4">
+                <form id="addGoalForm">
+                  <select
+                    id="goalCategory"
+                    class="select select-bordered w-full mb-4"
+                  >
                     <option disabled selected>Select Category</option>
-                    <option>Category 1</option>
-                    <option>Category 2</option>
+                    <!-- Categories will be dynamically populated here -->
+                  </select>
+                  <select
+                    id="goalType"
+                    class="select select-bordered w-full mb-4"
+                    onchange="handleGoalTypeChange()"
+                  >
+                    <option disabled selected>Select Goal Type</option>
+                    <option value="saving">Saving</option>
+                    <option value="spending">Spending</option>
+                  </select>
+                  <select
+                    id="goalResetDay"
+                    class="select select-bordered w-full mb-4"
+                    disabled
+                  >
+                    <option disabled selected>Select Day</option>
+                    <option value="sunday">Sunday</option>
+                    <option value="monday">Monday</option>
+                    <option value="tuesday">Tuesday</option>
+                    <option value="wednesday">Wednesday</option>
+                    <option value="thursday">Thursday</option>
+                    <option value="friday">Friday</option>
+                    <option value="saturday">Saturday</option>
                   </select>
                   <input
-                    type="text"
+                    type="number"
+                    id="goalTarget"
                     placeholder="£ Target"
                     class="input input-bordered w-full mb-4"
                   />
@@ -417,5 +443,59 @@
         categoriesTable.appendChild(row);
       });
     }
+
+    function initializeAddGoalForm(categories) {
+      const categorySelect = document.getElementById("goalCategory");
+      categorySelect.innerHTML =
+        "<option disabled selected>Select Category</option>";
+      categories.forEach((category) => {
+        if (!category.goalId) {
+          // Assuming `goalId` exists means there's a goal set
+          const option = document.createElement("option");
+          option.value = category.categoryId;
+          option.textContent = category.categoryTitle;
+          categorySelect.appendChild(option);
+        }
+      });
+    }
+
+    function handleGoalTypeChange() {
+      const goalTypeSelect = document.getElementById("goalType");
+      const goalResetDaySelect = document.getElementById("goalResetDay");
+      goalResetDaySelect.disabled = goalTypeSelect.value !== "spending";
+    }
+
+    document
+      .getElementById("addGoalForm")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const categoryId = document.getElementById("goalCategory").value;
+        const goalType = document.getElementById("goalType").value;
+        const goalResetDay = document.getElementById("goalResetDay").value;
+        const goalTarget = parseFloat(
+          document.getElementById("goalTarget").value,
+        );
+
+        if (!categoryId || !goalType || isNaN(goalTarget)) {
+          alert("Please fill all required fields correctly.");
+          return;
+        }
+
+        if (goalType === "spending" && goalResetDay === "Select Day") {
+          alert("Please select a reset day for spending goals.");
+          return;
+        }
+
+        try {
+          await createGoal(categoryId, goalType, goalTarget, goalResetDay);
+          alert("Goal added successfully.");
+          const updatedData = await fetchAllBudgetData();
+          updatePage(updatedData);
+          initializeAddGoalForm(updatedData.categories); // Reinitialize the form
+        } catch (error) {
+          console.error("Error adding goal:", error);
+          alert("Failed to add goal.");
+        }
+      });
   </script>
 </html>

@@ -271,6 +271,21 @@ async function fetchAllBudgetData() {
   }
 }
 
+async function createGoal(categoryId, goalType, goalTarget, goalResetDay) {
+  try {
+    const newGoal = await makeFetchRequest("/goals", {
+      method: "POST",
+      body: JSON.stringify({ categoryId, goalType, goalTarget, goalResetDay }),
+    });
+    console.log("Goal created:", newGoal);
+    alert("Goal successfully created.");
+    return newGoal;
+  } catch (error) {
+    alert("Error creating goal:", error.message);
+    throw error;
+  }
+}
+
 // Transaction page functions
 
 async function fetchAllTransactions() {
