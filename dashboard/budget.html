@@ -81,11 +81,10 @@
             >
               <div class="card-body">
                 <h2 class="card-title">Assign Funds</h2>
-                <form>
+                <form id="assignFundsForm">
                   <select class="select select-bordered w-full mb-4">
-                    <option disabled selected>Select Account</option>
-                    <option>Account 1</option>
-                    <option>Account 2</option>
+                    <option disabled selected>Select Category</option>
+                    <!-- Categories will be dynamically populated here -->
                   </select>
                   <input
                     type="text"
@@ -180,8 +179,8 @@
                     <tr>
                       <th>Name</th>
                       <th>Available</th>
-                      <th>Status</th>
                       <th>Goal</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
                   <!-- Table Body -->
@@ -288,6 +287,34 @@
         });
     });
 
+    document
+      .querySelector("#assignFundsForm")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const categoryId = document.querySelector(
+          "#assignFundsForm .select",
+        ).value;
+        const amount = parseFloat(
+          document.querySelector("#assignFundsForm input[type='text']").value,
+        );
+
+        if (!categoryId || isNaN(amount)) {
+          alert("Please select a category and enter a valid amount.");
+          return;
+        }
+
+        try {
+          await assignMoneyToCategory(categoryId, amount);
+          alert("Funds assigned successfully.");
+          // Refresh the budget data and update the page
+          const updatedData = await fetchAllBudgetData();
+          updatePage(updatedData);
+        } catch (error) {
+          console.error("Error assigning funds:", error);
+          alert("Failed to assign funds.");
+        }
+      });
+
     function updatePage(data) {
       // Update 'Available to Spend' and 'Ready to Assign' values
       document.getElementById(
@@ -296,6 +323,17 @@
       document.getElementById(
         "readyToAssign",
       ).textContent = `£${data.readyToAssign}`;
+
+      // Update categories dropdown for Assign Funds
+      const categorySelect = document.querySelector("#assignFundsForm .select");
+      categorySelect.innerHTML =
+        "<option disabled selected>Select Category</option>";
+      data.categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.categoryId;
+        option.textContent = category.categoryTitle;
+        categorySelect.appendChild(option);
+      });
 
       // Update categories table
       const categoriesTable = document.querySelector(".table tbody");
@@ -307,18 +345,18 @@
       <td>£${category.categoryAvailable.toFixed(2)}</td>
       <td><u>${category.categoryGoal}</u></td>
       <td>
-  ${
-    category.categoryStatus !== "no goal"
-      ? `<div class="badge ${
-          category.categoryStatus === "funded"
-            ? "bg-primary text-primary-content"
-            : "badge-outline"
-        }">
-    ${category.categoryStatus}
-  </div>`
-      : ""
-  }
-</td>
+        ${
+          category.categoryStatus !== "no goal"
+            ? `<div class="badge ${
+                category.categoryStatus === "funded"
+                  ? "bg-primary text-primary-content"
+                  : "badge-outline"
+              }">
+          ${category.categoryStatus}
+        </div>`
+            : ""
+        }
+      </td>
     `;
         categoriesTable.appendChild(row);
       });
