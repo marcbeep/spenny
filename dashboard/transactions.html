@@ -236,9 +236,10 @@
         }</u></td>
         <td class="edit-amount cursor-pointer" data-id="${
           transaction.transactionId
-        }" data-amount="${transaction.transactionAmount.toFixed(
-          2,
-        )}"><u>£${transaction.transactionAmount.toFixed(2)}</u></td>
+        }" data-amount="${formatNumber(
+          transaction.transactionAmount,
+        )}"><u>£${formatNumber(transaction.transactionAmount)}</u></td>
+
         <td>${transaction.transactionType}</td>
         <td>${transaction.categoryName}</td>
         <td>${transaction.accountName}</td>
@@ -256,12 +257,12 @@
             .addEventListener("click", function () {
               const newAmount = prompt(
                 "Enter new amount:",
-                this.getAttribute("data-amount"),
+                formatNumber(this.getAttribute("data-amount")),
               );
               if (newAmount !== null && !isNaN(newAmount)) {
                 updateTransactionAmount(
                   this.getAttribute("data-id"),
-                  parseFloat(newAmount),
+                  formatNumber(parseFloat(newAmount)),
                 );
               }
             });
@@ -394,6 +395,10 @@
       } catch (error) {
         console.error("Failed to refresh transactions:", error);
       }
+    }
+
+    function formatNumber(value) {
+      return Number(value).toFixed(2);
     }
   </script>
 </html>

@@ -321,7 +321,9 @@
       const cover = document.getElementById("cover");
 
       // Update 'Available to Spend' and 'Ready to Assign' values
-      readyToAssign.textContent = `£${data.readyToAssign} to Assign`;
+      readyToAssign.textContent = `£${formatNumber(
+        data.readyToAssign,
+      )} to Assign`;
 
       if (data.readyToAssign > 0) {
         // More than zero
@@ -437,6 +439,13 @@
         const amount = parseFloat(
           document.querySelector("#moveFundsForm input[type='text']").value,
         );
+        if (!isNaN(amount)) {
+          await moveMoneyBetweenCategories(
+            fromCategoryId,
+            toCategoryId,
+            formatNumber(amount),
+          );
+        }
 
         if (!fromCategoryId || !toCategoryId || isNaN(amount)) {
           alert("Please select both categories and enter a valid amount.");
@@ -473,6 +482,9 @@
         const amount = parseFloat(
           document.querySelector("#assignFundsForm input[type='text']").value,
         );
+        if (!isNaN(amount)) {
+          await assignMoneyToCategory(categoryId, formatNumber(amount));
+        }
 
         if (!categoryId || isNaN(amount)) {
           alert("Please select a category and enter a valid amount.");
@@ -521,9 +533,9 @@
     <td>${category.categoryTitle}</td>
     <td onclick="handleAvailableBalanceClick('${
       category.categoryId
-    }', ${category.categoryAvailable.toFixed(2)})">
+    }', £${formatNumber(category.categoryAvailable)})">
       <div class="badge ${fundedStyle}" style="cursor: pointer;">
-        £${category.categoryAvailable.toFixed(2)}
+        £${formatNumber(category.categoryAvailable)}
       </div>
     </td>
     <td>
@@ -685,5 +697,9 @@
           alert("Failed to add goal.");
         }
       });
+
+    function formatNumber(value) {
+      return Number(value).toFixed(2);
+    }
   </script>
 </html>

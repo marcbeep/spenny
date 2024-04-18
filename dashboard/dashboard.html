@@ -233,13 +233,13 @@
         const netWorth = data.statCards.data.netWorth || "N/A";
         document.querySelector(
           ".stat-value[data-id='netWorth']",
-        ).textContent = `£${netWorth}`;
+        ).textContent = `£${formatNumber(netWorth)}`;
 
         // Update Savings Rate
         const savingsRate = data.statCards.data.savingsRate || "N/A";
         document.querySelector(
           ".stat-value[data-id='savingsRate']",
-        ).textContent = `${savingsRate}%`;
+        ).textContent = `${formatNumber(savingsRate)}%`;
 
         // Update Goals Funded
         const goalsFunded = data.statCards.data.goalsFunded || "N/A";
@@ -252,7 +252,7 @@
           data.statCards.data.averageDailySpend || "N/A";
         document.querySelector(
           ".stat-value[data-id='averageDailySpend']",
-        ).textContent = `£${averageDailySpend}`;
+        ).textContent = `£${formatNumber(averageDailySpend)}`;
       } else {
         console.log("Stat cards data is missing or incomplete");
       }
@@ -295,7 +295,7 @@
                             ? "fa-plus"
                             : "fa-minus"
                         }"></i>
-                        £${txn.transactionAmount}
+                        £${formatNumber(txn.transactionAmount)}
                     </td>
                 </tr>`;
           transactionsTableBody.innerHTML += row;
@@ -522,6 +522,10 @@
           },
         },
       });
+    }
+
+    function formatNumber(value) {
+      return Number(value).toFixed(2);
     }
   </script>
 </html>

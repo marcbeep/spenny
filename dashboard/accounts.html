@@ -319,9 +319,10 @@
           }" style="cursor:pointer;"><u>${account.accountTitle}</u></td>
           <td class="update-balance" data-account-id="${
             account._id
-          }" style="cursor:pointer;"><u>£${account.accountBalance.toFixed(
-            2,
+          }" style="cursor:pointer;"><u>£${formatNumber(
+            account.accountBalance,
           )}</u></td>
+
           <td>${account.accountType}</td>
           <td>${account.accountStatus}</td>
         `;
@@ -351,7 +352,10 @@
           const accountId = this.getAttribute("data-account-id");
           const newBalance = prompt("Enter new balance:");
           if (newBalance && !isNaN(newBalance)) {
-            await updateAccount(accountId, parseFloat(newBalance));
+            await updateAccount(
+              accountId,
+              formatNumber(parseFloat(newBalance)),
+            );
             refreshAccountData();
           }
         });
@@ -372,7 +376,9 @@
         const formData = new FormData(this);
         const accountData = {
           accountTitle: formData.get("accountTitle"),
-          accountBalance: formData.get("accountBalance"),
+          accountBalance: formatNumber(
+            parseFloat(formData.get("accountBalance")),
+          ),
           accountType: formData.get("accountType"),
         };
 
@@ -385,5 +391,9 @@
           alert("Failed to add account: " + error.message);
         }
       });
+
+    function formatNumber(value) {
+      return Number(value).toFixed(2);
+    }
   </script>
 </html>
