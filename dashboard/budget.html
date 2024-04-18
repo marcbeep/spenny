@@ -439,13 +439,6 @@
         const amount = parseFloat(
           document.querySelector("#moveFundsForm input[type='text']").value,
         );
-        if (!isNaN(amount)) {
-          await moveMoneyBetweenCategories(
-            fromCategoryId,
-            toCategoryId,
-            formatNumber(amount),
-          );
-        }
 
         if (!fromCategoryId || !toCategoryId || isNaN(amount)) {
           alert("Please select both categories and enter a valid amount.");
@@ -483,9 +476,6 @@
         const amount = parseFloat(
           document.querySelector("#assignFundsForm input[type='text']").value,
         );
-        if (!isNaN(amount)) {
-          await assignMoneyToCategory(categoryId, formatNumber(amount));
-        }
 
         if (!categoryId || isNaN(amount)) {
           alert("Please select a category and enter a valid amount.");
