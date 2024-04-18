@@ -66,24 +66,32 @@
             >
               <div class="card-body">
                 <h2 class="card-title">Add Account</h2>
-                <form>
+                <form id="addAccountForm">
                   <input
                     type="text"
+                    name="accountTitle"
                     placeholder="Title"
                     class="input input-bordered w-full mb-4"
+                    required
                   />
                   <input
-                    type="text"
+                    type="number"
+                    name="accountBalance"
                     placeholder="Balance"
                     class="input input-bordered w-full mb-4"
+                    required
                   />
-                  <select class="select select-bordered w-full mb-4">
-                    <option disabled selected>Select Type</option>
+                  <select
+                    name="accountType"
+                    class="select select-bordered w-full mb-4"
+                    required
+                  >
+                    <option value="" disabled selected>Select Type</option>
                     <option value="spending">
-                      Spending (e.g. Bank Account)
+                      Spending (e.g., Bank Account)
                     </option>
                     <option value="tracking">
-                      Tracking (e.g. Investment Account)
+                      Tracking (e.g., Investment Account)
                     </option>
                   </select>
                   <button type="submit" class="btn w-full">Submit</button>
@@ -355,5 +363,27 @@
       updateTable(accounts);
       updateAccountOptions(accounts);
     }
+
+    document
+      .getElementById("addAccountForm")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const formData = new FormData(this);
+        const accountData = {
+          accountTitle: formData.get("accountTitle"),
+          accountBalance: formData.get("accountBalance"),
+          accountType: formData.get("accountType"),
+        };
+
+        try {
+          const newAccount = await addAccount(accountData); // Assuming addAccount is correctly implemented to handle API calls
+          console.log("Account created successfully:", newAccount);
+          refreshAccountData(); // Refresh the data shown on the page, assuming this function fetches and displays the accounts
+        } catch (error) {
+          console.error("Error adding account:", error);
+          alert("Failed to add account: " + error.message);
+        }
+      });
   </script>
 </html>
