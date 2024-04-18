@@ -575,39 +575,6 @@
       });
     }
 
-    document
-      .getElementById("addGoalForm")
-      .addEventListener("submit", async function (event) {
-        event.preventDefault();
-        const categoryId = document.getElementById("goalCategory").value;
-        const goalType = document.getElementById("goalType").value;
-        const goalResetDay = document.getElementById("goalResetDay").value;
-        const goalTarget = parseFloat(
-          document.getElementById("goalTarget").value,
-        );
-
-        if (!categoryId || !goalType || isNaN(goalTarget)) {
-          alert("Please fill all required fields correctly.");
-          return;
-        }
-
-        if (goalType === "spending" && goalResetDay === "Select Day") {
-          alert("Please select a reset day for spending goals.");
-          return;
-        }
-
-        try {
-          await createGoal(categoryId, goalType, goalTarget, goalResetDay);
-          alert("Goal added successfully.");
-          const updatedData = await fetchAllBudgetData();
-          updatePage(updatedData);
-          initializeAddGoalForm(updatedData.categories); // Reinitialize the form
-        } catch (error) {
-          console.error("Error adding goal:", error);
-          alert("Failed to add goal.");
-        }
-      });
-
     function editGoalPrompt(goalId, currentGoal) {
       const newGoal = prompt("Edit Goal Target:", currentGoal);
       if (newGoal !== null && newGoal.trim() !== "" && !isNaN(newGoal)) {
@@ -659,6 +626,16 @@
       }
     }
 
+    function handleGoalTypeChange() {
+      const goalTypeSelect = document.getElementById("goalType");
+      const goalResetDaySelect = document.getElementById("goalResetDay");
+      if (goalTypeSelect.value === "spending") {
+        goalResetDaySelect.style.display = "block";
+      } else {
+        goalResetDaySelect.style.display = "none";
+      }
+    }
+
     document
       .getElementById("addGoalForm")
       .addEventListener("submit", async function (event) {
@@ -674,13 +651,18 @@
             ? document.getElementById("goalResetDay").value
             : undefined;
 
-        if (
-          !categoryId ||
-          !goalType ||
-          isNaN(goalTarget) ||
-          (goalType === "spending" && goalResetDay === "Select Day")
-        ) {
+        // Validation: Check if all required fields are filled correctly.
+        if (!categoryId || !goalType || isNaN(goalTarget)) {
           alert("Please fill all required fields correctly.");
+          return;
+        }
+
+        // Additional validation for spending goal types.
+        if (
+          goalType === "spending" &&
+          (goalResetDay === "Select Day" || goalResetDay === undefined)
+        ) {
+          alert("Please select a reset day for spending goals.");
           return;
         }
 
@@ -691,23 +673,17 @@
             goalTarget,
             goalResetDay,
           );
-          alert("Goal added successfully!");
-          console.log(newGoal); // Optionally update the UI here
-          // Consider re-fetching the goals to update the list or the UI
+          alert("Goal added successfully.");
+          console.log("New Goal:", newGoal); // Optionally update the UI here
+
+          // Refresh the list of goals and update the page.
+          const updatedData = await fetchAllBudgetData();
+          updatePage(updatedData);
+          initializeAddGoalForm(updatedData.categories); // Reinitialize the form to reflect changes.
         } catch (error) {
           console.error("Error adding goal:", error);
           alert("Failed to add goal.");
         }
       });
-
-    function handleGoalTypeChange() {
-      const goalTypeSelect = document.getElementById("goalType");
-      const goalResetDaySelect = document.getElementById("goalResetDay");
-      if (goalTypeSelect.value === "spending") {
-        goalResetDaySelect.style.display = "block";
-      } else {
-        goalResetDaySelect.style.display = "none";
-      }
-    }
   </script>
 </html>
