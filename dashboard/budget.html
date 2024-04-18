@@ -466,6 +466,7 @@
           alert("Funds moved successfully.");
           const updatedData = await fetchAllBudgetData();
           updatePage(updatedData);
+          this.reset();
         } catch (error) {
           console.error("Error moving funds:", error);
           alert("Failed to move funds.");
@@ -497,6 +498,7 @@
           // Refresh the budget data and update the page
           const updatedData = await fetchAllBudgetData();
           updatePage(updatedData);
+          this.reset();
         } catch (error) {
           console.error("Error assigning funds:", error);
           alert("Failed to assign funds.");
@@ -692,6 +694,7 @@
           const updatedData = await fetchAllBudgetData();
           updatePage(updatedData);
           initializeAddGoalForm(updatedData.categories); // Reinitialize the form to reflect changes.
+          this.reset();
         } catch (error) {
           console.error("Error adding goal:", error);
           alert("Failed to add goal.");
