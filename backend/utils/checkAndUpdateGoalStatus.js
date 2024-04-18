@@ -24,15 +24,14 @@ const checkAndUpdateGoalStatus = async (goalId = null, categoryId = null) => {
           const today = moment();
           let resetDay = moment().isoWeekday(goal.goalResetDay);
 
-          // Adjust resetDay to last occurrence if today is past it
-          if (resetDay.isAfter(today, 'day')) {
-            resetDay.subtract(1, 'weeks');
+          // Adjust resetDay to the upcoming occurrence if today is past it
+          if (resetDay.isBefore(today, 'day')) {
+            resetDay.add(1, 'weeks');
           }
 
           const resetDayPassed = today.isSameOrAfter(resetDay, 'day');
-          if (!resetDayPassed) {
-            isGoalFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable;
-          }
+          // If today is the reset day or past it, check if funds are sufficient
+          isGoalFunded = goal.goalTarget <= goal.goalCategory.categoryAvailable;
           break;
         default:
           console.error(`Unknown goal type: ${goal.goalType}`);

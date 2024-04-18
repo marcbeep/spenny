@@ -105,34 +105,6 @@ const initializeUserData = async (userId) => {
   }
 };
 
-// Function to update category activity
-const updateCategoryActivity = async (userId, categories) => {
-  const transactions = await Transaction.find({ user: userId });
-
-  // Map of category IDs to their total activity
-  const activityMap = transactions.reduce((acc, transaction) => {
-    const amount =
-      transaction.transactionType === 'debit'
-        ? -transaction.transactionAmount
-        : transaction.transactionAmount;
-    if (acc[transaction.transactionCategory]) {
-      acc[transaction.transactionCategory] += amount;
-    } else {
-      acc[transaction.transactionCategory] = amount;
-    }
-    return acc;
-  }, {});
-
-  // Update each category with the calculated activity
-  const updatePromises = categories.map((category) => {
-    const activity = activityMap[category._id.toString()] || 0;
-    return Category.findByIdAndUpdate(category._id, { $inc: { categoryActivity: activity } });
-  });
-
-  await Promise.all(updatePromises);
-};
-
-// Example Transactions Creation Function
 const createExampleTransactions = async (userId, categories, accounts) => {
   // Select spending accounts
   const spendingAccounts = accounts.filter((account) => account.accountType === 'spending');
@@ -235,18 +207,6 @@ const createExampleTransactions = async (userId, categories, accounts) => {
   await checkAndUpdateGoalStatus(null, null);
 };
 
-exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await User.login(email, password);
-    const token = createToken(user._id);
-    res.status(200).json({ email: user.userEmail, token, profilePicture: user.userProfilePicture });
-  } catch (err) {
-    res.status(401).json({ error: err.message || 'Authentication failed' });
-  }
-};
-
 exports.signupUser = async (req, res) => {
   const { email, password } = req.body;
   const profilePictureUrl = `https://api.dicebear.com/8.x/notionists-neutral/svg?seed=${email}`;
@@ -270,5 +230,17 @@ exports.signupUser = async (req, res) => {
       errorMessage = err.message;
     }
     res.status(400).json({ error: errorMessage });
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.login(email, password);
+    const token = createToken(user._id);
+    res.status(200).json({ email: user.userEmail, token, profilePicture: user.userProfilePicture });
+  } catch (err) {
+    res.status(401).json({ error: err.message || 'Authentication failed' });
   }
 };
