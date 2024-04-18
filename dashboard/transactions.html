@@ -352,6 +352,7 @@
       try {
         await addTransaction(transactionData);
         refreshTransactionData();
+        this.reset();
       } catch (error) {
         console.error("Error adding transaction:", error);
       }
