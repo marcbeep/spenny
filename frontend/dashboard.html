@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dashboard - Spenny</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="output.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <script
+      src="https://kit.fontawesome.com/77a0651d35.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="api.js"></script>
+    <!--chartjs-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <!-- drawer -->
+  <body class="drawer min-h-screen bg-base-200 lg:drawer-open">
+    <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+    <!-- content -->
+    <main class="drawer-content">
+      <div
+        class="grid grid-cols-12 grid-rows-[min-content] gap-y-12 p-4 lg:gap-x-12 lg:p-10"
+      >
+        <!-- header -->
+        <header class="col-span-12 flex items-center gap-2 lg:gap-4">
+          <label
+            for="my-drawer"
+            class="btn btn-square btn-ghost drawer-button lg:hidden"
+          >
+            <i class="fa-solid fa-bars"></i>
+          </label>
+          <div class="grow">
+            <h1 class="lg:text-2xl font-semibold">Dashboard</h1>
+          </div>
+          <div>
+            <h2 id="userEmail"></h2>
+          </div>
+          <!-- dropdown -->
+          <div class="dropdown-end dropdown z-10">
+            <div tabindex="0" class="avatar btn btn-circle btn-ghost">
+              <div class="w-10 rounded-full">
+                <img id="userProfilePicture" src="" alt="User Profile" />
+              </div>
+            </div>
+            <ul
+              tabindex="0"
+              class="menu dropdown-content mt-3 w-52 rounded-box bg-base-100 p-2 shadow-2xl"
+            >
+              <li>
+                <a onclick="logoutUser()">Logout</a>
+              </li>
+            </ul>
+          </div>
+          <!-- /dropdown -->
+        </header>
+        <!-- /header -->
+
+        <!-- header stat cards -->
+        <section
+          class="stats stats-vertical col-span-12 w-full shadow-sm xl:stats-horizontal"
+        >
+          <div class="stat">
+            <div class="stat-title">Networth</div>
+            <div class="stat-value" data-id="netWorth">Loading...</div>
+            <div class="stat-desc">All time</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-title">Savings Rate</div>
+            <div class="stat-value" data-id="savingsRate">Loading...</div>
+            <div class="stat-desc">All time</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-title">Goals Funded</div>
+            <div class="stat-value" data-id="goalsFunded">Loading...</div>
+            <div class="stat-desc">Past week</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-title">Average Daily Spend</div>
+            <div class="stat-value" data-id="averageDailySpend">Loading...</div>
+            <div class="stat-desc">Past week</div>
+          </div>
+        </section>
+        <!-- /header stat cards -->
+
+        <!-- last 5 transactions -->
+        <section
+          class="card col-span-12 overflow-hidden bg-base-100 shadow-sm xl:col-span-6"
+        >
+          <div class="card-body grow-0">
+            <h2 class="card-title">
+              <a class="link-hover link">Last 5 Transactions</a>
+            </h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="table table-zebra">
+              <tbody class="last-five-transactions">
+                <!-- Rows will be populated dynamically here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <!-- /last 5 transactions -->
+
+        <!-- daily spend bar chart -->
+        <section
+          class="card col-span-12 bg-primary text-primary-content shadow-sm xl:col-span-6"
+        >
+          <div class="card-body pb-0">
+            <h2 class="card-title">Daily spend for last week</h2>
+            <a class="link-hover link text-xs" href="transactions.html"
+              >View all transactions →</a
+            >
+          </div>
+          <div id="dailySpendChartContainer" class="p-4">
+            <canvas id="dailySpendChart"></canvas>
+          </div>
+        </section>
+        <!-- /daily spend bar chart -->
+
+        <!-- spend by cat chart -->
+        <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
+          <div class="card-body">
+            <h2 class="card-title">Spend by Category</h2>
+            <canvas
+              id="spendByCategoryChart"
+              class="h-32 w-32 shrink-0"
+            ></canvas>
+          </div>
+        </section>
+        <!-- /spend by cat chart -->
+
+        <!-- available to spend chart -->
+        <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
+          <div class="card-body">
+            <h2 class="card-title">Available to Spend</h2>
+            <canvas
+              id="availableToSpendChart"
+              class="h-32 w-32 shrink-0"
+            ></canvas>
+            <!-- Canvas for Chart.js -->
+          </div>
+        </section>
+        <!-- /available to spend chart -->
+
+        <!-- account balances chart-->
+        <section class="card col-span-12 bg-base-100 shadow-sm xl:col-span-4">
+          <div class="card-body">
+            <h2 class="card-title">Account Balances</h2>
+            <canvas
+              id="accountBalancesChart"
+              class="h-32 w-32 shrink-0"
+            ></canvas>
+            <!-- Canvas for Chart.js -->
+          </div>
+        </section>
+        <!-- /account balances chart-->
+      </div>
+    </main>
+    <!-- /content -->
+    <aside class="drawer-side z-10">
+      <label for="my-drawer" class="drawer-overlay"></label>
+      <!-- sidebar menu -->
+      <nav
+        class="flex min-h-screen w-72 flex-col gap-2 overflow-y-auto bg-base-100 px-6 py-10"
+      >
+        <div class="mx-4 flex items-center gap-2 font-black">
+          <i class="fa-solid fa-piggy-bank"></i>
+          Spenny
+        </div>
+        <ul class="menu">
+          <li>
+            <a class="active">
+              <i class="fa-solid fa-house"></i>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="budget.html">
+              <i class="fa-solid fa-money-bill-wave"></i>
+              Budget
+            </a>
+          </li>
+          <li>
+            <a href="transactions.html">
+              <i class="fa-solid fa-arrow-right-arrow-left"></i>
+              Transactions
+            </a>
+          </li>
+          <li>
+            <a href="accounts.html">
+              <i class="fa-solid fa-money-check"></i>
+              Accounts
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /sidebar menu -->
+    </aside>
+  </body>
+  <!-- /drawer -->
+  <script>
+    // auth
+    const userEmail = sessionStorage.getItem("userEmail");
+    const userProfilePicture = sessionStorage.getItem("userProfilePicture");
+
+    if (!userEmail || !userProfilePicture) {
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("userEmail").textContent = `${userEmail}`;
+      document.getElementById("userProfilePicture").src = userProfilePicture;
+    }
+
+    // get user data
+    document.addEventListener("DOMContentLoaded", function () {
+      fetchAllAnalyticsData()
+        .then((data) => {
+          console.log("All dashboard data:", data);
+          updateDashboard(data);
+        })
+        .catch((error) => {
+          console.error("Failed to load dashboard data:", error);
+        });
+    });
+
+    function updateDashboard(data) {
+      // Update Stat Cards
+      if (data.statCards && data.statCards.data) {
+        // Update Net Worth
+        const netWorth = data.statCards.data.netWorth || "N/A";
+        document.querySelector(
+          ".stat-value[data-id='netWorth']",
+        ).textContent = `£${formatNumber(netWorth)}`;
+
+        // Update Savings Rate
+        const savingsRate = data.statCards.data.savingsRate || "N/A";
+        document.querySelector(
+          ".stat-value[data-id='savingsRate']",
+        ).textContent = `${formatNumber(savingsRate)}%`;
+
+        // Update Goals Funded
+        const goalsFunded = data.statCards.data.goalsFunded || "N/A";
+        document.querySelector(
+          ".stat-value[data-id='goalsFunded']",
+        ).textContent = goalsFunded;
+
+        // Update Average Daily Spend
+        const averageDailySpend =
+          data.statCards.data.averageDailySpend || "N/A";
+        document.querySelector(
+          ".stat-value[data-id='averageDailySpend']",
+        ).textContent = `£${formatNumber(averageDailySpend)}`;
+      } else {
+        console.log("Stat cards data is missing or incomplete");
+      }
+
+      // Update Recent Transactions
+      updateTransactions(data.lastFiveTransactions);
+
+      // Update Daily Spend Chart
+      updateDailySpendChart(data.dailySpendLastWeek);
+
+      // Update Spend by Category Chart
+      updateSpendByCategoryChart(data.spendByCategoryAllTime);
+
+      // Update Available to Spend Chart
+      updateAvailableToSpendChart(data.availableToSpend);
+
+      // Update Account Balances Chart
+      updateAccountBalancesChart(data.accountBalances);
+    }
+
+    function updateTransactions(transactionsData) {
+      const transactionsTableBody = document.querySelector(
+        ".last-five-transactions",
+      );
+      transactionsTableBody.innerHTML = ""; // Clear existing rows
+
+      if (transactionsData && transactionsData.data.length > 0) {
+        transactionsData.data.forEach((txn) => {
+          const row = `
+                <tr>
+                    <td>${txn.transactionTitle}</td>
+                    <td>${txn.createdAt}</td>
+                    <td class="${
+                      txn.transactionType === "credit"
+                        ? "text-primary"
+                        : "text-neutral"
+                    }">
+                        <i class="fa-solid ${
+                          txn.transactionType === "credit"
+                            ? "fa-plus"
+                            : "fa-minus"
+                        }"></i>
+                        £${formatNumber(txn.transactionAmount)}
+                    </td>
+                </tr>`;
+          transactionsTableBody.innerHTML += row;
+        });
+      } else {
+        // Create a formatted string for today's date
+        const today = new Date().toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+
+        // If no transactions, display a placeholder transaction row
+        transactionsTableBody.innerHTML = `
+            <tr>
+                <td><i class="fa-solid fa-sack-xmark"></i> No transactions yet. Add one.</td>
+                <td>${today}</td>
+                <td class="text-neutral">£0.00</td>
+            </tr>`;
+      }
+    }
+
+    function updateDailySpendChart(dailyOutgoingsData) {
+      const ctx = document.getElementById("dailySpendChart").getContext("2d");
+      const placeholderData = {
+        dailyOutgoings: [10, 20, 30, 40, 50, 60, 70],
+      };
+
+      // Ensure the chart container is visible
+      document.getElementById("dailySpendChartContainer").style.display =
+        "block";
+
+      // Create a new chart instance each time the function is called
+      console.log(dailyOutgoingsData.dailyOutgoings);
+
+      const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const today = new Date().getDay();
+      const orderedDaysOfWeek = [
+        ...daysOfWeek.slice(today + 1),
+        ...daysOfWeek.slice(0, today + 1),
+      ];
+      console.log(orderedDaysOfWeek);
+
+      let dailySpendChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: orderedDaysOfWeek,
+          datasets: [
+            {
+              label: "Daily Spend (£)",
+              data: dailyOutgoingsData.dailyOutgoings,
+              // data: placeholderData.dailyOutgoings,
+              backgroundColor: "rgba(227, 232, 250)",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              display: false,
+            },
+            x: {
+              display: false,
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      });
+
+      // Optionally clear the previous chart instance before creating a new one
+      if (ctx.chart) {
+        ctx.chart.destroy();
+      }
+
+      // Update the context with the new chart
+      ctx.chart = dailySpendChart;
+    }
+
+    function updateSpendByCategoryChart(spendData) {
+      const ctx = document
+        .getElementById("spendByCategoryChart")
+        .getContext("2d");
+
+      // Destroy existing chart instance if it exists
+      if (ctx.chart) {
+        ctx.chart.destroy();
+      }
+
+      console.log(spendData.categories);
+      console.log(spendData.percentages);
+      // Create a new chart instance directly using provided data
+      ctx.chart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: spendData.categories,
+          datasets: [
+            {
+              label: "(%)",
+              data: spendData.percentages,
+              backgroundColor: [
+                "#3b28cc",
+                "#2667ff",
+                "#3f8efc",
+                "#87bfff",
+                "#a4caff",
+              ],
+              borderColor: ["#fff"],
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false,
+              position: "bottom",
+            },
+          },
+        },
+      });
+    }
+
+    function updateAvailableToSpendChart(availableToSpend) {
+      const ctx = document
+        .getElementById("availableToSpendChart")
+        .getContext("2d");
+
+      // Check if all values are 0
+      if (availableToSpend.availableToSpend.every((value) => value === 0)) {
+        // Replace with array of ones
+        availableToSpend.availableToSpend = Array(
+          availableToSpend.availableToSpend.length,
+        ).fill(1);
+      }
+
+      // Destroy existing chart instance if it exists
+      if (ctx.chart) {
+        ctx.chart.destroy();
+      }
+
+      console.log(availableToSpend.categories);
+      console.log(availableToSpend.availableToSpend);
+      // Create a new chart instance directly using provided data
+      ctx.chart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: availableToSpend.categories,
+          datasets: [
+            {
+              label: "(£)",
+              data: availableToSpend.availableToSpend,
+              backgroundColor: [
+                "#3b28cc",
+                "#2667ff",
+                "#3f8efc",
+                "#87bfff",
+                "#a4caff",
+              ],
+              borderColor: ["#ffffff"],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false,
+              position: "bottom",
+            },
+          },
+        },
+      });
+    }
+
+    function updateAccountBalancesChart(accountBalances) {
+      const ctx = document
+        .getElementById("accountBalancesChart")
+        .getContext("2d");
+
+      // Destroy existing chart instance if it exists
+      if (ctx.chart) {
+        ctx.chart.destroy();
+      }
+
+      console.log(accountBalances.accounts);
+      console.log(accountBalances.balances);
+      // Create a new chart instance directly using provided data
+      ctx.chart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: accountBalances.accounts,
+          datasets: [
+            {
+              label: "(£)",
+              data: accountBalances.balances,
+              backgroundColor: [
+                "#3b28cc",
+                "#2667ff",
+                "#3f8efc",
+                "#87bfff",
+                "#a4caff",
+              ],
+              borderColor: ["#ffffff"],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false,
+              position: "bottom",
+            },
+          },
+        },
+      });
+    }
+
+    function formatNumber(value) {
+      return Number(value).toFixed(2);
+    }
+  </script>
+</html>

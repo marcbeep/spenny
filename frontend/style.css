@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600;800&display=swap");
+
+body {
+  font-family: "Nunito", sans-serif;
+}
+
+.archive-trigger,
+.update-balance {
+  cursor: pointer;
+}
+
+.archive-trigger:hover,
+.update-balance:hover {
+  text-decoration: underline;
+}
