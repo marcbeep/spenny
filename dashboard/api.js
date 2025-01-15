@@ -1,7 +1,7 @@
 const API_URL =
   window.location.hostname === "localhost"
     ? "http://localhost:3000"
-    : "https://spenny-6e54c38e0b23.herokuapp.com";
+    : "https://spenny-backend.vercel.app";
 
 // Helper functions
 
