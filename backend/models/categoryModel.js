@@ -18,12 +18,6 @@ const categorySchema = new Schema(
       required: true,
       lowercase: true,
     },
-    // categoryAssigned: {
-    //   type: Number,
-    //   default: 0,
-    //   required: true,
-    //   set: formatNumber,
-    // },
     categoryAvailable: {
       type: Number,
       default: 0,
@@ -53,9 +47,6 @@ categorySchema.pre('save', function (next) {
 
 categorySchema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function (next) {
   const update = this.getUpdate();
-  // if (update.categoryAssigned !== undefined) {
-  //   update.categoryAssigned = formatNumber(update.categoryAssigned);
-  // }
   if (update.categoryAvailable !== undefined) {
     update.categoryAvailable = formatNumber(update.categoryAvailable);
   }
