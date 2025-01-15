@@ -1,7 +1,7 @@
 const API_URL =
   window.location.hostname === "localhost"
     ? "http://localhost:3000"
-    : "https://spenny-backend.vercel.app";
+    : "https://placeholder.com";
 
 // Helper functions
 
@@ -147,7 +147,6 @@ async function fetchAllAnalyticsData() {
     // results[0] corresponds to the response from fetchStatCards
     // results[1] corresponds to the response from fetchLastFiveTransactions, etc.
 
-    // You might want to handle the results differently based on your UI setup:
     return {
       statCards: results[0],
       lastFiveTransactions: results[1],

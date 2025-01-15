@@ -1,51 +1,56 @@
-# 📊 Spenny
+# Spenny
 
-Welcome to **Spenny**, a zero-based budget tool for desktop & mobile, inspired by the popular YNAB software, and built using the MERN stack!
+- Spenny is a zero-based budgeting tool for both desktop and mobile, inspired by the popular YNAB software.
+- It was built using the MERN stack as part of my undergraduate final year project.
+- Spenny is no longer hosted remotely, meaning you can clone this repository, install the dependencies, and run it locally.
+- This repository is no longer maintained but is published for archival purposes. By looking at the commits, you can see the frantic pace at which I was trying to finish this project.
+
+## Screenshots
 
 ![1](imgs/1.png)
 ![2](imgs/2.png)
 ![3](imgs/3.png)
 
-## 🌟 Features
+## Features
 
 ### Users
 
-- 📝 **Sign Up & Login**: Create an account with a username and password.
-- 🛠️ **Automatic Setup**:
-  - Generic categories and a spending account with zero balance.
+- **Sign Up & Login**: Create an account with a username and password.
+- **Automatic Setup**:
+  - Generic categories and a spending account with a zero balance.
   - Random profile picture generated using an online service.
 
 ### Accounts
 
-- ➕ **Add & Update Accounts**: Create new accounts and update balances.
-- 📂 **Archive Accounts**: Archive instead of deleting to maintain data integrity.
-- 💳 **Types of Accounts**:
-  - **Spending** (e.g., Barclays, Lloyds)
-  - **Tracking** (e.g., Vanguard Index Fund Portfolio)
-- 🔄 **Money Transfers**: Move money between accounts (spending <-> tracking).
+- **Add & Update Accounts**: Create new accounts and update balances.
+- **Archive Accounts**: Archive accounts instead of deleting them to maintain data integrity.
+- **Types of Accounts**:
+  - **Spending**: e.g., Barclays, Lloyds.
+  - **Tracking**: e.g., Vanguard Index Fund Portfolio.
+- **Money Transfers**: Move money between accounts (spending <-> tracking).
 
 ### Categories
 
-- ➕ **Manage Categories**: Add, delete, and update assigned values.
-- 🎯 **Category Goals**: Set goals for each category.
-  - **Spending Goal**: Assign a target amount by a specific day each week.
+- **Manage Categories**: Add, delete, and update assigned values.
+- **Category Goals**:
+  - **Spending Goal**: Assign a target amount to be spent by a specific day each week.
   - **Saving Goal**: Achieve a target amount without a set deadline.
 
 ### Transactions
 
-- 💸 **Manage Transactions**: Add, delete, and update transactions.
-- ➕ **Debit/Credit**: Adjust account and category balances accordingly.
-- 🔄 **Effect on Budget**: Automatically updates funds and category assignments.
+- **Manage Transactions**: Add, delete, and update transactions.
+- **Debit/Credit Adjustments**: Adjust account and category balances accordingly.
+- **Effect on Budget**: Automatically updates funds and category assignments.
 
 ### Analytics
 
 1. **Total Spend for the Week**: Track weekly spending and trends.
 2. **Spending by Category**: View spending distribution across categories.
-3. **Net Worth Tracking**: Monitor net worth over time.
+3. **Net Worth Tracking**: Monitor your net worth over time.
 4. **Income vs. Expenses**: Compare weekly income and expenses.
 5. **Savings Rate**: Calculate the percentage of income saved each week.
 
-## 🔗 Endpoints
+## Endpoints
 
 | Endpoint                        | Method | Description                     |
 | ------------------------------- | ------ | ------------------------------- |
@@ -80,7 +85,7 @@ Welcome to **Spenny**, a zero-based budget tool for desktop & mobile, inspired b
 | `/users/login`                  | POST   | User login.                     |
 | `/users/signup`                 | POST   | User signup and initialization. |
 
-## 📋 Status Codes
+## Status Codes
 
 - **200 OK**: Request succeeded.
 - **201 Created**: New resource created.
@@ -89,7 +94,3 @@ Welcome to **Spenny**, a zero-based budget tool for desktop & mobile, inspired b
 - **401 Unauthorized**: Authentication required.
 - **404 Not Found**: Resource not found.
 - **500 Internal Server Error**: Server error.
-
----
-
-✨ Enjoy budgeting with Spenny! Manage your finances with ease and achieve your goals. Happy budgeting! 💰

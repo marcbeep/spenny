@@ -374,7 +374,6 @@
         }
 
         try {
-          // Assuming you have an API function `deleteGoal(goalId)` correctly implemented
           await deleteGoal(goalId); // Pass goalId to the delete function
           alert("Goal deleted successfully.");
           const updatedData = await fetchAllBudgetData();
@@ -407,7 +406,7 @@
           await deleteCategory(categoryIdToDelete, reassignToCategoryId);
           alert("Category deleted successfully.");
           const updatedData = await fetchAllBudgetData();
-          updatePage(updatedData); // Assume this function updates all your UI components
+          updatePage(updatedData); 
         } catch (error) {
           console.error("Error deleting category:", error);
           alert("Failed to delete category.");
