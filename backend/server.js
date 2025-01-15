@@ -14,28 +14,6 @@ const analyticsRoutes = require('./routes/analytics');
 
 const app = express();
 
-// const allowedOrigins = [
-//   'https://spenny.reeflink.org',
-//   'https://getspenny.com',
-//   'https://www.getspenny.com',
-//   'http://localhost:4000',
-// ];
-
-// app.use(cors({
-//   origin: (origin, callback) => {
-//       if (!origin) return callback(null, true);
-//       if (allowedOrigins.includes(origin)) {
-//           return callback(null, true);
-//       } else {
-//           const message = 'The CORS policy for this site does not allow access from the specified Origin.';
-//           return callback(new Error(message), false);
-//       }
-//   },
-//   credentials: true,
-//   allowedHeaders: 'Content-Type,Authorization',
-//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
-// }));
-
 app.use(
   cors({
     origin: '*', // Allow all origins
